@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Merchants — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1000px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="merchants" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Merchants</h1><div class="sub">{{sub}}</div></div>
+        <div class="acts">
+          <div class="seg" role="group" aria-label="Prototype: preview state" title="Prototype control" style="border-style: dashed">
+            <sc-for list="{{states}}" as="s" hint-placeholder-count="4"><button class="{{s.cls}}" onClick="{{s.pick}}" aria-pressed="{{s.on}}">{{s.label}}</button></sc-for>
+          </div>
+          <button class="btn pri"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>New merchant</button>
+        </div>
+      </div>
+      <section class="card lv" aria-label="Merchants list" aria-busy="{{loading}}">
+        <div class="lt">
+          <div class="views" role="tablist" aria-label="Saved views">
+            <sc-for list="{{views}}" as="v" hint-placeholder-count="5"><button class="{{v.cls}}" role="tab" aria-selected="{{v.on}}">{{v.label}}<span class="c">{{v.c}}</span></button></sc-for>
+            <button class="vt"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Save view</button>
+          </div>
+          <span class="sp"></span>
+          <label class="inpw" style="width: 220px"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.search}}"></path></svg><span class="sr">Filter merchants</span><input placeholder="DBA, MID, city…" value="{{qv}}" readonly="{{true}}"></label>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Filter</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cols}}"></path></svg>Columns</button>
+          <div class="seg" role="group" aria-label="Row density"><button class="{{dComf}}" onClick="{{setComf}}">Comfortable</button><button class="{{dComp}}" onClick="{{setComp}}">Compact</button></div>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button>
+        </div>
+        <div class="chips">
+          <span class="chip">Status <b>{{statusChip}}</b><button aria-label="Remove status filter"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></span>
+          <span class="chip">Processor <b>is Maverick</b><button aria-label="Remove processor filter"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></span>
+          <sc-if value="{{empty}}" hint-placeholder-val="{{false}}"><span class="chip">MCC <b>is 5813 · Bars</b><button aria-label="Remove MCC filter"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></span></sc-if>
+          <button class="lnk"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Add filter</button>
+        </div>
+        <sc-if value="{{hasSel}}" hint-placeholder-val="{{false}}">
+          <div class="bulk" role="region" aria-label="Bulk actions"><span>{{selCount}} selected</span><button class="btn sm">Reassign agent</button><button class="btn sm">Add tag</button><button class="btn sm">New ticket</button><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export</button><span class="sp"></span><button class="btn sm ghost" onClick="{{clearSel}}">Clear</button></div>
+        </sc-if>
+
+        <sc-if value="{{error}}" hint-placeholder-val="{{false}}">
+          <div class="empty" role="alert">
+            <span class="ei" style="background: var(--r-bg); color: var(--r-ink); border-color: transparent"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg></span>
+            <h3>Couldn’t load merchants</h3>
+            <p>The request timed out after 30 seconds. Your filters are saved. Nothing was changed.</p>
+            <div class="row"><button class="btn pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.refresh}}"></path></svg>Try again</button><a class="btn" href="Settings.dc.html">Check integration status</a></div>
+            <span class="subtle sm mono">Error ref: req_7Hf2KQ · Nov 21, 2026 9:42 AM</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+          <div class="empty">
+            <span class="ei"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.store}}"></path></svg></span>
+            <h3>No merchants match these filters</h3>
+            <p>No live Maverick merchants are boarded under MCC 5813. Clear a filter, or add a merchant to start boarding.</p>
+            <div class="row"><button class="btn">Clear filters</button><button class="btn pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>New merchant</button></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{showTable}}" hint-placeholder-val="{{true}}">
+          <div class="tblw">
+            <table class="{{tblCls}}">
+              <thead><tr>
+                <th class="w0"><input type="checkbox" aria-label="Select all merchants" checked="{{allSel}}" onChange="{{toggleAll}}"></th>
+                <th><span class="th-s">DBA<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.sort}}"></path></svg></span></th>
+                <th>Status</th><th>MID</th><th>MCC</th><th>Location</th><th>Owner</th>
+                <th class="r">30-day volume</th><th class="r">vs prior 30</th><th class="r">Transactions</th><th class="r">CB ratio</th>
+              </tr></thead>
+              <tbody onKeyDown="{{keys}}">
+                <sc-if value="{{loading}}" hint-placeholder-val="{{false}}">
+                  <sc-for list="{{skel}}" as="s" hint-placeholder-count="9">
+                    <tr><td><span class="sk" style="width: 16px; height: 16px"></span></td><td><span class="sk" style="width: {{s.w}}px"></span><span class="sk" style="width: 120px; height: 8px; margin-top: 6px"></span></td><td><span class="sk" style="width: 54px; height: 18px; border-radius: 9px"></span></td><td><span class="sk" style="width: 130px"></span></td><td><span class="sk" style="width: 34px"></span></td><td><span class="sk" style="width: 90px"></span></td><td><span class="sk" style="width: 22px; height: 22px; border-radius: 11px"></span></td><td class="r"><span class="sk" style="width: 80px; margin-left: auto"></span></td><td class="r"><span class="sk" style="width: 40px; margin-left: auto"></span></td><td class="r"><span class="sk" style="width: 40px; margin-left: auto"></span></td><td class="r"><span class="sk" style="width: 36px; margin-left: auto"></span></td></tr>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ready}}" hint-placeholder-val="{{true}}">
+                  <sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+                    <tr class="{{r.trc}}">
+                      <td><input type="checkbox" aria-label="{{r.selLabel}}" checked="{{r.sel}}" onChange="{{r.toggle}}"></td>
+                      <td style="padding-top: 6px; padding-bottom: 6px"><a class="rl" data-nav="1" href="Merchant.dc.html">{{r.dba}}</a><div class="subtle sm">{{r.legal}}</div></td>
+                      <td><span class="{{r.st.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.st.d}}"></path></svg>{{r.st.label}}</span></td>
+                      <td><span class="row" style="gap: 6px"><span class="mono">{{r.mid}}</span><sc-if value="{{r.hasMid}}" hint-placeholder-val="{{true}}"><span class="proc"><span class="pm">M</span>Maverick</span></sc-if></span></td>
+                      <td class="mono muted">{{r.mcc}}</td>
+                      <td class="muted">{{r.city}}</td>
+                      <td><span class="{{r.ow.av}}" title="{{r.ow.name}}" aria-label="{{r.ow.name}}">{{r.ow.ini}}</span></td>
+                      <td class="r">{{r.vol}}</td>
+                      <td class="r"><span class="{{r.dCls}}">{{r.delta}}</span></td>
+                      <td class="r">{{r.txn}}</td>
+                      <td class="r"><span class="{{r.cbCls}}">{{r.cb}}</span></td>
+                    </tr>
+                  </sc-for>
+                </sc-if>
+              </tbody>
+            </table>
+          </div>
+          <div class="lfoot"><span>{{footer}}</span><span class="row" style="gap: 6px"><button class="btn sm icon ghost" aria-label="Previous page"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevL}}"></path></svg></button><span>Page 1 of {{pages}}</span><button class="btn sm icon ghost" aria-label="Next page"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg></button></span></div>
+        </sc-if>
+      </section>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"variant":{"editor":"enum","options":["ready","loading","empty","error"],"default":"ready"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const v = this.state?.v ?? this.props.variant ?? 'ready';
+    const density = this.state?.density ?? 'comfortable';
+    const sel = this.state?.sel ?? {};
+    const list = IB.M.filter(m => IB.canSee(role, m.owner));
+    const rows = list.map((m, i) => {
+      const d = m.prev ? (m.vol - m.prev) / m.prev * 100 : null;
+      return {
+        dba: m.dba, legal: m.legal, st: IB.pill(m.status), mid: m.mid, hasMid: m.mid !== '—', mcc: m.mcc, city: m.city, ow: IB.agent(m.owner),
+        vol: m.vol ? IB.usd(m.vol) : '—', delta: d == null ? '—' : (m.status === 'Closed' ? '−100.0%' : (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(1) + '%'),
+        dCls: d == null ? 'subtle' : (d >= 0 ? 'tx-green' : 'tx-red'), txn: m.txn ? IB.num(m.txn) : '—',
+        cb: m.cbr == null ? '—' : m.cbr.toFixed(2) + '%', cbCls: m.cbr >= 0.65 ? 'tx-red' : (m.cbr >= 0.25 ? 'tx-amber' : ''),
+        sel: !!sel[i], trc: sel[i] ? 'sel' : '', selLabel: 'Select ' + m.dba, toggle: () => this.setState({ sel: { ...sel, [i]: !sel[i] } })
+      };
+    });
+    const selCount = Object.keys(sel).filter(k => sel[k]).length;
+    const total = role === 'agent' ? 86 : 1284;
+    const views = [['All merchants', role === 'agent' ? 92 : 1352], ['Live', total], ['Boarding', role === 'agent' ? 4 : 31], ['High CB ratio', role === 'agent' ? 1 : 9], ['Volume down 10%+', role === 'agent' ? 3 : 27]].map((x, i) => ({ label: x[0], c: IB.num(x[1]), on: i === 0, cls: 'vt' + (i === 0 ? ' on' : '') }));
+    const states = ['ready', 'loading', 'empty', 'error'].map(s => ({ label: s === 'ready' ? 'Data' : s[0].toUpperCase() + s.slice(1), on: v === s, cls: v === s ? 'on' : '', pick: () => this.setState({ v: s }) }));
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      sub: role === 'agent' ? 'Your book · 86 live, 4 boarding, 2 prospects' : '1,284 live · 31 boarding · 37 prospects across 5 agents',
+      states, views, rows, statusChip: v === 'empty' ? 'is Live' : 'is any of Prospect, Boarding, Live, Closed',
+      qv: v === 'empty' ? '' : '',
+      ready: v === 'ready', loading: v === 'loading', empty: v === 'empty', error: v === 'error', showTable: v === 'ready' || v === 'loading',
+      skel: [180, 140, 200, 160, 120, 190, 150, 170, 130].map(w => ({ w })),
+      hasSel: v === 'ready' && selCount > 0, selCount, allSel: rows.length > 0 && rows.every(r => r.sel),
+      toggleAll: () => { const all = rows.every(r => r.sel); const n = {}; if (!all) rows.forEach((r, i) => n[i] = true); this.setState({ sel: n }); },
+      clearSel: () => this.setState({ sel: {} }),
+      tblCls: 'tbl' + (density === 'compact' ? ' compact' : ''),
+      dComf: density === 'comfortable' ? 'on' : '', dComp: density === 'compact' ? 'on' : '',
+      setComf: () => this.setState({ density: 'comfortable' }), setComp: () => this.setState({ density: 'compact' }),
+      footer: v === 'loading' ? 'Loading merchants…' : 'Showing 1–' + rows.length + ' of ' + IB.num(role === 'agent' ? 92 : 1352) + ' · ↑/↓ moves between rows, Enter opens',
+      pages: role === 'agent' ? 7 : 97,
+      keys: IB.rowKeys,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

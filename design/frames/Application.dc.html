@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>APP-20431 Bluebird Pediatric Dental — Boarding application</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1640px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="applications" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content" style="gap: 16px">
+      <div class="row">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="Boarding.dc.html">Applications</a><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg><b aria-current="page">APP-20431</b></nav>
+        <span class="sp"></span>
+        <div class="seg" role="group" aria-label="Prototype: preview status" style="border-style: dashed">
+          <sc-for list="{{vars}}" as="s" hint-placeholder-count="2"><button class="{{s.cls}}" onClick="{{s.pick}}" aria-pressed="{{s.on}}">{{s.label}}</button></sc-for>
+        </div>
+      </div>
+
+      <header class="row w" style="align-items: flex-start; gap: 14px">
+        <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 6px">
+          <div class="row w" style="gap: 10px">
+            <h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -.02em">Bluebird Pediatric Dental</h1>
+            <span class="{{st.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{st.d}}"></path></svg>{{st.label}}</span>
+            <sc-if value="{{cond}}" hint-placeholder-val="{{false}}"><span class="pill t-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pa}}"></path></svg>Conditional</span></sc-if>
+            <span class="{{sig.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{sig.d}}"></path></svg>{{sig.label}}</span>
+            <span class="proc"><span class="pm">M</span>Maverick</span>
+          </div>
+          <div class="row w muted" style="gap: 10px">
+            <span class="mono">APP-20431</span><span aria-hidden="true">·</span><span>Bluebird Pediatric Dentistry PLLC</span><span aria-hidden="true">·</span><span>MCC <span class="mono">8021</span> Dentists</span><span aria-hidden="true">·</span>
+            <span class="who"><span class="av av-3">TW</span>Tess Whitaker</span><span aria-hidden="true">·</span><span class="who"><span class="av av-7">LB</span>Leah Brooks, specialist</span>
+          </div>
+        </div>
+        <div class="row w" style="gap: 8px">
+          <a class="btn" href="Merchant.dc.html"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.store}}"></path></svg>Merchant record</a>
+          <sc-if value="{{pending}}" hint-placeholder-val="{{true}}">
+            <span class="tipw">
+              <button class="btn pri dis" aria-disabled="true" aria-describedby="submit-why"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.send}}"></path></svg>Submit to Underwriting</button>
+              <span class="tip right show" role="tooltip" id="submit-why" style="width: 290px">
+                <b style="display: block; margin-bottom: 4px">3 items left before you can submit</b>
+                <span class="tr"><span>Signature: Marcus Shah hasn’t signed</span></span>
+                <span class="tr"><span>Documents: voided check, Marcus Shah ID</span></span>
+                <span class="tr"><span>ACH: bank account not verified</span></span>
+              </span>
+            </span>
+          </sc-if>
+          <sc-if value="{{cond}}" hint-placeholder-val="{{false}}"><button class="btn pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.check}}"></path></svg>Mark conditions met</button></sc-if>
+          <button class="btn icon" aria-label="More actions"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.more}}"></path></svg></button>
+        </div>
+      </header>
+
+      <section class="card card-b" aria-label="Status" style="padding: 18px 20px; margin-top: 10px">
+        <ol class="stepper" style="list-style: none; margin: 0; padding: 0">
+          <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+            <li class="{{s.cls}}" aria-current="{{s.cur}}">
+              <span class="ln" aria-hidden="true"></span>
+              <span class="dot"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{s.d}}"></path></svg></span>
+              <span class="st">{{s.n}}</span>
+              <span class="ts">{{s.ts}}</span>
+              <span class="ts">{{s.dur}}</span>
+            </li>
+          </sc-for>
+          <li class="step" style="flex: 1.3; padding-right: 0">
+            <span class="dot" style="{{outDot}}"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{outIc}}"></path></svg></span>
+            <span class="st">Decision</span>
+            <span class="row w" style="gap: 4px">
+              <sc-for list="{{outs}}" as="o" hint-placeholder-count="3"><span class="{{o.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{o.d}}"></path></svg>{{o.label}}</span></sc-for>
+            </span>
+            <span class="ts">{{outTs}}</span>
+          </li>
+        </ol>
+      </section>
+
+      <div class="g-main" style="grid-template-columns: minmax(0, 1fr) 400px">
+        <div class="stack">
+          <section class="card" aria-labelledby="ck-h">
+            <div class="card-h"><h2 id="ck-h">Completion checklist</h2><div class="row" style="gap: 10px; width: 220px"><div class="prog" style="flex: 1"><i style="width: {{pct}}%"></i></div><span class="sm muted num">{{doneN}} of 8 sections</span></div></div>
+            <sc-for list="{{checks}}" as="c" hint-placeholder-count="8">
+              <div class="ck" style="align-items: flex-start">
+                <span class="{{c.icls}}" aria-label="{{c.state}}"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.d}}"></path></svg></span>
+                <div style="flex: 1; min-width: 0">
+                  <div class="row"><span class="t">{{c.n}}</span><span class="sp"></span><span class="{{c.scls}}">{{c.state}}</span></div>
+                  <div class="d">{{c.s}}</div>
+                  <sc-if value="{{c.fees}}" hint-placeholder-val="{{false}}">
+                    <table class="tbl compact" style="margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden">
+                      <thead><tr><th>Fee (Q4 2026 · Healthcare IC+)</th><th class="r">Rate</th><th class="r">Per item</th></tr></thead>
+                      <tbody>
+                        <tr><td>Interchange-plus markup · Visa/MC/Discover</td><td class="r">0.25%</td><td class="r">$0.08</td></tr>
+                        <tr><td>Amex OptBlue markup</td><td class="r">0.30%</td><td class="r">$0.10</td></tr>
+                        <tr><td>Monthly service · PCI program</td><td class="r">—</td><td class="r">$9.95 · $7.50</td></tr>
+                        <tr><td>Chargeback fee</td><td class="r">—</td><td class="r">$25.00</td></tr>
+                      </tbody>
+                    </table>
+                  </sc-if>
+                  <sc-if value="{{c.docs}}" hint-placeholder-val="{{false}}">
+                    <div style="margin-top: 8px; border: 1px solid var(--line); border-radius: 8px">
+                      <sc-for list="{{docs}}" as="d" hint-placeholder-count="6">
+                        <div class="row" style="padding: 7px 10px; border-bottom: 1px solid var(--line); font-size: 12px">
+                          <svg class="i s14" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-3)"><path d="{{ic.file}}"></path></svg>
+                          <span style="flex: 1">{{d.n}}</span><span class="subtle">{{d.req}}</span>
+                          <span class="{{d.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{d.p.d}}"></path></svg>{{d.p.label}}</span>
+                          <sc-if value="{{d.missing}}" hint-placeholder-val="{{false}}"><button class="btn sm"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.upload}}"></path></svg>Upload</button></sc-if>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+                <button class="btn ghost sm">{{c.act}}</button>
+              </div>
+            </sc-for>
+          </section>
+
+          <section class="card" aria-labelledby="notes-h">
+            <div class="card-h"><h2 id="notes-h">Notes <span class="ct">3</span></h2><span class="subtle sm">Internal · not visible to the merchant or Maverick</span></div>
+            <div class="card-b" style="display: flex; flex-direction: column; gap: 14px">
+              <sc-for list="{{notes}}" as="n" hint-placeholder-count="3">
+                <div class="row" style="align-items: flex-start; gap: 10px">
+                  <span class="{{n.av}}">{{n.ini}}</span>
+                  <div style="flex: 1; min-width: 0"><div class="row"><b style="font-weight: 600">{{n.by}}</b><span class="subtle sm">{{n.w}}</span></div><div style="margin-top: 2px">{{n.t}}</div></div>
+                </div>
+              </sc-for>
+              <div class="composer int">
+                <label class="sr" for="appnote">Add a note</label>
+                <textarea id="appnote" placeholder="Add a note for the boarding team… @mention to notify" style="min-height: 64px"></textarea>
+                <div class="row" style="padding: 8px 10px; border-top: 1px solid var(--note-line)"><button class="btn ghost sm icon" aria-label="Attach file"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.clip}}"></path></svg></button><span class="sp"></span><button class="btn sm pri">Add note</button></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="stack">
+          <section class="card" aria-labelledby="sig-h">
+            <div class="card-h"><h2 id="sig-h">Signature</h2><span class="{{sig.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{sig.d}}"></path></svg>{{sig.label}}</span></div>
+            <div>
+              <sc-for list="{{signers}}" as="s" hint-placeholder-count="2">
+                <div class="ck">
+                  <span class="{{s.av}}">{{s.ini}}</span>
+                  <div style="flex: 1; min-width: 0"><div class="t">{{s.n}}</div><div class="d">{{s.r}}</div><div class="d">{{s.ev}}</div></div>
+                  <span class="{{s.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{s.p.d}}"></path></svg>{{s.p.label}}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div class="card-b" style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line)">
+              <button class="btn" style="justify-content: flex-start"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.send}}"></path></svg>Send e-sign request<span class="sp"></span><span class="subtle sm">Reminder to Marcus</span></button>
+              <button class="btn" style="justify-content: flex-start" onClick="{{copyLink}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.copy}}"></path></svg>{{copyLabel}}<span class="sp"></span><span class="subtle sm">Expires Dec 4, 2026</span></button>
+              <button class="btn" style="justify-content: flex-start"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.sign}}"></path></svg>Mark signed manually…<span class="sp"></span><span class="subtle sm">Requires signed PDF</span></button>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="uw-h">
+            <div class="card-h"><h2 id="uw-h">Underwriting checks</h2><button class="btn ghost sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.refresh}}"></path></svg>Re-run</button></div>
+            <div class="row" style="padding: 8px 16px; gap: 12px; border-bottom: 1px solid var(--line); font-size: 12px">
+              <span class="tx-green"><b class="num">{{uwN.p}}</b> passed</span><span class="tx-red"><b class="num">{{uwN.f}}</b> failed</span><span class="tx-blue"><b class="num">{{uwN.q}}</b> pending</span><span class="sp"></span><span class="subtle">Ran {{uwTs}}</span>
+            </div>
+            <sc-for list="{{uw}}" as="u" hint-placeholder-count="7">
+              <div class="ck" style="align-items: flex-start">
+                <span class="{{u.p.cls}}" style="padding: 0 6px; margin-top: 1px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{u.p.d}}"></path></svg><span class="sr">{{u.p.label}}</span></span>
+                <div style="flex: 1; min-width: 0"><div class="t">{{u.n}}</div><div class="{{u.rc}}">{{u.r}}</div></div>
+                <span class="subtle sm">{{u.p.label}}</span>
+              </div>
+            </sc-for>
+          </section>
+
+          <sc-if value="{{cond}}" hint-placeholder-val="{{false}}">
+            <section class="card" aria-labelledby="cond-h" style="border-color: color-mix(in srgb, var(--a-ink) 35%, var(--line))">
+              <div class="card-h" style="background: var(--a-bg); border-radius: 10px 10px 0 0"><h2 id="cond-h" style="color: var(--a-ink)"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.flag}}"></path></svg>Approval conditions</h2><span class="sm" style="color: var(--a-ink)">1 of 3 met</span></div>
+              <sc-for list="{{conds}}" as="c" hint-placeholder-count="3">
+                <div class="ck"><input type="checkbox" checked="{{c.met}}" aria-label="{{c.n}}"><div style="flex: 1"><div class="t">{{c.n}}</div><div class="d">{{c.d}}</div></div><span class="{{c.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.p.d}}"></path></svg>{{c.p.label}}</span></div>
+              </sc-for>
+            </section>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"onboarding"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"variant":{"editor":"enum","options":["pending","conditional"],"default":"pending"},"$preview":{"width":1440,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const role = this.state?.role ?? this.props.viewRole ?? 'onboarding';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const v = this.state?.v ?? this.props.variant ?? 'pending';
+    const pending = v === 'pending', cond = v === 'conditional';
+    const copied = this.state?.copied ?? false;
+    const done = { cls: 'step done', d: ic.check }, cur = { cls: 'step cur', d: ic.clock, cur: 'step' }, todo = { cls: 'step', d: '' };
+    const steps = pending
+      ? [{ n: 'New', ts: 'Nov 12, 2026 10:04 AM', dur: '2 days', ...done }, { n: 'Pending', ts: 'Since Nov 14, 2026 3:20 PM', dur: '7 days · over 5-day target', ...cur }, { n: 'Underwriting', ts: 'Not started', dur: '', ...todo }]
+      : [{ n: 'New', ts: 'Nov 12, 2026 10:04 AM', dur: '2 days', ...done }, { n: 'Pending', ts: 'Nov 14, 2026 3:20 PM', dur: '7 days', ...done }, { n: 'Underwriting', ts: 'Nov 21, 2026 8:55 AM', dur: '4 hours', ...done }];
+    const outs = pending
+      ? [P('Approved', 'neutral'), P('Declined', 'neutral'), P('Cancelled', 'neutral')].map(o => ({ ...o, cls: 'pill', d: '' }))
+      : [{ ...P('Approved'), label: 'Approved · Conditional', cls: 'pill t-amber', d: IB.PI.amber }, { label: 'Declined', cls: 'pill', d: '' }, { label: 'Cancelled', cls: 'pill', d: '' }];
+    const C = [
+      ['Business info', 'DBA, legal name, EIN ••-•••0396, MCC 8021, 3 addresses', 'ok', 'Edit'],
+      ['Principals', '2 principals · 100% ownership · Dr. Anika Shah (60%), Marcus Shah (40%)', 'ok', 'Edit'],
+      ['Processing', 'Est. $54,000.00/mo · avg ticket $186.00 · high ticket $2,400.00 · 92% card present', 'ok', 'Edit'],
+      ['ACH', pending ? 'Checking •••• 3318 added · verification needs a voided check' : 'Checking •••• 3318 · verified Nov 21, 2026', pending ? 'part' : 'ok', 'Edit'],
+      ['Fees', 'From pricing campaign “Q4 2026 · Healthcare IC+”', 'ok', 'Change campaign', 'fees'],
+      ['Equipment / Terminals', '2 × Smart Terminal S2 (purchase) · 1 × Virtual terminal', 'ok', 'Edit'],
+      ['Documents', pending ? '4 of 6 required uploaded' : '6 of 6 required uploaded', pending ? 'no' : 'ok', 'Upload', 'docs'],
+      ['Signature', pending ? '1 of 2 principals signed' : '2 of 2 principals signed', pending ? 'part' : 'ok', 'Remind']
+    ];
+    const ICK = { ok: ['cki ok', ic.check, 'Complete', 'sm tx-green'], part: ['cki part', ic.clock, 'In progress', 'sm tx-amber'], no: ['cki no', ic.x, 'Missing items', 'sm tx-red'] };
+    const checks = C.map(c => ({ n: c[0], s: c[1], icls: ICK[c[2]][0], d: ICK[c[2]][1], state: ICK[c[2]][2], scls: ICK[c[2]][3], act: c[3], fees: c[4] === 'fees', docs: c[4] === 'docs' }));
+    const doneN = C.filter(c => c[2] === 'ok').length;
+    const docs = [['Voided check', 'Required', pending ? 'Missing' : 'Uploaded'], ['Driver’s license — Dr. Anika Shah', 'Required', 'Uploaded'], ['Driver’s license — Marcus Shah', 'Required', pending ? 'Missing' : 'Uploaded'], ['Business license (NC)', 'Required', 'Uploaded'], ['Bank statements · 3 months', 'Required', 'Uploaded'], ['Prior processing statements', 'Required', 'Uploaded'], ['Website screenshots', 'Optional', 'Uploaded']].map(d => ({ n: d[0], req: d[1], p: P(d[2]), missing: d[2] === 'Missing' }));
+    const signers = [
+      { n: 'Dr. Anika Shah', ini: 'AS', av: 'av av-3 lg', r: 'Owner · 60% · Signer, Guarantor', ev: 'Signed Nov 19, 2026 4:02 PM · IP verified', p: P('Signed') },
+      pending ? { n: 'Marcus Shah', ini: 'MS', av: 'av av-4 lg', r: 'Owner · 40% · Signer', ev: 'Sent Nov 14 · viewed Nov 19, 2026 6:30 PM · not signed', p: P('Unsigned') }
+              : { n: 'Marcus Shah', ini: 'MS', av: 'av av-4 lg', r: 'Owner · 40% · Signer', ev: 'Signed Nov 20, 2026 9:15 AM', p: P('Signed') }
+    ];
+    const UW = [
+      ['OFAC / sanctions screen', 'No matches for business or principals', 'Passed'],
+      ['EIN / TIN match (IRS)', 'Name and EIN match', 'Passed'],
+      ['Secretary of State business lookup', 'Active, good standing since 2017', 'Passed'],
+      ['MATCH / terminated merchant file', 'No records', 'Passed'],
+      ['Website & content review', pending ? 'Membership plan page lacks recurring-billing disclosure and refund policy' : 'Fixed Nov 20 · disclosure added', pending ? 'Failed' : 'Passed'],
+      ['Guarantor credit (soft pull)', pending ? 'Waiting for Marcus Shah’s consent (sent with e-sign)' : 'Score band B · within policy', pending ? 'Pending' : 'Passed'],
+      ['Bank account verification', pending ? 'Needs voided check or instant verification' : 'Verified via voided check', pending ? 'Pending' : 'Passed']
+    ];
+    const uw = UW.map(u => ({ n: u[0], r: u[1], p: P(u[2]), rc: u[2] === 'Failed' ? 'd tx-red' : 'd' }));
+    const uwN = { p: UW.filter(u => u[2] === 'Passed').length, f: UW.filter(u => u[2] === 'Failed').length, q: UW.filter(u => u[2] === 'Pending').length };
+    const conds = [['Rolling reserve 5% for 180 days', 'Held from daily payouts · auto-releases on a rolling basis', 'Met', true], ['Monthly volume cap $75,000.00 for 90 days', 'Review on Feb 19, 2027', 'Pending', false], ['Provide 3 months of prior processing statements', 'Due Dec 5, 2026 · requested from merchant', 'Pending', false]].map(c => ({ n: c[0], d: c[1], p: P(c[2]), met: c[3] }));
+    const notes = [
+      { by: 'Leah Brooks', ini: 'LB', av: 'av av-7', w: 'Nov 20, 2026 10:12 AM', t: 'Website check failed on the membership plan page. Asked Dr. Shah’s office manager to add the recurring-billing disclosure. @Tess Whitaker can you follow up if nothing by Monday?' },
+      { by: 'Tess Whitaker', ini: 'TW', av: 'av av-3', w: 'Nov 19, 2026 6:45 PM', t: 'Marcus opened the e-sign email but is traveling until Nov 22. He’ll sign from his phone.' },
+      { by: 'Leah Brooks', ini: 'LB', av: 'av av-7', w: 'Nov 14, 2026 3:22 PM', t: 'Moved to Pending. Pricing pulled from the Q4 healthcare campaign; equipment shipping to the Raleigh office.' }
+    ];
+    const vars = [['pending', 'Pending · not submitted'], ['conditional', 'Approved · Conditional']].map(x => ({ label: x[1], on: v === x[0], cls: v === x[0] ? 'on' : '', pick: () => this.setState({ v: x[0] }) }));
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      pending, cond, vars, pa: IB.PI.amber,
+      st: P(pending ? 'Pending' : 'Approved'), sig: P(pending ? 'Partially Signed' : 'Signed'),
+      steps, outs, outDot: cond ? 'border-color: var(--a-ink); background: var(--a-bg); color: var(--a-ink)' : '', outIc: cond ? ic.check : '', outTs: cond ? 'Nov 21, 2026 12:58 PM' : 'Awaiting underwriting',
+      checks, doneN, pct: Math.round(doneN / 8 * 100), docs, signers, uw, uwN, uwTs: pending ? 'Nov 20, 2026 9:12 AM' : 'Nov 21, 2026 8:55 AM', conds, notes,
+      copyLabel: copied ? 'Link copied' : 'Copy merchant completion link', copyLink: () => this.setState({ copied: true }),
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

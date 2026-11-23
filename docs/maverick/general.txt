@@ -1,0 +1,39 @@
+== /General Information
+
+
+== /General Information/Authentication
+ Our API uses Access Token to authenticate requests. You can view and manage your Access Token in the Dashboard. The method we use for authentication is Bearer Authentication All API requests must be made over HTTPS . Calls made over plain HTTP will fail. API requests without authentication will also fail. Warning Don't share your Access Token with anybody. Bearer Authentication Bearer Authentication is an HTTP authentication scheme that involves security tokens called bearer tokens. The client must send this token in the Authorization header when making requests to protected resources. Authorization: Bearer 
+
+== /General Information/Errors
+ We use conventional HTTP response codes to indicate the success or failure of an API request. The 2XX range indicates success. The 4XX range indicates an error that failed given the information provided (e.g., a required parameter was omitted, etc.). The 5XX range indicates an error with our servers (these are rare). In addition, name , message , code , and status will be applied to the error response. Example Response { "name":"Unprocessable entity", "message":"Amount cannot be blank.", "code":422, "status":422 } 
+
+== /General Information/Responses
+ Our response will be divided into 3 sections: items - contains the actual result of your request _meta - contains meta information of your request like total results, number of pages, etc. _links - contains links to the next page, last page, etc. { "items": [ // Results goes here ], "_links": { "self": { "href": "/path?page=1&per-page=10" }, "next": { "href": "/path?page=2&per-page=10" }, "last": { "href": "/path?page=5&per-page=10" } }, "_meta": { "totalCount": 50, "pageCount": 5, "currentPage": 1, "perPage": 10 } } 
+
+== /General Information/Filters
+ Filters will help you find what you search. Parameters Description lt Stands for the less-than sign < gt Stands for the greater-than sign > lte Stands for the less-than or equals sign <= gte Stands for the greater-than or equals sign >= eq Stands for the equals sign = neq Stands for the not equals sign != in IN nin NOT IN like LIKE or OR and AND not Exclude specified values Use NULL as a value if you want to select empty values. Only fields marked with Filterable can be used for filtering the results. 
+
+== /General Information/Filters/Example - gte
+
+
+== /General Information/Filters/Example - between
+
+
+== /General Information/Filters/Example - like
+
+
+== /General Information/Filters/Example - in
+
+
+== /General Information/Filters/Example - non-empty
+
+
+== /General Information/Pagination
+ If there are too many results of your request, we will enable pagination of the results. Two parameters can control pagination page and per-page . page - The page number you want to get. By default is 1 . per-page - Items per page. The value can be between 1 and 50 . By default is 30 . 
+
+== /General Information/Pagination/10 results per page
+
+
+== /General Information/Data Types
+ Type Description Boolean Yes or No Integer A number which is not a fraction; a whole number. 1 , 2 , 3 ... Number Floating point numbers. 1.5 , 2.9 , 3.59 ... String A string is a collection of characters, can contain alphanumeric characters. ENUM Enumeration type or ENUM for short, is a data type to categorize named values. Date Date is in the following format YYYY-MM-DD (Example: 2019-02-17) Always in UTC time zone Datetime Date and time is in the following format YYYY-MM-DD HH:MM:SS (Example: 2019-02-17 20:05:34) Always in UTC time zone. Time Time is in the following format HH:MM:SS (Example: 20:05:34) Object An object is a collection of properties, and a property is an association between a name/key and a value. 
+

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1280px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="home" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" start-open="{{startOpen}}" start-q="{{startQ}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div>
+          <h1>{{greeting}}</h1>
+          <div class="sub">{{subline}}</div>
+        </div>
+        <div class="acts">
+          <div class="seg" role="group" aria-label="Period"><button>Today</button><button class="on" aria-pressed="true">This month</button><button>Quarter</button></div>
+          <button class="btn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cols}}"></path></svg>Customize</button>
+        </div>
+      </div>
+
+      <section class="kpis" aria-label="Key metrics">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="7">
+          <a class="card kpi" href="{{k.href}}">
+            <span class="l">{{k.l}}</span>
+            <span class="v">{{k.v}}</span>
+            <span class="s"><span class="{{k.dcls}}"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{k.dic}}"></path></svg>{{k.d}}</span>{{k.s}}</span>
+          </a>
+        </sc-for>
+      </section>
+
+      <div class="g-main">
+        <section class="card" aria-labelledby="att-h">
+          <div class="card-h">
+            <h2 id="att-h">Needs attention <span class="ct">{{attCount}}</span></h2>
+            <div class="seg" role="group" aria-label="Filter attention items"><button class="on" aria-pressed="true">All</button><button>Applications</button><button>Risk</button><button>Support</button></div>
+          </div>
+          <sc-for list="{{att}}" as="a" hint-placeholder-count="6">
+            <a class="att" href="{{a.href}}">
+              <span class="ai {{a.tone}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{a.d}}"></path></svg></span>
+              <span style="min-width: 0">
+                <span class="t1" style="display: block">{{a.t}}</span>
+                <span class="t2" style="display: block">{{a.s}}</span>
+              </span>
+              <span class="row" style="gap: 10px"><span class="{{a.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{a.p.d}}"></path></svg>{{a.p.label}}</span><span class="{{a.ow.av}}" title="{{a.ow.name}}">{{a.ow.ini}}</span></span>
+            </a>
+          </sc-for>
+        </section>
+
+        <section class="card" aria-labelledby="task-h">
+          <div class="card-h">
+            <h2 id="task-h">My tasks today <span class="ct">{{openTasks}}</span></h2>
+            <button class="btn ghost sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Add</button>
+          </div>
+          <sc-for list="{{tasks}}" as="t" hint-placeholder-count="5">
+            <div class="{{t.cls}}">
+              <input type="checkbox" id="{{t.id}}" checked="{{t.done}}" onChange="{{t.toggle}}">
+              <label for="{{t.id}}" style="flex: 1; min-width: 0; cursor: pointer">
+                <span class="tt" style="display: block; font-weight: 500">{{t.t}}</span>
+                <span class="subtle sm" style="display: block">{{t.s}}</span>
+              </label>
+              <span class="{{t.dueCls}}">{{t.due}}</span>
+            </div>
+          </sc-for>
+        </section>
+      </div>
+
+      <div class="grid2">
+        <section class="card" aria-labelledby="pipe-h">
+          <div class="card-h">
+            <h2 id="pipe-h">Weighted pipeline</h2>
+            <span class="subtle sm">Est. monthly volume × stage probability</span>
+          </div>
+          <div class="card-b">
+            <div class="row" style="gap: 24px; margin-bottom: 10px">
+              <div><div class="subtle sm">Weighted total</div><div style="font-size: 18px; font-weight: 600" class="num">{{pipeW}}</div></div>
+              <div><div class="subtle sm">Unweighted</div><div style="font-size: 18px; font-weight: 600; color: var(--ink-2)" class="num">{{pipeU}}</div></div>
+              <div class="sp"></div>
+              <div class="legend"><span><i class="lg0"></i>Amount</span><span><i class="lg1"></i>Weighted</span></div>
+            </div>
+            <div role="img" aria-label="{{pipeAria}}" style="display: flex; flex-direction: column; gap: 12px; padding-top: 4px">
+              <sc-for list="{{pipe}}" as="p" hint-placeholder-count="5">
+                <div class="hbar">
+                  <div><div style="font-weight: 500; font-size: 12px">{{p.label}}</div><div class="subtle" style="font-size: 11px">{{p.prob}}</div></div>
+                  <div class="tr2"><div class="bk" style="width: {{p.wa}}%"><div class="fg" style="width: {{p.wp}}%"></div></div><span class="sm num"><b style="font-weight: 600">{{p.w}}</b> <span class="subtle">of {{p.a}}</span></span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="vol-h">
+          <div class="card-h">
+            <h2 id="vol-h">Monthly processing volume</h2>
+            <div class="legend"><span><i class="lg1" style="height: 2px; vertical-align: 3px"></i>{{volLegend}}</span><span><i class="lgd"></i>Nov projected</span></div>
+          </div>
+          <div class="card-b">
+            <div class="chw">
+            <svg class="ch" viewBox="{{vc.vb}}" role="img" aria-label="{{volAria}}">
+              <sc-for list="{{vc.yt}}" as="t" hint-placeholder-count="4">
+                <line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line>
+              </sc-for>
+              <path class="ar" d="{{vc.area}}"></path>
+              <path class="ln" d="{{vc.d}}"></path>
+              <path class="ln2" d="{{projD}}"></path>
+              <sc-for list="{{vc.pts}}" as="p" hint-placeholder-count="11"><circle class="pt" cx="{{p.x}}" cy="{{p.y}}" r="3"></circle></sc-for>
+            </svg>
+            <sc-for list="{{vc.yt}}" as="t" hint-placeholder-count="4"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            <sc-for list="{{vc.xt}}" as="t" hint-placeholder-count="12"><span class="cl" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <sc-if value="{{isManager}}" hint-placeholder-val="{{true}}">
+        <section class="card lv" aria-labelledby="team-h">
+          <div class="card-h">
+            <h2 id="team-h">Team performance · November</h2>
+            <a class="lnk" href="Reports.dc.html">Open report<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg></a>
+          </div>
+          <div class="tblw">
+            <table class="tbl">
+              <thead><tr><th>Agent</th><th>Role</th><th class="r">Active merchants</th><th class="r">Volume MTD</th><th class="r">New apps</th><th class="r">Approval rate</th><th class="r">Open deals</th><th class="r">Residuals (Oct)</th></tr></thead>
+              <tbody>
+                <sc-for list="{{team}}" as="r" hint-placeholder-count="5">
+                  <tr><td><span class="who"><span class="{{r.av}}">{{r.ini}}</span>{{r.name}}</span></td><td class="muted">{{r.role}}</td><td class="r">{{r.m}}</td><td class="r">{{r.v}}</td><td class="r">{{r.a}}</td><td class="r">{{r.ar}}</td><td class="r">{{r.d}}</td><td class="r">{{r.res}}</td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </sc-if>
+      <sc-if value="{{isAgent}}" hint-placeholder-val="{{false}}">
+        <section class="card lv" aria-labelledby="mydeals-h">
+          <div class="card-h">
+            <h2 id="mydeals-h">My deals closing this month</h2>
+            <a class="lnk" href="Deals.dc.html">Open pipeline<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg></a>
+          </div>
+          <div class="tblw">
+            <table class="tbl">
+              <thead><tr><th>Business</th><th>Stage</th><th class="r">Est. monthly volume</th><th class="r">Probability</th><th class="r">Weighted</th><th class="r">Days in stage</th><th>Next step</th></tr></thead>
+              <tbody>
+                <sc-for list="{{myDeals}}" as="r" hint-placeholder-count="4">
+                  <tr><td><a class="rl" href="Deals.dc.html">{{r.n}}</a></td><td><span class="tag">{{r.st}}</span></td><td class="r">{{r.v}}</td><td class="r">{{r.p}}</td><td class="r">{{r.w}}</td><td class="r">{{r.d}}</td><td class="muted">{{r.next}}</td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"startOpen":{"editor":"enum","options":["","palette","new","bell"],"default":""},"startQ":{"editor":"text","default":""},"$preview":{"width":1440,"height":1280}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const isAgent = role === 'agent', isManager = role === 'manager';
+    const up = { dcls: 'delta up', dic: ic.arrowUp }, dn = { dcls: 'delta dn', dic: ic.arrowDn }, flat = { dcls: 'delta', dic: ic.arrowR };
+    const K = {
+      manager: [
+        { l: 'Active merchants', v: '1,284', d: '18', s: 'net new vs Oct', href: 'Merchants.dc.html', ...up },
+        { l: 'Volume · Nov MTD', v: '$27.86M', d: '5.5%', s: 'vs $26.41M Oct MTD', href: 'Reports.dc.html', ...up },
+        { l: 'New applications', v: '46', d: '7', s: 'vs 39 in Oct', href: 'Boarding.dc.html', ...up },
+        { l: 'Approval rate', v: '87.0%', d: '2.1 pts', s: 'vs 84.9%', href: 'Reports.dc.html', ...up },
+        { l: 'Open tickets', v: '37', d: '6', s: 'at SLA risk', href: 'Support.dc.html', ...dn },
+        { l: 'Open chargebacks', v: '14', d: '$9,842.17', s: 'disputed', href: 'Chargebacks.dc.html', ...flat },
+        { l: 'Residuals · Oct', v: '$214,386.52', d: '3.2%', s: 'vs Sep', href: 'Residuals.dc.html', ...up }
+      ],
+      agent: [
+        { l: 'My active merchants', v: '86', d: '3', s: 'net new vs Oct', href: 'Merchants.dc.html', ...up },
+        { l: 'My volume · Nov MTD', v: '$1.94M', d: '4.1%', s: 'vs $1.86M Oct MTD', href: 'Reports.dc.html', ...up },
+        { l: 'My new applications', v: '5', d: '1', s: 'vs 4 in Oct', href: 'Boarding.dc.html', ...up },
+        { l: 'My approval rate', v: '83.3%', d: '1.4 pts', s: 'vs 84.7%', href: 'Reports.dc.html', ...dn },
+        { l: 'Open tickets (my book)', v: '4', d: '1', s: 'at SLA risk', href: 'Support.dc.html', ...dn },
+        { l: 'Open chargebacks', v: '2', d: '$198.40', s: 'disputed', href: 'Chargebacks.dc.html', ...flat },
+        { l: 'My residuals · Oct', v: '$11,842.60', d: '2.6%', s: 'vs Sep', href: 'Residuals.dc.html', ...up }
+      ]
+    };
+    K.onboarding = [
+      { l: 'Applications in flight', v: '31', d: '4', s: 'vs last week', href: 'Boarding.dc.html', ...up },
+      { l: 'Awaiting signature', v: '9', d: '2', s: 'over 5 days', href: 'Boarding.dc.html', ...dn },
+      { l: 'In underwriting', v: '7', d: '1.8 d', s: 'avg time in status', href: 'Boarding.dc.html', ...flat },
+      { l: 'Approval rate', v: '87.0%', d: '2.1 pts', s: 'vs Oct', href: 'Reports.dc.html', ...up },
+      { l: 'Conditional approvals', v: '5', d: '3', s: 'open conditions', href: 'Boarding.dc.html', ...flat },
+      { l: 'Cycle time', v: '6.4 d', d: '0.9 d', s: 'created → approved', href: 'Reports.dc.html', ...up },
+      { l: 'Failed checks', v: '3', d: '1', s: 'need review', href: 'Application.dc.html', ...dn }
+    ];
+    K.support = [
+      { l: 'My open tickets', v: '5', d: '1', s: 'vs yesterday', href: 'Support.dc.html', ...dn },
+      { l: 'Unassigned', v: '2', d: '1', s: 'in queue', href: 'Support.dc.html', ...flat },
+      { l: 'SLA at risk', v: '2', d: '1', s: '1 already breached', href: 'Support.dc.html', ...dn },
+      { l: 'First response', v: '38m', d: '6m', s: 'median, 7 days', href: 'Reports.dc.html', ...up },
+      { l: 'Open chargebacks', v: '14', d: '3', s: 'due within 3 days', href: 'Chargebacks.dc.html', ...dn },
+      { l: 'Maverick tickets', v: '9', d: '0', s: 'mirrored', href: 'Support.dc.html', ...flat },
+      { l: 'CSAT · 30 days', v: '94%', d: '1 pt', s: 'vs prior 30', href: 'Reports.dc.html', ...up }
+    ];
+    const P = IB.pill;
+    const ATT = [
+      { k: 'app', t: 'Bluebird Pediatric Dental — Pending 7 days', s: 'APP-20431 · 1 of 2 principals has not signed', d: ic.clock, tone: 't-amber', p: P('Partially Signed'), ow: 'tw', href: 'Application.dc.html' },
+      { k: 'risk', t: 'Saguaro Family Pharmacy — underwriting check failed', s: 'APP-20447 · OFAC / sanctions name screen needs manual review', d: ic.alert, tone: 't-red', p: P('Failed'), ow: 'tw', href: 'Application.dc.html' },
+      { k: 'cb', t: 'Chargeback due in 2 days — Mesa Verde Auto Repair', s: 'CB-88213 · $412.50 · Services not provided · respond by Nov 23, 2026', d: ic.cb, tone: 't-red', p: P('Due soon'), ow: 'mo', href: 'Chargebacks.dc.html' },
+      { k: 'sup', t: 'Ticket breaching SLA — Oak & Ember Pizzeria', s: 'TCK-3318 · Terminal not batching · first response 1h 12m overdue', d: ic.support, tone: 't-red', p: P('SLA breached'), ow: 'dr', href: 'Support.dc.html' },
+      { k: 'risk', t: 'High-risk authorization warning — Granite Peak Outfitters', s: '6 keyed transactions over $2,500 in 1 hour · Maverick risk alert', d: ic.shield, tone: 't-amber', p: P('On Hold'), ow: 'mo', href: 'Merchant.dc.html' },
+      { k: 'app', t: 'Harbor Street Coffee Co. – Hawthorne — Underwriting 6 days', s: 'APP-20419 · waiting on 3 months of bank statements', d: ic.clock, tone: 't-amber', p: P('Underwriting'), ow: 'dr', href: 'Application.dc.html' }
+    ];
+    const show = { manager: 'app risk cb sup', agent: 'app sup risk', onboarding: 'app risk', support: 'cb sup risk' }[role];
+    const att = ATT.filter(a => show.indexOf(a.k) >= 0 && (!isAgent || a.ow === 'dr' || a.ow === 'jl' || a.k === 'app')).filter(a => !isAgent || a.ow === 'dr').map(a => ({ ...a, ow: IB.agent(a.ow) }));
+    const TS = {
+      manager: [['Approve residual adjustments for October', 'Residuals · 3 pending adjustments', '9:00 AM'], ['1:1 with Marcus Okafor', 'Pipeline review', '11:30 AM'], ['Review Granite Peak risk alert', 'Granite Peak Outfitters', '1:00 PM'], ['Sign off Q4 pricing campaign', 'Settings · Pricing', '3:00 PM'], ['Escalation: Oak & Ember terminal', 'TCK-3318', 'Overdue']],
+      agent: [['Call back Driftwood Pet Grooming re pricing', 'Corinne Baptiste · (912) 555-0110', '10:30 AM'], ['Send proposal — Copper Kettle catering location', 'Deal · Pricing/Proposal', '12:00 PM'], ['Collect void check for Hawthorne location', 'Harbor Street Coffee Co. – Hawthorne', '2:00 PM'], ['Quarterly check-in', 'Northline Hardware & Supply', '4:00 PM'], ['Follow up on terminal swap', 'Oak & Ember Pizzeria', 'Overdue']],
+      onboarding: [['Chase 2nd signer', 'Bluebird Pediatric Dental · Marcus Shah', '9:30 AM'], ['Upload bank statements', 'Harbor Street – Hawthorne', '11:00 AM'], ['OFAC manual review', 'Saguaro Family Pharmacy', '1:30 PM'], ['Clear conditions', 'Lakeshore Yoga – Westside', '3:00 PM'], ['Order terminals', 'Copper Kettle – Catering', 'Overdue']],
+      support: [['Reply to TCK-3318', 'Oak & Ember Pizzeria', 'Overdue'], ['Build dispute response CB-88213', 'Mesa Verde Auto Repair', '10:00 AM'], ['Confirm deposit trace', 'Northline Hardware & Supply', '11:30 AM'], ['Close out TCK-3301', 'Copper Kettle Bakery', '2:00 PM'], ['Review Maverick escalations', '3 mirrored tickets', '4:00 PM']]
+    }[role];
+    const done = this.state?.done ?? {};
+    const tasks = TS.map((t, i) => ({ id: 'task-' + role + i, t: t[0], s: t[1], due: t[2], done: !!done[i], cls: 'task' + (done[i] ? ' done' : ''), dueCls: t[2] === 'Overdue' ? 'sm tx-red' : 'sm subtle', toggle: () => this.setState({ done: { ...done, [i]: !done[i] } }) }));
+    const ST = isAgent
+      ? [['New Lead', 0.1, 11600], ['Contacted', 0.2, 9800], ['Qualified', 0.4, 49500], ['Pricing/Proposal', 0.6, 42000], ['Application Sent', 0.8, 26000]]
+      : [['New Lead', 0.1, 34700], ['Contacted', 0.2, 115200], ['Qualified', 0.4, 113500], ['Pricing/Proposal', 0.6, 90500], ['Application Sent', 0.8, 114000]];
+    const pmax = Math.max.apply(null, ST.map(s => s[2]));
+    let tw = 0, tu = 0;
+    const pipe = ST.map((s, i) => { const a = s[2], w = a * s[1]; tw += w; tu += a; const wa = a / pmax * 58, ww = w / pmax * 300, wp = s[1] * 100; return { label: s[0], prob: Math.round(s[1] * 100) + '% probability', y: i * 44 + 6, ty: i * 44 + 18, ty2: i * 44 + 33, wa: +wa.toFixed(1), ww: +ww.toFixed(1), wp, vx: +(128 + wa + 10).toFixed(1), w: IB.short(w), a: IB.short(a) }; });
+    const vols = isAgent ? [1.71, 1.66, 1.78, 1.82, 1.9, 1.94, 2.01, 2.05, 2.1, 2.16, 2.21] : [29.8, 28.1, 30.4, 31.2, 32.9, 33.5, 34.1, 34.8, 35.2, 36.1, 36.97];
+    const proj = isAgent ? 2.79 : 39.6;
+    const vc = IB.lineChart(vols, { w: 560, h: 230, min: isAgent ? 1.4 : 24, max: isAgent ? 3.0 : 42, steps: 4, n: 12, fmt: v => '$' + (isAgent ? v.toFixed(1) : Math.round(v)) + 'M', labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'] });
+    const last = vc.pts[vc.pts.length - 1];
+    const projD = 'M' + last.x + ' ' + last.y + ' L' + vc.sx(11).toFixed(1) + ' ' + vc.sy(proj).toFixed(1);
+    const team = [['dr', 86, '$1.94M', 5, '83.3%', 14, '$11,842.60'], ['mo', 112, '$3.12M', 9, '90.0%', 18, '$17,206.45'], ['tw', 64, '$1.38M', 7, '85.7%', 11, '$8,904.12'], ['jl', 31, '$0.52M', 3, '100%', 9, '$2,340.80'], ['sk', 27, '$0.41M', 2, '50.0%', 6, '$1,915.33']].map(r => { const a = IB.agent(r[0]); return { av: a.av, ini: a.ini, name: a.name, role: a.role, m: r[1], v: r[2], a: r[3], ar: r[4], d: r[5], res: r[6] }; });
+    const myDeals = [['Copper Kettle – Catering', 'Pricing/Proposal', 42000, 0.6, 9, 'Send proposal'], ['Driftwood Pet Grooming', 'Qualified', 18500, 0.4, 4, 'Pricing call Nov 24'], ['Lantern Row Books', 'Application Sent', 26000, 0.8, 2, 'Await signatures'], ['Pine & Proper Barbers', 'Contacted', 9800, 0.2, 11, 'Second touch']].map(r => ({ n: r[0], st: r[1], v: IB.usd(r[2]), p: Math.round(r[3] * 100) + '%', w: IB.usd(r[2] * r[3]), d: r[4], next: r[5] }));
+    const u = IB.agent(IB.roleOf(role).user);
+    return {
+      ic, role, dark, isAgent, isManager,
+      rootCls: 'ib' + (dark ? ' dark' : ''),
+      accent: this.props.accent ?? '#5B5BD6',
+      startOpen: this.props.startOpen || '', startQ: this.props.startQ || '',
+      greeting: 'Good morning, ' + u.name.split(' ')[0],
+      subline: 'Nov 21, 2026 · ' + (isManager ? 'Whole portfolio' : isAgent ? 'Your book of merchants' : role === 'onboarding' ? 'Boarding queue' : 'Support queue'),
+      kpis: K[role], att, attCount: att.length, tasks, openTasks: tasks.filter(t => !t.done).length,
+      pipe, pipeW: IB.short(tw), pipeU: IB.short(tu), pipeAria: 'Weighted pipeline by stage. Weighted total ' + IB.short(tw) + ' of ' + IB.short(tu) + '.',
+      vc, projD, volLegend: isAgent ? 'My volume' : 'Portfolio volume',
+      volAria: 'Monthly processing volume, December 2025 to October 2026, rising from ' + vols[0] + ' to ' + vols[10] + ' million dollars; November projected ' + proj + ' million.',
+      team, myDeals,
+      setRole: (v) => this.setState({ role: v }),
+      toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

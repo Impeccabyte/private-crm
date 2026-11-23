@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chargebacks — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1000px">
+<div class="app" style="min-height: 1000px">
+  <div class="side-col"><dc-import name="Sidebar" active="chargebacks" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Chargebacks</h1><div class="sub">Disputes mirrored from Maverick · deadlines are the date Maverick needs the response</div></div>
+        <div class="acts"><button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.refresh}}"></path></svg>Sync now</button></div>
+      </div>
+      <section class="kpis" style="grid-template-columns: repeat(4, minmax(0, 1fr))" aria-label="Chargeback summary">
+        <div class="card kpi"><span class="l">Open</span><span class="v">14</span><span class="s">$9,842.17 disputed</span></div>
+        <div class="card kpi"><span class="l">Due within 3 days</span><span class="v tx-red">3</span><span class="s">Respond or accept</span></div>
+        <div class="card kpi"><span class="l">Win rate · 90 days</span><span class="v">61%</span><span class="s">28 won of 46 decided</span></div>
+        <div class="card kpi"><span class="l">Portfolio CB ratio</span><span class="v">0.09%</span><span class="s">Network threshold 0.65%</span></div>
+      </section>
+      <section class="card lv" aria-label="Chargebacks list">
+        <div class="lt">
+          <div class="views" role="tablist" aria-label="Saved views">
+            <button class="vt on" role="tab" aria-selected="true">Open<span class="c">14</span></button>
+            <button class="vt" role="tab" aria-selected="false">Due in 3 days<span class="c">3</span></button>
+            <button class="vt" role="tab" aria-selected="false">Won<span class="c">28</span></button>
+            <button class="vt" role="tab" aria-selected="false">Lost<span class="c">18</span></button>
+            <button class="vt"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Save view</button>
+          </div>
+          <span class="sp"></span>
+          <label class="inpw" style="width: 200px"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.search}}"></path></svg><span class="sr">Search chargebacks</span><input placeholder="Case ID, merchant, MID"></label>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Filter</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cols}}"></path></svg>Columns</button>
+          <div class="seg" role="group" aria-label="Row density"><button class="{{dComf}}" onClick="{{setComf}}">Comfortable</button><button class="{{dComp}}" onClick="{{setComp}}">Compact</button></div>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button>
+        </div>
+        <div class="bulk"><span>1 selected</span><button class="btn sm">Assign</button><button class="btn sm">Request documents</button><button class="btn sm">Accept selected</button><span class="sp"></span><button class="btn sm ghost">Clear</button></div>
+        <div class="tblw">
+          <table class="{{tblCls}}">
+            <thead><tr><th class="w0"><input type="checkbox" aria-label="Select all"></th><th>Merchant</th><th>MID</th><th>Case ID</th><th class="r">Amount</th><th>Reason</th><th>Received</th><th>Response deadline</th><th>Status</th></tr></thead>
+            <tbody onKeyDown="{{keys}}">
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+                <tr class="{{r.trc}}">
+                  <td><input type="checkbox" aria-label="{{r.selLabel}}" checked="{{r.on}}"></td>
+                  <td><button class="lnk" data-nav="1" onClick="{{r.open}}" style="font-size: 13px; color: var(--ink)">{{r.m}}</button></td>
+                  <td class="mono muted">{{r.mid}}</td>
+                  <td class="mono">{{r.id}}</td>
+                  <td class="r num" style="font-weight: 500">{{r.amt}}</td>
+                  <td class="muted">{{r.reason}}</td>
+                  <td class="muted">{{r.rec}}</td>
+                  <td><span class="row" style="gap: 8px"><span>{{r.due}}</span><span class="{{r.cdCls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.cdIc}}"></path></svg>{{r.cd}}</span></span></td>
+                  <td><span class="{{r.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.p.d}}"></path></svg>{{r.p.label}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div class="lfoot"><span>Showing 9 of 60 · open disputes shown first, by deadline</span><span>Page 1 of 7</span></div>
+      </section>
+    </div>
+
+    <sc-if value="{{sheet}}" hint-placeholder-val="{{true}}">
+      <div class="sheet-wrap">
+        <div class="scrim" onClick="{{close}}"></div>
+        <aside class="sheet" role="dialog" aria-modal="false" aria-labelledby="cb-t" style="width: 500px">
+          <div class="sheet-h">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+              <div class="row" style="gap: 6px"><span class="mono subtle">{{s.id}}</span><span class="{{s.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{s.p.d}}"></path></svg>{{s.p.label}}</span></div>
+              <h2 id="cb-t" style="margin: 0; font-size: 17px; font-weight: 600">{{s.amt}} · {{s.m}}</h2>
+              <div class="subtle sm">{{s.reason}} · MID <span class="mono">{{s.mid}}</span></div>
+            </div>
+            <button class="btn ghost icon" aria-label="Close" onClick="{{close}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+          </div>
+          <div class="sheet-b">
+            <div class="{{s.banCls}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="{{ic.clock}}"></path></svg><div><div class="bt">Respond by {{s.due}} · {{s.cd}}</div><div class="bd sm">After the deadline Maverick accepts the chargeback automatically and the merchant loses {{s.amt}} plus the $25.00 fee.</div></div></div>
+            <dl class="dl">
+              <dt>Transaction</dt><dd>Nov 3, 2026 · Visa •••• 4417 · card present</dd>
+              <dt>Original amount</dt><dd class="num">{{s.amt}}</dd>
+              <dt>Received</dt><dd>{{s.rec}}</dd>
+              <dt>Merchant contact</dt><dd>Ruben Alcaraz · (520) 555-0163</dd>
+            </dl>
+            <div>
+              <div class="sec-t">Timeline</div>
+              <div class="tl">
+                <div class="ev sys"><span class="ico"><span class="pm" style="width: 12px; height: 12px; font-size: 8px; line-height: 12px">M</span></span><div class="hd"><b>Chargeback received from Visa</b><span class="when">Nov 19, 2026 8:12 AM</span></div></div>
+                <div class="ev"><span class="ico"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.mail}}"></path></svg></span><div><div class="hd"><b>Merchant notified, documents requested</b><span class="muted">Omar Haddad</span><span class="when">Nov 19, 2026 9:30 AM</span></div></div></div>
+                <div class="ev sys"><span class="ico"><span class="pm" style="width: 12px; height: 12px; font-size: 8px; line-height: 12px">M</span></span><div class="hd"><b>Disputed amount debited from merchant payout</b><span class="when">Nov 20, 2026 6:00 AM</span></div></div>
+                <div class="ev"><span class="ico"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.upload}}"></path></svg></span><div><div class="hd"><b>2 documents uploaded by merchant</b><span class="when">Nov 20, 2026 4:48 PM</span></div></div></div>
+              </div>
+            </div>
+            <div>
+              <div class="row" style="margin-bottom: 8px"><div class="sec-t" style="margin: 0">Documents</div><span class="sp"></span><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.upload}}"></path></svg>Upload</button></div>
+              <div class="card">
+                <div class="ck"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-3)"><path d="{{ic.file}}"></path></svg><div style="flex: 1"><div class="t">Repair order #RO-55821.pdf</div><div class="d">Signed by cardholder · 1.2 MB</div></div><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Uploaded</span></div>
+                <div class="ck"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-3)"><path d="{{ic.file}}"></path></svg><div style="flex: 1"><div class="t">Shop photos — completed brake job.zip</div><div class="d">6 images · 8.4 MB</div></div><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Uploaded</span></div>
+                <div class="ck"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-3)"><path d="{{ic.file}}"></path></svg><div style="flex: 1"><div class="t">Rebuttal letter</div><div class="d">Generated when you build the response</div></div><span class="pill t-neutral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pn}}"></path></svg>Not started</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="sheet-f" style="justify-content: space-between">
+            <button class="btn danger">Accept chargeback</button>
+            <div class="row"><button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.note}}"></path></svg>Build dispute response</button><button class="btn pri dis" aria-disabled="true" title="Build the dispute response first">Submit to Maverick</button></div>
+          </div>
+        </aside>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"support"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const role = this.state?.role ?? this.props.viewRole ?? 'support';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const sel = this.state?.sel ?? 2, sheet = this.state?.sheet ?? true;
+    const density = this.state?.density ?? 'comfortable';
+    const R = [
+      ['Lakeshore Yoga Collective', '527104400122485', 'CB-88198', 89.00, '13.2 Cancelled recurring', 'Nov 16, 2026', 'Nov 21, 2026', 0, 'Processed', 'sk'],
+      ['Tidewater Marine Supply', '527104400102077', 'CB-88224', 1875.00, '13.7 Cancelled merchandise', 'Nov 21, 2026', 'Nov 22, 2026', 1, 'Processed', 'mo'],
+      ['Mesa Verde Auto Repair', '527104400109254', 'CB-88213', 412.50, '13.1 Services not provided', 'Nov 19, 2026', 'Nov 23, 2026', 2, 'Processed', 'mo'],
+      ['Oak & Ember Pizzeria', '527104400088302', 'CB-88201', 112.00, '12.6.1 Duplicate processing', 'Nov 18, 2026', 'Nov 25, 2026', 4, 'Processed', 'dr'],
+      ['Harbor Street Coffee Co.', '527104400128731', 'CB-88190', 86.40, '13.3 Not as described', 'Nov 17, 2026', 'Nov 27, 2026', 6, 'Processed', 'dr'],
+      ['Granite Peak Outfitters', '527104400115837', 'CB-88220', 2640.00, '10.4 Fraud · card not present', 'Nov 20, 2026', 'Nov 30, 2026', 9, 'Processed', 'mo'],
+      ['Northline Hardware & Supply', '527104400097718', 'CB-88150', 342.18, '4853 Not as described', 'Oct 24, 2026', 'Nov 3, 2026', null, 'Won', 'dr'],
+      ['Mesa Verde Auto Repair', '527104400109254', 'CB-88102', 230.00, '13.1 Services not provided', 'Oct 9, 2026', 'Oct 19, 2026', null, 'Lost', 'mo'],
+      ['Copper Kettle Bakery', '527104400141160', 'CB-88077', 18.50, '12.5 Incorrect amount', 'Oct 2, 2026', 'Oct 12, 2026', null, 'Won', 'jl']
+    ];
+    const rows = R.map((r, i) => {
+      const d = r[7], open = d != null, urgent = open && d < 3;
+      const cd = !open ? 'Closed' : d === 0 ? 'Due today' : d === 1 ? '1 day left' : d + ' days left';
+      return { m: r[0], mid: r[1], id: r[2], amt: IB.usd(r[3]), reason: r[4], rec: r[5], due: r[6], cd, cdCls: urgent ? 'pill t-red' : (open ? 'pill t-neutral' : 'pill t-gray'), cdIc: urgent ? ic.alert : (open ? ic.clock : IB.PI.gray), p: P(r[8]), on: i === sel, trc: i === sel ? 'sel' : '', selLabel: 'Select ' + r[2], open: () => this.setState({ sel: i, sheet: true }), dd: d };
+    });
+    const s0 = rows[sel];
+    const s = { ...s0, banCls: 'banner ' + (s0.dd != null && s0.dd < 3 ? 'red' : 'blue') };
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      rows, s, sheet,
+      pg: IB.PI.green, pn: IB.PI.neutral,
+      close: () => this.setState({ sheet: false }),
+      tblCls: 'tbl' + (density === 'compact' ? ' compact' : ''),
+      dComf: density === 'comfortable' ? 'on' : '', dComp: density === 'compact' ? 'on' : '',
+      setComf: () => this.setState({ density: 'comfortable' }), setComp: () => this.setState({ density: 'compact' }),
+      keys: IB.rowKeys,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+GET https://dashboard.example.com/api/tickets
+
+ Use this endpoint to list all of your tickets. If needing to sort in descending order, utilize  ?sort=-createdOn  
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "id": 88,
+            "dba": {
+                "id": 2
+            },
+            "category": {
+                "id": 4
+            },
+            "title": "Charback Help",
+            "text": "One of my merchants is inquiring about chargebacks. I need your clarification",
+            "status": "New",
+            "notifyMerchant": "No",
+            "attentionMerchant": "No",
+            "createdBy": {
+                "id": 14
+            },
+            "attachments": [
+				{
+					"id": 5573
+				}
+			],
+            "createdOn": "2023-05-16 13:39:45",
+            "lastUpdatedOn": "2023-05-16 13:39:45",
+            "agentLastUpdatedOn": "2023-05-16 13:39:45"
+        }
+    ],
+    "_links": {
+        "self": {
+            "href": "https://dashboard.example.com/api/tickets?page=1"
+        },
+        "first": {
+            "href": "https://dashboard.example.com/api/tickets?page=1"
+        },
+        "last": {
+            "href": "https://dashboard.example.com/api/tickets?page=1"
+        }
+    },
+    "_meta": {
+        "totalCount": 1,
+        "pageCount": 1,
+        "currentPage": 1,
+        "perPage": 30
+    }
+}

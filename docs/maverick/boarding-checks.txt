@@ -1,0 +1,93 @@
+GET https://dashboard.example.com/api/boarding-application/<id>/checks
+
+ To track and review those checks you can utilise this endpoint. 
+
+
+EXAMPLE RESPONSE:
+{
+    "MasterCardMatch": {
+        "pass": null,
+        "actionRequired": false
+    },
+    "Credit": {
+        "equifax": [
+            {
+                "owner": "N/A",
+                "pass": false,
+                "actionRequired": "Review Needed"
+            }
+        ]
+    },
+    "OFAC": {
+        "TINCheck": {
+            "pass": null,
+            "actionRequired": false
+        }
+    },
+    "BankValidation": {
+        "plaid": [
+            {
+                "bankRoutingNumber": "091311229",
+                "bankAccountNumber": "202*********",
+                "pass": true,
+                "actionRequired": false
+            },
+            {
+                "bankRoutingNumber": "071311229",
+                "bankAccountNumber": "207*********",
+                "pass": true,
+                "actionRequired": false
+            }
+        ],
+        "gAuth": {
+            "pass": null,
+            "actionRequired": false
+        }
+    },
+    "IdentityVerification": {
+        "GIdentityBusiness": {
+            "pass": null,
+            "actionRequired": false
+        },
+        "GIdentityPersonal": {
+            "pass": null,
+            "actionRequired": false
+        },
+        "TINCheck": {
+            "pass": null,
+            "actionRequired": false
+        }
+    },
+    "Website": {
+        "G2": {
+            "pass": null,
+            "actionRequired": false
+        },
+        "Keywords": {
+            "pass": null,
+            "actionRequired": false
+        }
+    },
+    "RequiredDocuments": [
+        {
+            "name": "Voided Check",
+            "attachmentAbout": {
+                "id": 6,
+                "key": "voided-check"
+            },
+            "description": "Please categorize as a Voided Check",
+            "required": "Yes",
+            "uploaded": false
+        },
+        {
+            "name": "Driver License",
+            "attachmentAbout": {
+                "id": 18,
+                "key": "driver-license"
+            },
+            "description": "Please categorize as a Driver License",
+            "required": "No",
+            "uploaded": true
+        }
+    ]
+}

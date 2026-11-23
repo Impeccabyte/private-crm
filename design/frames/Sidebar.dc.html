@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sidebar</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<nav class="{{cls}}" aria-label="Primary" style="font-family: Inter, system-ui, sans-serif; color: var(--ink)">
+  <div class="ws">
+    <span class="logo" aria-hidden="true">IB</span>
+    <div class="lbl" style="display: flex; flex-direction: column; min-width: 0">
+      <span class="ws-name">Impeccabyte</span>
+      <span class="ws-sub">Merchant CRM</span>
+    </div>
+  </div>
+  <sc-for list="{{items}}" as="it" hint-placeholder-count="10">
+    <a class="{{it.cls}}" href="{{it.href}}" aria-current="{{it.cur}}" title="{{it.label}}">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{it.d}}"></path></svg>
+      <span class="lbl">{{it.label}}</span>
+      <sc-if value="{{it.count}}" hint-placeholder-val="{{false}}"><span class="lbl cnt" aria-label="{{it.countLabel}}">{{it.count}}</span></sc-if>
+    </a>
+  </sc-for>
+  <div class="grow"></div>
+  <div class="lbl" style="margin: 8px 4px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500"><span class="dotg" aria-hidden="true"></span>Maverick sync healthy</div>
+    <div class="subtle sm">Last sync 2 min ago</div>
+  </div>
+  <button class="collapse" onClick="{{toggle}}" aria-label="{{tLabel}}" aria-expanded="{{expanded}}">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.panel}}"></path></svg>
+    <span class="lbl">Collapse</span>
+  </button>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"enum","options":["home","leads","deals","merchants","applications","support","chargebacks","reports","residuals","settings"],"default":"home"},"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"$preview":{"width":232,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB;
+    const collapsed = this.state?.collapsed ?? false;
+    const active = this.props.active ?? 'home';
+    const role = this.props.viewRole ?? 'manager';
+    const items = IB.NAV.filter(n => n.roles.indexOf(role) >= 0).map(n => ({
+      ...n,
+      cls: 'nv' + (n.k === active ? ' on' : ''),
+      cur: n.k === active ? 'page' : undefined,
+      countLabel: n.count ? n.count + ' open' : ''
+    }));
+    return {
+      ic: IB.I, items,
+      cls: 'sb' + (collapsed ? ' collapsed' : ''),
+      expanded: !collapsed,
+      tLabel: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
+      toggle: () => this.setState({ collapsed: !collapsed })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+GET https://dashboard.example.com/api/merchant
+
+
+
+EXAMPLE RESPONSE:
+{
+  "items": [
+      {
+                  "id": "1",
+                  "name": "Demo Merchant Inc",
+                  "principals": [
+                      {
+                          "name": {
+                              "first": "Dewayne",
+                              "last": "Stehr"
+                          },
+                          "isSigner": "Yes",
+                          "isPersonalGuarantee": "Yes",
+                          "ownershipPercentage": 51
+                      },
+                      {
+                          "name": {
+                              "first": "Kelli",
+                              "last": "Morar"
+                          },
+                          "isSigner": "Yes",
+                          "isPersonalGuarantee": "No",
+                          "ownershipPercentage": 12
+                      }
+                  ],
+                  "dbas": [
+                      {
+                          "id": "1",
+                          "name": "Demo Merchant DBA",
+                          "address": {
+                              "street": "Lorem 15",
+                              "city": "New Damonmouth",
+                              "zip": "2222",
+                              "state": [
+                                  15
+                              ],
+                              "country": [
+                                  199
+                              ]
+                          },
+                          "customerServiceContact": {
+                              "phone": "+1 717-888-8888",
+                              "email": "demo-merchant@manky.org"
+                          },
+                          "mcc": "5734",
+                          "processor": {
+			                "type": "TSYS"
+                          },
+                          "processing": {
+                              "mid": "201143806445",
+                              "bank": {
+                                  "accountNumber": "123123",
+                                  "routingNumber": "123123333"
+                              },
+                              "banks": [
+                                {
+                                  "id": 65622,
+                                  "type": "All",
+                                  "bankAccountNumber": "123123",
+                                  "bankRoutingNumber": "123123333"
+                                }
+                              ],
+                              "riskLevel": "LowEligible",
+                              "status": "Closed",
+                              "boardedOn": "2019-02-06 12:00:00",
+                              "closedOn": "2022-02-16 15:38:33",
+                              "volumes": {
+                                  "monthlyTransactionAmount": 7000000,
+                                  "avgTransactionAmount": 700,
+                                  "maxTransactionAmount": 7000
+                              },
+                              "sales": {
+                                  "swiped": 30,
+                                  "mail": 10,
+                                  "internet": 60
+                              },
+                              "feeSchedule": {
+                                  "fees": [
+                                      {
+                                          "id": "1",
+                                          "type": {
+                                              "id": "1"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "2",
+                                          "type": {
+                                              "id": "2"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "3",
+                                          "type": {
+                                              "id": "3"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "4",
+                                          "type": {
+                                              "id": "4"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "5",
+                                          "type": {
+                                              "id": "5"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "6",
+                                          "type": {
+                                              "id": "6"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "7",
+                                          "type": {
+                                              "id": "7"
+                                          },
+                                          "value": "0.75000"
+                                      },
+                                      {
+                                          "id": "8",
+                                          "type": {
+                                              "id": "8"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "9",
+                                          "type": {
+                                              "id": "9"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "10",
+                                          "type": {
+                                              "id": "10"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "11",
+                                          "type": {
+                                              "id": "11"
+                                          },
+                                          "value": "5.00000"
+                                      },
+                                      {
+                                          "id": "12",
+                                          "type": {
+                                              "id": "12"
+                                          },
+                                          "value": "25.00000"
+                                      },
+                                      {
+                                          "id": "13",
+                                          "type": {
+                                              "id": "13"
+                                          },
+                                          "value": "0.00000"
+                                      },
+                                      {
+                                          "id": "14",
+                                          "type": {
+                       

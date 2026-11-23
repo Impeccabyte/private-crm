@@ -1,0 +1,94 @@
+GET https://dashboard.example.com/api/terminals
+
+ List all terminals with their associated  merchant.id  and  dba.id  
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "id": "1",
+            "dba": {
+                "id": "1",
+                "name": "Demo Merchant DBA"
+            },
+            "merchant": {
+                "id": "1",
+                "name": "Demo Merchant Inc"
+            },
+            "name": "Demo Terminal",
+            "tid": 7000,
+            "vNumber": "123456",
+            "gateway": {
+                "provider": "Other",
+                "activatedOn": "2021-10-11 05:08:18",
+                "3DsStatus": "Unavailable"
+            },
+            "feeTerminalId": null,
+            "website": "https://www.example.com",
+            "note": "Demo note",
+            "cardTypes": {
+                "acceptVisa": "No",
+                "acceptMastercard": "No",
+                "acceptDiscover": "No",
+                "acceptAmericanExpress": "No",
+                "acceptPinDebit": "No",
+                "acceptEbt": "No",
+                "acceptGiftCard": "No"
+            },
+            "chain": "4",
+            "agentBank": "4",
+            "storeNumber": "0001",
+            "locationNumber": "00001",
+            "createdOn": "2019-02-06 13:55:35"
+        },
+        {
+            "id": 4,
+            "dba": {
+                "id": 3,
+                "name": "Satterfield PLC"
+            },
+            "merchant": {
+                "id": 3,
+                "name": "Wintheiser-Douglas"
+            },
+            "name": "7000",
+            "tid": 7000,
+            "backendProcessorId": "V8231814",
+            "equipment": {
+                "providedBy": "Deployment Center",
+                "equipmentType": "NoHardware",
+                "equipmentTypeLocked": "No",
+                "used": "NMI Gateway",
+                "note": "",
+                "discountPeriod": "Daily",
+                "fundingPeriod": "TwoBusinessDays",
+                "terminalCommunicationWirelessOption": null,
+                "terminalTip": null,
+                "terminalTipLocked": "No",
+                "terminalTipSuggestion": "No",
+                "terminalTipSuggestionLocked": "No"
+            },
+            "gateway": {
+                "provider": "Other",
+                "activatedOn": null,
+                "3DsStatus": "Unavailable"
+            },
+            "feeTerminalId": null,
+            "website": null,
+            "note": null,
+            "acceptVisa": "No",
+            "acceptMastercard": "No",
+            "acceptDiscover": "No",
+            "acceptAmericanExpress": "No",
+            "acceptPinDebit": "No",
+            "acceptEbt": "No",
+            "acceptGiftCard": "No",
+            "chain": "N/A",
+            "agentBank": "N/A",
+            "storeNumber": "0001",
+            "locationNumber": "00001",
+            "createdOn": "2017-12-14 21:54:11"
+        }
+    ]
+}

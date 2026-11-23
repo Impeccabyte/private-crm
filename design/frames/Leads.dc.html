@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Leads — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1120px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="leads" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Leads</h1><div class="sub">{{sub}}</div></div>
+        <div class="acts">
+          <a class="btn" href="Deals.dc.html"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.deals}}"></path></svg>Pipeline</a>
+          <button class="btn"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.upload}}"></path></svg>Import CSV</button>
+          <button class="btn pri"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>New lead</button>
+        </div>
+      </div>
+
+      <section class="card" aria-labelledby="dup-h" style="overflow: hidden">
+        <div class="banner amber" style="border-radius: 0; border-width: 0 0 1px 0">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="{{ic.alert}}"></path></svg>
+          <div style="flex: 1; min-width: 0">
+            <div class="bt" id="dup-h">Possible duplicate · import “trade-show-nov.csv”, row 14 of 38</div>
+            <div class="bd" style="margin-top: 2px">“Harbor St Coffee” matches the existing merchant <b>Harbor Street Coffee Co.</b> on <b>phone</b>, <b>domain</b> and <b>EIN last 4</b>. 2 other rows in this import also need review.</div>
+          </div>
+          <div class="row w" style="gap: 6px">
+            <button class="btn sm" onClick="{{toggleCompare}}" aria-expanded="{{compare}}">{{compareLabel}}</button>
+          </div>
+        </div>
+        <sc-if value="{{compare}}" hint-placeholder-val="{{true}}">
+          <div style="padding: 0">
+            <table class="tbl compact" aria-label="Compare incoming lead with existing record">
+              <thead><tr><th style="width: 160px">Field</th><th>Incoming lead (import row 14)</th><th>Existing record · Merchant</th><th class="w0">Match</th></tr></thead>
+              <tbody>
+                <sc-for list="{{cmp}}" as="c" hint-placeholder-count="7">
+                  <tr><td class="muted">{{c.f}}</td><td>{{c.a}}</td><td>{{c.b}}</td><td><span class="{{c.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.p.d}}"></path></svg>{{c.p.label}}</span></td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <div class="row w" style="padding: 10px 14px; border-top: 1px solid var(--line); background: var(--sunken)">
+              <span class="subtle sm">Merge keeps the existing record. Link adds this lead as a new location under the same EIN.</span>
+              <span class="sp"></span>
+              <button class="btn sm ghost">Create anyway</button>
+              <button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.link}}"></path></svg>Link as new location</button>
+              <button class="btn sm pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.merge}}"></path></svg>Merge into existing</button>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+
+      <section class="card lv" aria-label="Leads list">
+        <div class="lt">
+          <div class="views" role="tablist" aria-label="Saved views">
+            <sc-for list="{{views}}" as="v" hint-placeholder-count="4">
+              <button class="{{v.cls}}" role="tab" aria-selected="{{v.on}}" onClick="{{v.pick}}">{{v.label}}<span class="c">{{v.c}}</span></button>
+            </sc-for>
+            <button class="vt"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Save view</button>
+          </div>
+          <span class="sp"></span>
+          <label class="inpw" style="width: 200px"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.search}}"></path></svg><span class="sr">Search leads</span><input placeholder="Search leads"></label>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Filter</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cols}}"></path></svg>Columns</button>
+          <div class="seg" role="group" aria-label="Row density"><button class="{{dComf}}" onClick="{{setComf}}">Comfortable</button><button class="{{dComp}}" onClick="{{setComp}}">Compact</button></div>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button>
+        </div>
+        <div class="chips">
+          <span class="chip">Source <b>is any of Web form, Referral, Import, Partner</b><button aria-label="Remove source filter"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></span>
+          <span class="chip">Stage <b>is not Won, Lost</b><button aria-label="Remove stage filter"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></span>
+          <button class="lnk"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Add filter</button>
+        </div>
+        <sc-if value="{{hasSel}}" hint-placeholder-val="{{true}}">
+          <div class="bulk" role="region" aria-label="Bulk actions">
+            <span>{{selCount}} selected</span>
+            <button class="btn sm">Assign owner</button><button class="btn sm">Change stage</button><button class="btn sm">Add to sequence</button><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export</button>
+            <span class="sp"></span><button class="btn sm ghost" onClick="{{clearSel}}">Clear</button>
+          </div>
+        </sc-if>
+        <div class="tblw">
+          <table class="{{tblCls}}">
+            <thead><tr>
+              <th class="w0"><input type="checkbox" aria-label="Select all leads" checked="{{allSel}}" onChange="{{toggleAll}}"></th>
+              <th><span class="th-s">Business<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.sort}}"></path></svg></span></th>
+              <th>Contact</th><th>Source</th><th>Industry / MCC</th><th class="r">Est. monthly volume</th><th>Current processor</th><th>Lead score</th><th>Owner</th><th>Last activity</th><th>Next task</th>
+            </tr></thead>
+            <tbody onKeyDown="{{keys}}">
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="10">
+                <tr class="{{r.trc}}">
+                  <td><input type="checkbox" aria-label="{{r.selLabel}}" checked="{{r.sel}}" onChange="{{r.toggle}}"></td>
+                  <td><div class="row" style="gap: 6px"><a class="rl" data-nav="1" href="Merchant.dc.html">{{r.n}}</a><sc-if value="{{r.dup}}" hint-placeholder-val="{{false}}"><span class="pill t-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>Possible duplicate</span></sc-if></div></td>
+                  <td><div>{{r.c}}</div></td>
+                  <td><span class="tag">{{r.src}}</span></td>
+                  <td><span class="muted">{{r.ind}}</span> <span class="subtle mono">{{r.mcc}}</span></td>
+                  <td class="r num">{{r.vol}}</td>
+                  <td class="muted">{{r.proc}}</td>
+                  <td>
+                    <span class="tipw">
+                      <button class="score" aria-describedby="{{r.tipId}}"><span class="bar"><i style="width: {{r.score}}%"></i></span>{{r.score}}</button>
+                      <span class="tip right" role="tooltip" id="{{r.tipId}}">
+                        <b style="display: block; margin-bottom: 6px">Lead score {{r.score}} / 100</b>
+                        <span class="tr"><span class="muted">Industry fit (MCC)</span><span>+{{r.b1}}</span></span>
+                        <span class="tr"><span class="muted">Est. volume</span><span>+{{r.b2}}</span></span>
+                        <span class="tr"><span class="muted">Engagement (opens, calls)</span><span>+{{r.b3}}</span></span>
+                        <span class="tr"><span class="muted">Source quality</span><span>+{{r.b4}}</span></span>
+                      </span>
+                    </span>
+                  </td>
+                  <td><span class="who"><span class="{{r.ow.av}}">{{r.ow.ini}}</span>{{r.ow.name}}</span></td>
+                  <td class="muted">{{r.last}}</td>
+                  <td><span class="{{r.nextCls}}">{{r.next}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div class="lfoot"><span>{{footer}}</span><span class="row" style="gap: 6px"><button class="btn sm icon ghost" aria-label="Previous page"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevL}}"></path></svg></button><span>Page 1 of 3</span><button class="btn sm icon ghost" aria-label="Next page"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg></button></span></div>
+      </section>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"agent"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1120}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const role = this.state?.role ?? this.props.viewRole ?? 'agent';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const compare = this.state?.compare ?? true;
+    const density = this.state?.density ?? 'comfortable';
+    const view = this.state?.view ?? 'all';
+    const sel = this.state?.sel ?? { 1: true, 6: true };
+    const L = [
+      ['Harbor St Coffee', 'Maya Lindqvist', 'Import', 'Restaurants', '5812', 22000, 'Unknown', 41, 'dr', 'Imported · 4m ago', 'Resolve duplicate', 'Today', true],
+      ['Lantern Row Books', 'Elliot Park', 'Web form', 'Book stores', '5942', 26000, 'Stripe', 84, 'dr', 'Email opened · 35m ago', 'Send app reminder', 'Today'],
+      ['Driftwood Pet Grooming', 'Corinne Baptiste', 'Referral', 'Veterinary & pet', '0742', 18500, 'Square', 78, 'jl', 'Call · 2h ago', 'Pricing call', 'Nov 24, 2026'],
+      ['Clearwater Physical Therapy', 'Megan Holt', 'Referral', 'Medical services', '8099', 48500, 'Elavon', 88, 'mo', 'Meeting · yesterday', 'Send proposal', 'Nov 22, 2026'],
+      ['Summit Ridge Veterinary', 'Dr. Laura Kim', 'Import', 'Veterinary', '0742', 64000, 'Heartland', 71, 'mo', 'Email · 2d ago', 'Statement review', 'Nov 25, 2026'],
+      ['Golden Spoon Thai', 'Niran Charoen', 'Partner', 'Restaurants', '5812', 31000, 'Toast', 63, 'dr', 'Call · 2d ago', 'Follow-up call', 'Nov 21, 2026'],
+      ['Pine & Proper Barbers', 'Malik Jordan', 'Partner', 'Barber & beauty', '7230', 9800, 'Clover', 52, 'dr', 'Note · 3d ago', 'Second touch', 'Overdue'],
+      ['Hollow Oak Furniture', 'Beth Sandoval', 'Import', 'Furniture', '5712', 72400, 'Worldpay', 69, 'tw', 'Email · 4d ago', 'Intro call', 'Nov 26, 2026'],
+      ['Bayou Bites Food Truck', 'Andre Fontenot', 'Web form', 'Restaurants', '5812', 14200, 'Square', 46, 'tw', 'Form submitted · 5d ago', 'First call', 'Overdue'],
+      ['Red Fern Florist', 'Iris Nakamura', 'Web form', 'Florists', '5992', 11600, 'Square', 38, 'jl', 'Email bounced · 6d ago', 'Verify email', 'Nov 23, 2026']
+    ];
+    let idx = L.map((l, i) => i).filter(i => IB.canSee(role, L[i][8]));
+    if (view === 'mine') idx = idx.filter(i => L[i][8] === 'dr');
+    if (view === 'hot') idx = idx.filter(i => L[i][7] >= 70);
+    if (view === 'stale') idx = idx.filter(i => /[3-6]d ago/.test(L[i][9]));
+    const rows = idx.map(i => {
+      const l = L[i], s = l[7], b1 = Math.round(s * 0.3), b2 = Math.round(s * 0.35), b3 = Math.round(s * 0.2);
+      return { n: l[0], c: l[1], src: l[2], ind: l[3], mcc: l[4], vol: IB.usd(l[5]), proc: l[6], score: s, b1, b2, b3, b4: s - b1 - b2 - b3, ow: IB.agent(l[8]), last: l[9], next: l[10] + ' · ' + l[11], nextCls: l[11] === 'Overdue' ? 'tx-red' : (l[11] === 'Today' ? '' : 'muted'), dup: !!l[12], tipId: 'tip-' + i, sel: !!sel[i], trc: sel[i] ? 'sel' : '', selLabel: 'Select ' + l[0], toggle: () => this.setState({ sel: { ...sel, [i]: !sel[i] } }) };
+    });
+    const selCount = Object.keys(sel).filter(k => sel[k]).length;
+    const P = IB.pill;
+    const cmp = [
+      ['Business name', 'Harbor St Coffee', 'Harbor Street Coffee Co.', P('Similar', 'amber')],
+      ['Phone', '(503) 555-0142', '(503) 555-0142', P('Match', 'green')],
+      ['Website domain', 'harborstreet.example', 'harborstreet.example', P('Match', 'green')],
+      ['EIN', '••-•••4821', '••-•••4821', P('Match', 'green')],
+      ['MID', '—', '527104400128731', P('No data', 'neutral')],
+      ['Contact', 'Maya Lindqvist · owner', 'Maya Lindqvist · principal, 60%', P('Match', 'green')],
+      ['Address', '1418 SE Hawthorne Blvd, Portland, OR 97214', '612 NW Everett St, Portland, OR 97209', P('Different', 'gray')]
+    ].map(c => ({ f: c[0], a: c[1], b: c[2], p: c[3] }));
+    const vis = L.filter(l => IB.canSee(role, l[8]));
+    const views = [['all', 'All leads', role === 'agent' ? vis.length : 24], ['mine', 'My leads', vis.filter(l => l[8] === 'dr').length], ['hot', 'Hot · score 70+', vis.filter(l => l[7] >= 70).length], ['stale', 'No activity 3+ days', vis.filter(l => /[3-6]d ago/.test(l[9])).length]].map(v => ({ label: v[1], c: v[2], on: view === v[0], cls: 'vt' + (view === v[0] ? ' on' : ''), pick: () => this.setState({ view: v[0] }) }));
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      sub: role === 'agent' ? 'Your leads and your sub-agents’ leads' : '24 open leads across 5 agents',
+      compare, compareLabel: compare ? 'Hide comparison' : 'Compare side by side', cmp,
+      toggleCompare: () => this.setState({ compare: !compare }),
+      views, rows, hasSel: selCount > 0, selCount, allSel: rows.length > 0 && rows.every(r => r.sel),
+      toggleAll: () => { const all = rows.every(r => r.sel); const n = {}; if (!all) idx.forEach(i => n[i] = true); this.setState({ sel: n }); },
+      clearSel: () => this.setState({ sel: {} }),
+      tblCls: 'tbl' + (density === 'compact' ? ' compact' : ''),
+      dComf: density === 'comfortable' ? 'on' : '', dComp: density === 'compact' ? 'on' : '',
+      setComf: () => this.setState({ density: 'comfortable' }), setComp: () => this.setState({ density: 'compact' }),
+      footer: 'Showing ' + rows.length + ' of ' + (role === 'agent' ? 6 : 24) + ' leads · ↑/↓ moves between rows',
+      keys: IB.rowKeys,
+      setRole: (v) => this.setState({ role: v }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

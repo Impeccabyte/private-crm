@@ -1,0 +1,10 @@
+ Notification when a new Chargeback record is created. 
+   Event Identification   
+  {
+    ...
+    "module": "chargeback",
+    "action": "create",
+    "data": chargebackObject,
+    ...
+}
+  

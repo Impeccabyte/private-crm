@@ -1,0 +1,35 @@
+GET https://dashboard.example.com/api/ticket/<ticketId>
+
+ View all the information for a specific  ticket.id  
+
+
+EXAMPLE RESPONSE:
+{
+    "id": 88,
+    "dba": {
+        "id": 2
+    },
+    "category": {
+        "id": 4
+    },
+    "title": "Charback Help",
+    "text": "One of my merchants is inquiring about chargebacks. I need your clarification",
+    "status": "Open",
+    "notifyMerchant": "No",
+    "attentionMerchant": "No",
+    "dueDate": null,
+    "responsible": {
+        "id": null
+    },
+    "createdBy": {
+        "id": 14
+    },
+    "attachments": [
+        {
+            "id": 5573
+        }
+    ],
+    "createdOn": "2023-05-16 13:39:45",
+    "lastUpdatedOn": "2023-05-16 13:39:45",
+    "agentLastUpdatedOn": "2023-05-16 13:39:45"
+}

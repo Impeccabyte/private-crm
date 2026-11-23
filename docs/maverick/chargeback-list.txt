@@ -1,0 +1,6 @@
+GET https://dashboard.example.com/api/reporting/chargeback/<chargebackId>/dispute/<casesId>/preview/<disputeId>
+
+ Use this endpoint if you want to preview your dispute before submitting it. 
+
+
+EXAMPLE RESPONSE:

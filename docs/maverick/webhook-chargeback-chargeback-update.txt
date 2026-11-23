@@ -1,0 +1,10 @@
+ Notification when a Chargeback is updated. 
+   Event Identification   
+  {
+    ...
+    "module": "chargeback",
+    "action": "update",
+    "data": chargebackObject,
+    ...
+}
+  

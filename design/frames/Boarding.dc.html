@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Boarding pipeline — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1000px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="applications" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Applications</h1><div class="sub">{{sub}}</div></div>
+        <div class="acts">
+          <div class="seg" role="group" aria-label="Layout"><button class="on" aria-pressed="true">Board</button><button>Table</button></div>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Specialist: {{specLabel}}</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Signature: Any</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button>
+          <button class="btn pri"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>New application</button>
+        </div>
+      </div>
+      <div class="views" role="tablist" aria-label="Saved views">
+        <button class="vt on" role="tab" aria-selected="true">All open<span class="c">8</span></button>
+        <button class="vt" role="tab" aria-selected="false">Stuck over 5 days<span class="c">2</span></button>
+        <button class="vt" role="tab" aria-selected="false">Waiting on signature<span class="c">4</span></button>
+        <button class="vt" role="tab" aria-selected="false">Failed checks<span class="c">1</span></button>
+        <button class="vt"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Save view</button>
+      </div>
+      <div class="kb" role="list" aria-label="Application statuses" style="grid-auto-columns: minmax(180px, 1fr)">
+        <sc-for list="{{cols}}" as="c" hint-placeholder-count="6">
+          <section class="col" role="listitem" aria-label="{{c.aria}}" style="min-height: 680px">
+            <div class="col-h">
+              <div class="t"><span class="{{c.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.p.d}}"></path></svg>{{c.p.label}}</span><span class="ct">{{c.n}}</span></div>
+              <div class="m">{{c.m}}</div>
+            </div>
+            <sc-for list="{{c.cards}}" as="k" hint-placeholder-count="3">
+              <a class="kc" href="Application.dc.html">
+                <div><div class="n">{{k.n}}</div><div class="subtle sm mono">{{k.id}} · {{k.mcc}}</div></div>
+                <div class="row w" style="gap: 4px"><span class="{{k.sig.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{k.sig.d}}"></path></svg>{{k.sig.label}}</span><sc-if value="{{k.cond}}" hint-placeholder-val="{{false}}"><span class="pill t-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pa}}"></path></svg>Conditional</span></sc-if></div>
+                <sc-if value="{{k.issue}}" hint-placeholder-val="{{false}}"><div class="{{k.icls}}" style="display: flex; gap: 4px; align-items: center; font-size: 12px"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{k.iic}}"></path></svg>{{k.issue}}</div></sc-if>
+                <div class="meta"><span class="{{k.ag.av}}" title="Agent: {{k.ag.name}}">{{k.ag.ini}}</span><span class="{{k.sp.av}}" title="Specialist: {{k.sp.name}}">{{k.sp.ini}}</span><span class="sp"></span><span class="{{k.dCls}}"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align: -2px"><path d="{{ic.clock}}"></path></svg> {{k.d}}</span></div>
+              </a>
+            </sc-for>
+          </section>
+        </sc-for>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"onboarding"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const role = this.state?.role ?? this.props.viewRole ?? 'onboarding';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const S = [
+      ['New', 'Not yet sent to merchant', [['Lantern Row Books', 'APP-20452', '5942', 'Unsigned', 'dr', 1, ''], ['Clearwater Physical Therapy', 'APP-20455', '8099', 'Unsigned', 'mo', 0, 'Pricing not selected', 'amber']]],
+      ['Pending', 'Collecting signatures & documents', [['Bluebird Pediatric Dental', 'APP-20431', '8021', 'Partially Signed', 'tw', 7, '3 items before submit', 'red'], ['Copper Kettle – Catering', 'APP-20440', '5462', 'Unsigned', 'jl', 4, 'Completion link sent'], ['Summit Ridge Veterinary', 'APP-20449', '0742', 'Signed', 'mo', 2, 'Ready to submit', 'green']]],
+      ['Underwriting', 'With Maverick risk team', [['Saguaro Family Pharmacy', 'APP-20447', '5912', 'Signed', 'tw', 3, 'OFAC screen failed', 'red'], ['Harbor Street Coffee Co. – Hawthorne', 'APP-20419', '5812', 'Signed', 'dr', 6, 'Bank statements requested', 'amber'], ['Granite Peak – Online', 'APP-20437', '5941', 'Signed', 'mo', 1, '']]],
+      ['Approved', 'Last 14 days', [['Lakeshore Yoga – Westside', 'APP-20428', '7997', 'Signed', 'sk', 2, '2 open conditions', 'amber', true], ['Tidewater Marine – Annapolis', 'APP-20412', '5551', 'Signed', 'mo', 5, 'First batch Nov 19'], ['Oak & Ember – Short North', 'APP-20405', '5812', 'Signed', 'dr', 9, '']]],
+      ['Declined', 'Last 30 days', [['Northgate Smoke Shop', 'APP-20398', '5993', 'Signed', 'sk', 12, 'High-risk MCC outside policy', 'red']]],
+      ['Cancelled', 'Last 30 days', [['Quarry Hill Brewing', 'APP-20390', '5813', 'Rejected', 'mo', 15, 'Merchant rejected terms']]]
+    ];
+    const ICLS = { red: ['tx-red', ic.alert], amber: ['tx-amber', ic.clock], green: ['tx-green', ic.check], '': ['muted', ic.info] };
+    const cols = S.map(s => {
+      const cards = s[2].filter(k => IB.canSee(role, k[4])).map(k => {
+        const days = k[5], open = s[0] === 'New' || s[0] === 'Pending' || s[0] === 'Underwriting';
+        const ic2 = ICLS[k[7] || ''];
+        return { n: k[0], id: k[1], mcc: 'MCC ' + k[2], sig: P(k[3]), ag: IB.agent(k[4]), sp: IB.agent('lb'), d: days === 0 ? 'Today' : days + (days === 1 ? ' day' : ' days'), dCls: open && days > 5 ? 'over' : (open && days > 3 ? 'stale' : ''), issue: k[6], icls: ic2[0], iic: ic2[1], cond: !!k[8] };
+      });
+      return { p: P(s[0]), m: s[1], n: cards.length, cards, aria: s[0] + ', ' + cards.length + ' applications' };
+    });
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6', pa: IB.PI.amber,
+      sub: role === 'agent' ? 'Applications for your merchants' : 'Boarding pipeline · flagged when a card sits more than 5 days in one status',
+      specLabel: role === 'onboarding' ? 'Me (Leah Brooks)' : 'Everyone', cols,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

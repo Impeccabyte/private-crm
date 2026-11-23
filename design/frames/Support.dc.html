@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Support inbox — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1000px">
+<div class="app" style="min-height: 1000px">
+  <div class="side-col"><dc-import name="Sidebar" active="support" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="inbox">
+      <section class="ilist" aria-label="Tickets">
+        <div style="padding: 12px 14px 10px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px">
+          <div class="row"><h1 style="margin: 0; font-size: 16px; font-weight: 600">Support</h1><span class="sp"></span><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>CSV</button><button class="btn sm pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Ticket</button></div>
+          <div class="views" role="tablist" aria-label="Ticket views">
+            <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="padding: 0 8px">{{t.label}}<span class="c">{{t.c}}</span></button></sc-for>
+          </div>
+          <div class="row"><span class="subtle sm">Source</span><div class="seg" role="group" aria-label="Source filter"><sc-for list="{{srcs}}" as="s" hint-placeholder-count="3"><button class="{{s.cls}}" onClick="{{s.pick}}" aria-pressed="{{s.on}}">{{s.label}}</button></sc-for></div><span class="sp"></span><button class="btn ghost sm icon" aria-label="More filters"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg></button></div>
+        </div>
+        <div role="listbox" aria-label="Ticket list" onKeyDown="{{keys}}">
+          <sc-for list="{{list}}" as="t" hint-placeholder-count="8">
+            <button class="{{t.cls}}" data-nav="1" role="option" aria-selected="{{t.on}}" onClick="{{t.pick}}">
+              <span class="r1"><span class="mono subtle">{{t.id}}</span><span class="{{t.srcCls}}">{{t.src}}</span><span class="sp"></span><span class="{{t.slaCls}}">{{t.sla}}</span></span>
+              <span class="subj">{{t.subj}}</span>
+              <span class="r1"><span class="pv" style="flex: 1">{{t.m}} · {{t.pv}}</span></span>
+              <span class="r1"><span class="{{t.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.p.d}}"></path></svg>{{t.p.label}}</span><span class="sp"></span><span class="{{t.as.av}}" title="{{t.as.name}}">{{t.as.ini}}</span><span class="subtle sm">{{t.w}}</span></span>
+            </button>
+          </sc-for>
+          <sc-if value="{{empty}}" hint-placeholder-val="{{false}}"><div class="empty" style="padding: 40px 16px"><span class="ei"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.check}}"></path></svg></span><h3>Nothing here</h3><p>No tickets match this view.</p></div></sc-if>
+        </div>
+      </section>
+
+      <section class="thread" aria-label="Conversation">
+        <div style="padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface); display: flex; flex-direction: column; gap: 8px">
+          <div class="row w" style="gap: 8px">
+            <span class="mono subtle">{{cur.id}}</span>
+            <span class="{{cur.srcCls}}">{{cur.src}}</span>
+            <sc-if value="{{cur.isMav}}" hint-placeholder-val="{{false}}"><span class="subtle sm">Mirrored from Maverick help desk · MAV-HD-77120</span></sc-if>
+            <span class="sp"></span>
+            <label class="sr" for="tstatus">Status</label>
+            <select id="tstatus" class="inp" style="height: 28px; width: 130px"><option>{{cur.p.label}}</option><option>New</option><option>In Progress</option><option>On Hold</option><option>Closed</option></select>
+            <button class="btn sm"><span class="{{cur.as.av}}" style="width: 18px; height: 18px; font-size: 8px">{{cur.as.ini}}</span>{{cur.as.name}}</button>
+            <sc-if value="{{cur.canEsc}}" hint-placeholder-val="{{true}}"><button class="btn sm"><span class="pm">M</span>Escalate to Maverick</button></sc-if>
+            <button class="btn sm icon" aria-label="More"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.more}}"></path></svg></button>
+          </div>
+          <h2 style="margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -.01em">{{cur.subj}}</h2>
+          <div class="row w muted sm" style="gap: 8px"><span class="{{cur.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{cur.p.d}}"></path></svg>{{cur.p.label}}</span><span>Category: {{cur.cat}}</span><span aria-hidden="true">·</span><span>Priority: {{cur.pri}}</span><span aria-hidden="true">·</span><span class="{{cur.slaCls}}">{{cur.slaLong}}</span></div>
+        </div>
+        <div style="flex: 1; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; overflow: auto">
+          <sc-for list="{{msgs}}" as="m" hint-placeholder-count="5">
+            <article class="{{m.cls}}">
+              <sc-if value="{{m.sys}}" hint-placeholder-val="{{false}}"><span class="pm" aria-hidden="true">{{m.mark}}</span><span style="flex: 1">{{m.t}}</span><span class="subtle">{{m.w}}</span></sc-if>
+              <sc-if value="{{m.human}}" hint-placeholder-val="{{true}}">
+                <div class="row"><span class="{{m.av}}">{{m.ini}}</span><b style="font-weight: 600">{{m.by}}</b><span class="subtle sm">{{m.to}}</span><sc-if value="{{m.internal}}" hint-placeholder-val="{{false}}"><span class="tag" style="background: var(--note-line); border-color: transparent; color: var(--ink)">Internal note</span></sc-if><span class="sp"></span><span class="subtle sm">{{m.w}}</span></div>
+                <div style="white-space: pre-line">{{m.t}}</div>
+                <sc-if value="{{m.att}}" hint-placeholder-val="{{false}}"><span class="chip" style="align-self: flex-start"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.clip}}"></path></svg><b>{{m.att}}</b></span></sc-if>
+              </sc-if>
+            </article>
+          </sc-for>
+        </div>
+        <div style="padding: 12px 20px 16px; background: var(--bg)">
+          <div class="{{compCls}}">
+            <div class="row" style="padding: 6px 8px 0; gap: 2px">
+              <div class="seg" role="tablist" aria-label="Composer mode"><button class="{{rCls}}" role="tab" aria-selected="{{isReply}}" onClick="{{toReply}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.mail}}"></path></svg>Reply</button><button class="{{nCls}}" role="tab" aria-selected="{{isNote}}" onClick="{{toNote}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.note}}"></path></svg>Internal note</button></div>
+              <span class="sp"></span>
+              <sc-if value="{{isReply}}" hint-placeholder-val="{{true}}"><span class="subtle sm">To: {{cur.contact}}</span></sc-if>
+              <sc-if value="{{isNote}}" hint-placeholder-val="{{false}}"><span class="sm" style="color: var(--ink-2)">Only your team sees this</span></sc-if>
+            </div>
+            <label class="sr" for="comp">{{compLabel}}</label>
+            <textarea id="comp" placeholder="{{compPh}}">{{draft}}</textarea>
+            <div class="row" style="padding: 8px 10px; border-top: 1px solid var(--line); gap: 6px">
+              <button class="btn sm ghost"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.template}}"></path></svg>Templates<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevD}}"></path></svg></button>
+              <button class="btn sm ghost icon" aria-label="Attach files"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.clip}}"></path></svg></button>
+              <span class="sp"></span>
+              <sc-if value="{{isReply}}" hint-placeholder-val="{{true}}">
+                <span class="row" style="gap: 8px"><button class="{{notifyCls}}" role="switch" aria-checked="{{notify}}" aria-labelledby="notify-l" onClick="{{toggleNotify}}"></button><span id="notify-l" class="sm muted">Notify merchant</span></span>
+              </sc-if>
+              <button class="btn sm pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.send}}"></path></svg>{{sendLabel}}</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="ctx" aria-label="Merchant context">
+        <div>
+          <div class="sec-t">Merchant</div>
+          <a href="Merchant.dc.html" style="font-weight: 600; font-size: 14px; color: var(--ink); text-decoration: none">{{mc.dba}}</a>
+          <div class="subtle sm">{{mc.legal}}</div>
+          <div class="row w" style="gap: 6px; margin-top: 8px"><span class="{{mc.st.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{mc.st.d}}"></path></svg>{{mc.st.label}}</span><span class="proc"><span class="pm">M</span>Maverick</span></div>
+        </div>
+        <dl class="dl" style="grid-template-columns: 100px 1fr">
+          <dt>MID</dt><dd class="mono">{{mc.mid}}</dd>
+          <dt>MCC</dt><dd><span class="mono">{{mc.mcc}}</span> {{mc.ind}}</dd>
+          <dt>Agent</dt><dd><span class="who"><span class="{{mc.ow.av}}">{{mc.ow.ini}}</span>{{mc.ow.name}}</span></dd>
+          <dt>Contact</dt><dd>{{mc.contact}}<br><span class="num muted">{{mc.phone}}</span></dd>
+        </dl>
+        <div class="card" style="padding: 12px">
+          <div class="subtle sm">30-day volume</div>
+          <div class="row"><b style="font-size: 17px" class="num">{{mc.vol}}</b><span class="sp"></span><span class="{{mc.dCls}}">{{mc.delta}}</span></div>
+          <svg class="ch" viewBox="0 0 240 44" role="img" aria-label="Daily volume, last 30 days" style="margin-top: 6px"><path class="ar" d="M0 30 L16 26 L32 28 L48 22 L64 24 L80 20 L96 23 L112 18 L128 21 L144 16 L160 19 L176 14 L192 17 L208 12 L224 15 L240 13 L240 44 L0 44 Z"></path><path class="ln" d="M0 30 L16 26 L32 28 L48 22 L64 24 L80 20 L96 23 L112 18 L128 21 L144 16 L160 19 L176 14 L192 17 L208 12 L224 15 L240 13"></path></svg>
+        </div>
+        <div>
+          <div class="row" style="margin-bottom: 6px"><div class="sec-t" style="margin: 0">Open chargebacks</div><span class="sp"></span><span class="ct">{{mc.cbN}}</span></div>
+          <sc-for list="{{mc.cbs}}" as="c" hint-placeholder-count="1">
+            <a class="att" href="Chargebacks.dc.html" style="padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; grid-template-columns: minmax(0, 1fr) auto"><span style="min-width: 0"><span class="t1 num" style="display: block">{{c.id}} · {{c.amt}}</span><span class="t2" style="display: block">{{c.r}}</span></span><span class="{{c.dc}}">{{c.due}}</span></a>
+          </sc-for>
+          <sc-if value="{{mc.noCb}}" hint-placeholder-val="{{false}}"><div class="subtle sm">None open</div></sc-if>
+        </div>
+        <div>
+          <div class="sec-t">Terminals</div>
+          <div class="sm muted">{{mc.terms}}</div>
+        </div>
+        <div>
+          <div class="sec-t">Recent tickets</div>
+          <div class="sm" style="display: flex; flex-direction: column; gap: 6px"><span><span class="mono subtle">TCK-3264</span> Receipt printer paper jam · <span class="subtle">Closed</span></span><span><span class="mono subtle">TCK-3190</span> Tip adjust question · <span class="subtle">Closed</span></span></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"support"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const role = this.state?.role ?? this.props.viewRole ?? 'support';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const tab = this.state?.tab ?? 'mine', src = this.state?.src ?? 'any', selId = this.state?.sel ?? 'TCK-3318';
+    const mode = this.state?.mode ?? 'reply', notify = this.state?.notify ?? true;
+    const T = [
+      ['TCK-3318', 'oep', 'Terminal not batching since Tuesday', 'Internal', 'New', 'oh', 'Breached 1h 12m', 'red', '9:02 AM', 'Hardware', 'High', 'Batches from Nov 18 and 19 still open on the S2…'],
+      ['TCK-3325', 'mva', 'What documents do I need for this chargeback?', 'Internal', 'In Progress', 'oh', 'At risk · 42m', 'amber', '8:40 AM', 'Chargebacks', 'Normal', 'Customer says the brake job was never done…'],
+      ['TCK-3322', 'hsc', 'Drive-thru terminal declining contactless', 'Maverick', 'In Progress', 'oh', 'Due in 3h', '', '7:15 AM', 'Hardware', 'Normal', 'Tap fails, chip works. Started after Nov 19 update…'],
+      ['TCK-3311', 'gpo', 'Risk hold on keyed transactions', 'Maverick', 'In Progress', 'oh', 'Due in 5h', '', 'Yesterday', 'Risk', 'High', 'Maverick placed a hold on 6 keyed sales…'],
+      ['TCK-3316', 'nhs', 'Deposit short on Nov 19', 'Maverick', 'On Hold', 'oh', 'Paused', '', 'Yesterday', 'Funding', 'Normal', 'Waiting on Maverick funding team for trace…'],
+      ['TCK-3327', 'ckb', 'Add a second location', 'Internal', 'New', null, 'Due in 6h', '', '10:21 AM', 'Account change', 'Low', 'We’re opening a catering kitchen next month…'],
+      ['TCK-3328', 'lyc', 'Question about monthly statement fee', 'Internal', 'New', null, 'Due in 7h', '', '10:44 AM', 'Billing', 'Low', 'Saw a $7.50 line I don’t recognize…'],
+      ['TCK-3301', 'ckb', 'Update receipt logo', 'Internal', 'Closed', 'oh', 'Resolved', '', 'Nov 19', 'Hardware', 'Low', 'Logo pushed to both terminals…']
+    ];
+    const byId = {}; IB.M.forEach(m => byId[m.id] = m);
+    const rowOf = t => {
+      const m = byId[t[1]], as = t[5] ? IB.agent(t[5]) : { name: 'Unassigned', ini: '—', av: 'av av-6' };
+      return { id: t[0], m: m.dba, subj: t[2], src: t[3], srcCls: 'tag' + (t[3] === 'Maverick' ? ' acc' : ''), isMav: t[3] === 'Maverick', canEsc: t[3] !== 'Maverick', p: P(t[4]), as, sla: t[6], slaCls: t[7] === 'red' ? 'sm tx-red' : (t[7] === 'amber' ? 'sm tx-amber' : 'sm subtle'), slaLong: 'SLA: ' + t[6], w: t[8], cat: t[9], pri: t[10], pv: t[11], contact: m.contact + ' <' + m.email + '>', mid: t[1], unassigned: !t[5], risk: !!t[7], closed: t[4] === 'Closed' };
+    };
+    const all = T.map(rowOf);
+    let list = all.filter(t => src === 'any' || t.src === src);
+    if (tab === 'mine') list = list.filter(t => t.as.ini === 'OH' && !t.closed);
+    if (tab === 'unassigned') list = list.filter(t => t.unassigned);
+    if (tab === 'sla') list = list.filter(t => t.risk);
+    list = list.map(t => ({ ...t, on: t.id === selId, cls: 'ti' + (t.id === selId ? ' on' : ''), pick: () => this.setState({ sel: t.id }) }));
+    const cur = all.find(t => t.id === selId) || all[0];
+    const m = byId[cur.mid];
+    const tabs = [['mine', 'My tickets', all.filter(t => t.as.ini === 'OH' && !t.closed).length], ['unassigned', 'Unassigned', all.filter(t => t.unassigned).length], ['sla', 'SLA at risk', all.filter(t => t.risk).length], ['all', 'All', all.length]].map(x => ({ label: x[1], c: x[2], on: tab === x[0], cls: 'vt' + (tab === x[0] ? ' on' : ''), pick: () => this.setState({ tab: x[0] }) }));
+    const srcs = [['any', 'All'], ['Internal', 'Internal'], ['Maverick', 'Maverick']].map(x => ({ label: x[1], on: src === x[0], cls: src === x[0] ? 'on' : '', pick: () => this.setState({ src: x[0] }) }));
+    const first = m.contact.split(' ')[0];
+    const msgs = cur.id === 'TCK-3318' ? [
+      { human: true, cls: 'msg', by: 'Tony Castellano', ini: 'TC', av: 'av av-3', to: 'via email', w: 'Nov 21, 2026 7:50 AM', t: 'Hi — our front terminal hasn’t settled since Tuesday. The screen says “Batch open” and our deposit for the 18th and 19th never showed up. We’re slammed on weekends so I need this fixed before Friday dinner.', att: 'IMG_2231.jpg' },
+      { sys: true, cls: 'msg sysm', mark: 'IB', t: 'Ticket created from email · assigned to Omar Haddad by round-robin', w: '7:50 AM' },
+      { sys: true, cls: 'msg sysm', mark: 'M', t: 'Maverick: 2 open batches on TID 71021904 · $5,184.20 unsettled', w: '8:05 AM' },
+      { sys: true, cls: 'msg sysm', mark: '!', t: 'First-response SLA (1h) breached', w: '8:50 AM' },
+      { human: true, internal: true, cls: 'msg note-y', by: 'Omar Haddad', ini: 'OH', av: 'av av-8', to: '', w: 'Nov 21, 2026 8:58 AM', t: 'Looks like the auto-close time got wiped in the Nov 19 firmware push. If a manual settle doesn’t work, escalate to Maverick so they can force-close the batches. @Dana Reyes FYI, this is your merchant.' }
+    ] : [
+      { human: true, cls: 'msg', by: m.contact, ini: m.contact.split(' ').map(x => x[0]).join('').slice(0, 2), av: 'av av-3', to: cur.isMav ? 'via Maverick help desk' : 'via email', w: 'Nov 21, 2026 ' + (cur.w.indexOf('M') > 0 ? cur.w : '9:00 AM'), t: cur.pv.replace('…', '.') + ' Can someone take a look today?' },
+      { sys: true, cls: 'msg sysm', mark: cur.isMav ? 'M' : 'IB', t: cur.isMav ? 'Mirrored from Maverick help desk · replies sync both ways' : 'Ticket created from email', w: '' },
+      { human: true, cls: 'msg out', by: 'Omar Haddad', ini: 'OH', av: 'av av-8', to: 'to ' + first, w: 'Nov 21, 2026 10:05 AM', t: 'Thanks ' + first + ', I’m on it and will update you by end of day.' }
+    ];
+    const cbs = { mva: [{ id: 'CB-88213', amt: '$412.50', r: 'Services not provided', due: '2 days', dc: 'pill t-red' }], hsc: [{ id: 'CB-88190', amt: '$86.40', r: 'Not as described', due: '6 days', dc: 'sm subtle' }], oep: [{ id: 'CB-88201', amt: '$112.00', r: 'Duplicate processing', due: '4 days', dc: 'sm tx-amber' }], gpo: [{ id: 'CB-88220', amt: '$2,640.00', r: 'Fraud · card not present', due: '9 days', dc: 'sm subtle' }] }[m.id] || [];
+    const d = m.prev ? (m.vol - m.prev) / m.prev * 100 : 0;
+    const terms = { oep: '2 × Smart Terminal S2 · TID 71021904 has 2 open batches', hsc: '2 × Smart Terminal S2, 1 × Mobile M1', mva: '1 × Smart Terminal S2', gpo: '2 × Smart Terminal S2 · virtual terminal' }[m.id] || '1 × Smart Terminal S2';
+    const mc = { dba: m.dba, legal: m.legal, st: P(m.status), mid: m.mid, mcc: m.mcc, ind: m.ind, ow: IB.agent(m.owner), contact: m.contact, phone: m.phone, vol: IB.usd(m.vol), delta: (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(1) + '%', dCls: d >= 0 ? 'sm tx-green' : 'sm tx-red', cbs, cbN: cbs.length, noCb: cbs.length === 0, terms };
+    const isReply = mode === 'reply';
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      tabs, srcs, list, empty: list.length === 0, cur, msgs, mc,
+      isReply, isNote: !isReply, rCls: isReply ? 'on' : '', nCls: isReply ? '' : 'on',
+      toReply: () => this.setState({ mode: 'reply' }), toNote: () => this.setState({ mode: 'note' }),
+      compCls: 'composer' + (isReply ? '' : ' int'), compLabel: isReply ? 'Reply to merchant' : 'Internal note',
+      compPh: isReply ? 'Write a reply… type / to insert a template' : 'Add an internal note… @mention a teammate',
+      draft: cur.id === 'TCK-3318' && isReply ? 'Hi Tony, thanks for the photo. I can see two open batches on your front terminal. I’m asking Maverick to force-close them now so the funds release on the next deposit cycle.' : '',
+      notify, notifyCls: 'switch' + (notify ? ' on' : ''), toggleNotify: () => this.setState({ notify: !notify }),
+      sendLabel: isReply ? (notify ? 'Send reply' : 'Save reply (no email)') : 'Add note',
+      keys: IB.rowKeys,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

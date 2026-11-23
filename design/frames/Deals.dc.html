@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Deals pipeline — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1120px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="deals" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Deals</h1><div class="sub">{{sub}}</div></div>
+        <div class="acts">
+          <div class="seg" role="group" aria-label="Layout"><button class="on" aria-pressed="true"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.deals}}"></path></svg>Board</button><a class="btn ghost sm" href="Leads.dc.html" style="height: 24px; box-shadow: none">Table</a></div>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Owner: {{ownerLabel}}</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button>
+          <button class="btn pri"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>New deal</button>
+        </div>
+      </div>
+      <div class="row w" style="gap: 20px">
+        <div><span class="subtle sm">Open pipeline</span> <b class="num">{{openU}}</b></div>
+        <div><span class="subtle sm">Weighted</span> <b class="num">{{openW}}</b></div>
+        <div><span class="subtle sm">Won this month</span> <b class="num">{{wonV}}</b></div>
+        <span class="sp"></span>
+        <span class="subtle sm">Drag cards between stages, or focus a card and use the Move menu. Cards over 14 days in a stage are flagged.</span>
+      </div>
+      <div class="kb" role="list" aria-label="Deal stages">
+        <sc-for list="{{cols}}" as="c" hint-placeholder-count="7">
+          <section class="col" role="listitem" aria-label="{{c.aria}}">
+            <div class="col-h">
+              <div class="t"><span class="{{c.p.cls}}" style="padding: 0 6px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.p.d}}"></path></svg>{{c.name}}</span><span class="ct">{{c.n}}</span></div>
+              <div class="m">{{c.prob}} · weighted <b style="color: var(--ink)">{{c.w}}</b></div>
+            </div>
+            <sc-for list="{{c.cards}}" as="k" hint-placeholder-count="3">
+              <div class="{{k.cls}}">
+                <div class="row" style="align-items: flex-start"><a class="n" href="Merchant.dc.html" style="color: var(--ink); text-decoration: none; flex: 1">{{k.n}}</a><button class="btn ghost sm icon" aria-label="{{k.moveLabel}}" style="height: 24px; width: 24px"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.more}}"></path></svg></button></div>
+                <div class="meta"><span>{{k.v}}/mo</span><span class="sp"></span><span class="tag" title="Stage probability">{{k.p}}</span></div>
+                <div class="meta"><span class="{{k.ow.av}}" title="{{k.ow.name}}">{{k.ow.ini}}</span><span class="nm">{{k.ow.name}}</span><span class="sp"></span><span class="{{k.dCls}}"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align: -2px"><path d="{{ic.clock}}"></path></svg> {{k.d}}</span></div>
+                <sc-if value="{{k.note}}" hint-placeholder-val="{{false}}"><div class="subtle sm">{{k.note}}</div></sc-if>
+                <sc-if value="{{k.won}}" hint-placeholder-val="{{false}}">
+                  <button class="btn sm pri" onClick="{{openSheet}}" style="width: 100%"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.app}}"></path></svg>Create boarding application</button>
+                </sc-if>
+                <sc-if value="{{k.hasApp}}" hint-placeholder-val="{{false}}">
+                  <a class="lnk" href="Application.dc.html"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.app}}"></path></svg>APP-20419 · Underwriting</a>
+                </sc-if>
+              </div>
+            </sc-for>
+            <button class="btn ghost sm" style="justify-content: flex-start"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Add deal</button>
+          </section>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{sheet}}" hint-placeholder-val="{{true}}">
+      <div class="sheet-wrap">
+        <div class="scrim" onClick="{{closeSheet}}"></div>
+        <aside class="sheet" role="dialog" aria-modal="false" aria-labelledby="sh-t">
+          <div class="sheet-h">
+            <div style="flex: 1">
+              <div class="subtle sm">Deal won · Bluebird Pediatric Dental</div>
+              <h2 id="sh-t" style="margin: 2px 0 0; font-size: 16px; font-weight: 600">Create boarding application</h2>
+            </div>
+            <button class="btn ghost icon" aria-label="Close" onClick="{{closeSheet}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+          </div>
+          <div class="sheet-b">
+            <div class="banner blue"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="{{ic.info}}"></path></svg><div><div class="bt">13 of 16 fields pre-filled</div><div class="bd sm">Taken from the deal, lead and contacts. Fields marked “Needs input” stay required in the application.</div></div></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px">
+              <div class="field" style="grid-column: span 2"><label for="f1">DBA name</label><input id="f1" class="inp" value="Bluebird Pediatric Dental"></div>
+              <div class="field" style="grid-column: span 2"><label for="f2">Legal name</label><input id="f2" class="inp" value="Bluebird Pediatric Dentistry PLLC"></div>
+              <div class="field"><label for="f3">EIN</label><input id="f3" class="inp mask" value="••-•••0396" readonly="{{true}}"><span class="hint">Masked · stored encrypted</span></div>
+              <div class="field"><label for="f4">MCC</label><input id="f4" class="inp" value="8021 · Dentists"></div>
+              <div class="field"><label for="f5">Est. monthly volume</label><input id="f5" class="inp num" value="$54,000.00"></div>
+              <div class="field"><label for="f6">Average ticket</label><input id="f6" class="inp num" value="$186.00"></div>
+              <div class="field" style="grid-column: span 2"><label for="f7">Pricing campaign</label><select id="f7" class="inp"><option>Q4 2026 · Healthcare IC+ (0.25% + $0.08)</option><option>Standard tiered</option></select></div>
+              <div class="field"><label for="f8">Processor</label><select id="f8" class="inp"><option>Maverick Payments</option></select></div>
+              <div class="field"><label for="f9">Owner agent</label><select id="f9" class="inp"><option>Tess Whitaker</option></select></div>
+            </div>
+            <div>
+              <div class="sec-t">Principals</div>
+              <div class="card">
+                <div class="ck"><span class="av av-3">AS</span><div style="flex: 1"><div class="t">Dr. Anika Shah</div><div class="d">60% ownership · anika@bluebirddental.example</div></div><span class="tag">Signer</span><span class="tag">Guarantor</span></div>
+                <div class="ck"><span class="av av-4">MS</span><div style="flex: 1"><div class="t">Marcus Shah</div><div class="d">40% ownership · Needs input: date of birth, SSN</div></div><span class="tag">Signer</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="sec-t">Needs input</div>
+              <div class="row w" style="gap: 6px"><span class="pill t-neutral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pn}}"></path></svg>Bank account (ACH)</span><span class="pill t-neutral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pn}}"></path></svg>Principal 2 identity</span><span class="pill t-neutral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pn}}"></path></svg>Equipment</span></div>
+            </div>
+          </div>
+          <div class="sheet-f">
+            <button class="btn" onClick="{{closeSheet}}">Not now</button>
+            <a class="btn pri" href="Application.dc.html">Create application<svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.arrowR}}"></path></svg></a>
+          </div>
+        </aside>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1120}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const sheet = this.state?.sheet ?? true;
+    const S = [
+      ['New Lead', 0.1, 'neutral', [['Red Fern Florist', 11600, 'jl', 2], ['Bayou Bites Food Truck', 14200, 'tw', 5], ['Maple Street Laundromat', 8900, 'sk', 1]]],
+      ['Contacted', 0.2, 'blue', [['Hollow Oak Furniture', 72400, 'tw', 4], ['Pine & Proper Barbers', 9800, 'dr', 11], ['Westgate Liquor', 33000, 'mo', 19]]],
+      ['Qualified', 0.4, 'blue', [['Summit Ridge Veterinary', 64000, 'mo', 3], ['Golden Spoon Thai', 31000, 'dr', 6], ['Driftwood Pet Grooming', 18500, 'jl', 4]]],
+      ['Pricing/Proposal', 0.6, 'amber', [['Clearwater Physical Therapy', 48500, 'mo', 2], ['Copper Kettle – Catering', 42000, 'dr', 9]]],
+      ['Application Sent', 0.8, 'amber', [['Saguaro Family Pharmacy', 88000, 'tw', 8], ['Lantern Row Books', 26000, 'dr', 2]]],
+      ['Won', 1, 'green', [['Bluebird Pediatric Dental', 54000, 'tw', 1, 'won'], ['Harbor Street Coffee Co. – Hawthorne', 22000, 'dr', 6, 'app']]],
+      ['Lost', 0, 'red', [['Quarry Hill Brewing', 40000, 'mo', 0, 'Lost to Toast on pricing'], ['Northgate Smoke Shop', 12000, 'sk', 0, 'High-risk MCC, declined']]]
+    ];
+    let openU = 0, openW = 0, wonV = 0;
+    const cols = S.map(s => {
+      const cards = s[3].filter(k => IB.canSee(role, k[2])).map(k => {
+        const days = k[3];
+        return { n: k[0], v: IB.usd0(k[1]), p: Math.round(s[1] * 100) + '%', ow: IB.agent(k[2]), d: s[0] === 'Lost' ? 'Closed' : days + (days === 1 ? ' day' : ' days'), dCls: days > 14 ? 'over' : (days > 7 ? 'stale' : ''), won: k[4] === 'won', hasApp: k[4] === 'app', note: (k[4] && k[4] !== 'won' && k[4] !== 'app') ? k[4] : '', cls: 'kc', moveLabel: 'Actions for ' + k[0] + ', move to another stage', amt: k[1] };
+      });
+      const tot = cards.reduce((a, c) => a + c.amt, 0), w = tot * s[1];
+      if (s[0] !== 'Won' && s[0] !== 'Lost') { openU += tot; openW += w; }
+      if (s[0] === 'Won') wonV = tot;
+      return { name: s[0], prob: s[0] === 'Lost' ? '0%' : Math.round(s[1] * 100) + '%', p: IB.pill(s[0], s[2]), n: cards.length, w: IB.short(w), cards, aria: s[0] + ', ' + cards.length + ' deals, weighted ' + IB.short(w) };
+    });
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      sub: role === 'agent' ? 'Your deals and Jordan Lee’s (sub-agent)' : 'All agents · amounts are estimated monthly volume',
+      ownerLabel: role === 'agent' ? 'Me + sub-agents' : 'Everyone',
+      cols, openU: IB.short(openU), openW: IB.short(openW), wonV: IB.short(wonV),
+      sheet, pn: IB.PI.neutral,
+      openSheet: () => this.setState({ sheet: true }), closeSheet: () => this.setState({ sheet: false }),
+      setRole: (v) => this.setState({ role: v }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

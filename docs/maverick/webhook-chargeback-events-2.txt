@@ -1,0 +1,1 @@
+ Groups of events you can subscribe to. 

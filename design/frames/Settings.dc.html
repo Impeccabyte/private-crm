@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings · Integrations — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1500px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="settings" view-role="manager" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph"><div><h1>Settings</h1><div class="sub">Workspace settings · Manager/Admin only</div></div></div>
+      <sc-if value="{{denied}}" hint-placeholder-val="{{false}}">
+        <div class="card"><div class="empty"><span class="ei"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.lock}}"></path></svg></span><h3>Settings are for Managers and Admins</h3><p>You’re previewing as {{roleLabel}}. Switch the role back to Manager / Admin to see this page.</p></div></div>
+      </sc-if>
+      <sc-if value="{{allowed}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap">
+        <nav aria-label="Settings sections" style="width: 190px; display: flex; flex-direction: column; gap: 2px; flex: none">
+          <a class="mi" href="#">General</a>
+          <a class="mi" href="#users">Users &amp; roles</a>
+          <a class="mi act" href="#integrations" aria-current="page" style="color: var(--accent-ink); background: var(--accent-soft)">Integrations</a>
+          <a class="mi" href="#">Pricing campaigns</a>
+          <a class="mi" href="#">Email templates</a>
+          <a class="mi" href="#">SLA policies</a>
+          <a class="mi" href="#">Audit log</a>
+        </nav>
+        <div class="stack" style="flex: 999 1 640px; min-width: 0; gap: 20px">
+          <section id="integrations" class="card" aria-labelledby="proc-h">
+            <div class="card-h"><h2 id="proc-h">Processor connections</h2><span class="subtle sm">Every MID belongs to one processor</span></div>
+            <div class="row w" style="padding: 16px; gap: 14px; border-bottom: 1px solid var(--line)">
+              <span style="width: 40px; height: 40px; border-radius: 10px; background: var(--ink); color: var(--surface); display: grid; place-items: center; font-weight: 700; font-size: 16px; flex: none" aria-hidden="true">M</span>
+              <div style="flex: 1; min-width: 240px">
+                <div class="row" style="gap: 8px"><b style="font-weight: 600; font-size: 14px">Maverick Payments</b><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Connected</span></div>
+                <div class="subtle sm">API v3 · Partner ID IB-20481 · 1,352 MIDs · connected Feb 2, 2024 by Alex Morgan</div>
+              </div>
+              <button class="btn">Configure</button>
+              <button class="btn pri" onClick="{{resync}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.refresh}}"></path></svg>{{resyncLabel}}</button>
+            </div>
+            <div class="row w" style="padding: 16px; gap: 14px">
+              <span style="width: 40px; height: 40px; border-radius: 10px; border: 1px dashed var(--line-strong); color: var(--ink-3); display: grid; place-items: center; flex: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg></span>
+              <div style="flex: 1"><div style="font-weight: 500; color: var(--ink-2)">Add another processor</div><div class="subtle sm">Not available yet. Merchants, MIDs and residuals are already modeled per processor.</div></div>
+              <button class="btn dis" aria-disabled="true">Add processor</button>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="health-h">
+            <div class="card-h"><h2 id="health-h">Connection health · Maverick</h2><span class="health sm"><span class="dotg" aria-hidden="true"></span>Healthy</span></div>
+            <div class="hs" style="border: 0; border-bottom: 1px solid var(--line); border-radius: 0; grid-template-columns: repeat(4, minmax(0, 1fr))">
+              <div><span class="l">Last successful sync</span><span class="v">2 min ago</span><span class="s">Nov 21, 2026 10:58 AM</span></div>
+              <div><span class="l">Webhook events · 24h</span><span class="v">4,812</span><span class="s">99.85% delivered first try</span></div>
+              <div><span class="l">Failed or retrying</span><span class="v tx-red">7</span><span class="s">3 failed · 4 retrying</span></div>
+              <div><span class="l">API latency (p95)</span><span class="v">410 ms</span><span class="s">Rate limit 12% used</span></div>
+            </div>
+            <div class="card-b">
+              <div class="row" style="margin-bottom: 8px"><span class="sec-t" style="margin: 0">Events per hour · last 24h</span><span class="sp"></span><span class="legend"><span><i class="lg1"></i>Delivered</span><span><i style="background: var(--r-ink)"></i>Failed</span></span></div>
+              <svg class="ch" viewBox="0 0 720 90" role="img" aria-label="Webhook events per hour over the last 24 hours, peaking around midday">
+                <sc-for list="{{hours}}" as="h" hint-placeholder-count="24"><rect class="b1" x="{{h.x}}" y="{{h.y}}" width="24" height="{{h.h}}" rx="2"></rect><rect x="{{h.x}}" y="{{h.fy}}" width="24" height="{{h.fh}}" style="fill: var(--r-ink)"></rect></sc-for>
+                <text class="ax" x="0" y="88">11 AM yesterday</text><text class="ax" x="720" y="88" text-anchor="end">Now</text>
+              </svg>
+            </div>
+          </section>
+
+          <section class="card lv" aria-labelledby="fail-h">
+            <div class="card-h"><h2 id="fail-h">Failed &amp; retrying events</h2><div class="row"><button class="btn sm">Retry all failed</button><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button></div></div>
+            <div class="tblw"><table class="tbl compact">
+              <thead><tr><th>Event</th><th>Object</th><th>Received</th><th class="r">Attempts</th><th>Last error</th><th>Status</th><th class="w0"></th></tr></thead>
+              <tbody onKeyDown="{{keys}}">
+                <sc-for list="{{evs}}" as="e" hint-placeholder-count="7">
+                  <tr class="{{e.trc}}"><td class="mono">{{e.t}}</td><td>{{e.o}}</td><td class="muted">{{e.w}}</td><td class="r">{{e.a}}</td><td class="muted"><span class="trunc" title="{{e.err}}">{{e.err}}</span></td><td><span class="{{e.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{e.p.d}}"></path></svg>{{e.p.label}}</span></td><td><span class="row" style="gap: 4px"><button class="btn sm ghost" data-nav="1" onClick="{{e.pick}}" aria-pressed="{{e.on}}">Payload</button><button class="btn sm">Retry</button></span></td></tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+            <div style="padding: 12px 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px">
+              <div class="row"><span class="sec-t" style="margin: 0">Payload preview · {{sel.t}}</span><span class="sp"></span><span class="subtle sm mono">{{sel.id}}</span><button class="btn sm ghost"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.copy}}"></path></svg>Copy</button></div>
+              <pre class="code">{{sel.json}}</pre>
+              <div class="subtle sm">Sensitive fields (EIN, SSN, bank account) are masked before payloads are stored.</div>
+            </div>
+          </section>
+
+          <section id="users" class="card lv" aria-labelledby="users-h">
+            <div class="card-h"><h2 id="users-h">Users &amp; roles <span class="ct">8</span></h2><div class="row"><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button><button class="btn sm pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Invite user</button></div></div>
+            <div class="tblw"><table class="tbl compact">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Reports to</th><th>Last active</th><th>Status</th></tr></thead>
+              <tbody>
+                <sc-for list="{{users}}" as="u" hint-placeholder-count="8">
+                  <tr><td><span class="who"><span class="{{u.av}}">{{u.ini}}</span><b style="font-weight: 500">{{u.n}}</b></span></td><td class="muted">{{u.e}}</td><td><label class="sr" for="{{u.rid}}">Role for {{u.n}}</label><select id="{{u.rid}}" class="inp" style="height: 26px; font-size: 12px"><option>{{u.r}}</option><option>Manager / Admin</option><option>Sales Agent</option><option>Sub-agent</option><option>Onboarding Specialist</option><option>Support Rep</option></select></td><td class="muted">{{u.to}}</td><td class="muted">{{u.la}}</td><td><span class="{{u.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{u.p.d}}"></path></svg>{{u.p.label}}</span></td></tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+          </section>
+
+          <section class="card" aria-labelledby="mx-h">
+            <div class="card-h"><h2 id="mx-h">Role permissions</h2><span class="subtle sm">“Own book” means merchants where the user or their sub-agents are the owner</span></div>
+            <div class="tblw"><table class="mx">
+              <thead><tr><th>Permission</th><th>Manager / Admin</th><th>Sales Agent</th><th>Onboarding Specialist</th><th>Support Rep</th></tr></thead>
+              <tbody>
+                <sc-for list="{{perms}}" as="p" hint-placeholder-count="10">
+                  <tr><td style="font-weight: 500">{{p.n}}</td>
+                    <sc-for list="{{p.cells}}" as="c" hint-placeholder-count="4"><td><span class="{{c.cls}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.d}}"></path></svg>{{c.t}}</span></td></sc-for>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table></div>
+          </section>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const sel = this.state?.sel ?? 0, syncing = this.state?.syncing ?? false;
+    const H = [140, 122, 96, 70, 52, 44, 41, 58, 96, 170, 236, 268, 281, 270, 262, 248, 239, 230, 251, 244, 226, 208, 190, 166];
+    const F = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0];
+    const hours = H.map((h, i) => { const hh = +(h / 300 * 70).toFixed(1), fh = F[i] * 3; return { x: i * 30, y: +(72 - hh).toFixed(1), h: hh, fy: +(72 - hh - fh).toFixed(1), fh }; });
+    const E = [
+      ['chargeback.updated', 'CB-88213 · Mesa Verde Auto Repair', 'Nov 21, 2026 10:41 AM', 3, 'HTTP 409: case is locked while a response draft exists', 'Retrying', 'evt_9KfT2pQ1', '{\n  "type": "chargeback.updated",\n  "id": "evt_9KfT2pQ1",\n  "created": "2026-11-21T15:41:07Z",\n  "data": {\n    "case_id": "CB-88213",\n    "mid": "527104400109254",\n    "amount": 41250,\n    "currency": "USD",\n    "reason_code": "13.1",\n    "status": "processed",\n    "respond_by": "2026-11-23"\n  }\n}'],
+      ['application.status_changed', 'APP-20447 · Saguaro Family Pharmacy', 'Nov 21, 2026 9:12 AM', 5, 'Timeout after 10s waiting for CRM worker', 'Failed', 'evt_7Hd1xR8a', '{\n  "type": "application.status_changed",\n  "id": "evt_7Hd1xR8a",\n  "data": {\n    "application_id": "APP-20447",\n    "from": "pending",\n    "to": "underwriting",\n    "ein": "••-•••3158",\n    "checks": [{ "name": "ofac", "result": "failed" }]\n  }\n}'],
+      ['payout.deposited', 'MID ••4419 · Riverbend Dry Cleaners', 'Nov 21, 2026 6:00 AM', 5, 'Merchant is Closed in CRM; payout has no open MID', 'Failed', 'evt_2Lm0aZ4c', '{\n  "type": "payout.deposited",\n  "id": "evt_2Lm0aZ4c",\n  "data": {\n    "mid": "527104400064419",\n    "net": 0,\n    "bank_account": "•••• 2207",\n    "deposit_date": "2026-11-21"\n  }\n}'],
+      ['terminal.added', 'TID 71044230 · Granite Peak Outfitters', 'Nov 20, 2026 4:55 PM', 2, 'HTTP 502 from CRM ingress', 'Retrying', 'evt_5Qe8vB2n', '{\n  "type": "terminal.added",\n  "id": "evt_5Qe8vB2n",\n  "data": { "mid": "527104400115837", "tid": "71044230", "model": "Smart Terminal S2" }\n}'],
+      ['merchant.updated', 'Tidewater Marine Supply', 'Nov 20, 2026 2:18 PM', 2, 'Schema: unknown field "dba_alias"', 'Retrying', 'evt_1Wq4kM7t', '{\n  "type": "merchant.updated",\n  "id": "evt_1Wq4kM7t",\n  "data": { "mid": "527104400102077", "dba_alias": "Tidewater Marine – Annapolis" }\n}'],
+      ['signature.completed', 'APP-20449 · Summit Ridge Veterinary', 'Nov 20, 2026 11:03 AM', 1, 'HTTP 429: rate limited, retry scheduled', 'Retrying', 'evt_8Rr2cN6y', '{\n  "type": "signature.completed",\n  "id": "evt_8Rr2cN6y",\n  "data": { "application_id": "APP-20449", "signer": "Dr. Laura Kim", "status": "signed" }\n}'],
+      ['ticket.mirrored', 'MAV-HD-77120 · Harbor Street Coffee Co.', 'Nov 20, 2026 7:16 AM', 5, 'Assignee "mav-support-14" has no CRM user', 'Failed', 'evt_4Tn9pC3d', '{\n  "type": "ticket.mirrored",\n  "id": "evt_4Tn9pC3d",\n  "data": { "external_id": "MAV-HD-77120", "crm_ticket": "TCK-3322", "assignee": "mav-support-14" }\n}']
+    ];
+    const evs = E.map((e, i) => ({ t: e[0], o: e[1], w: e[2], a: e[3] + ' of 5', err: e[4], p: P(e[5]), on: i === sel, trc: i === sel ? 'sel' : '', pick: () => this.setState({ sel: i }) }));
+    const s = E[sel];
+    const users = [['am', 'alex.morgan', 'Manager / Admin', '—', 'Now', 'Active'], ['dr', 'dana.reyes', 'Sales Agent', 'Alex Morgan', '5 min ago', 'Active'], ['mo', 'marcus.okafor', 'Sales Agent', 'Alex Morgan', '1h ago', 'Active'], ['tw', 'tess.whitaker', 'Sales Agent', 'Alex Morgan', 'Yesterday', 'Active'], ['jl', 'jordan.lee', 'Sub-agent', 'Dana Reyes', '3h ago', 'Active'], ['sk', 'sam.kowalski', 'Sub-agent', 'Marcus Okafor', 'Nov 18, 2026', 'Active'], ['lb', 'leah.brooks', 'Onboarding Specialist', 'Alex Morgan', '12 min ago', 'Active'], ['oh', 'omar.haddad', 'Support Rep', 'Alex Morgan', 'Now', 'Active']].map((u, i) => { const a = IB.agent(u[0]); return { n: a.name, ini: a.ini, av: a.av, e: u[1] + '@impeccabyte.example', r: u[2], to: u[3], la: u[4], p: P(u[5]), rid: 'role-' + i }; });
+    const Y = { cls: 'row tx-green', d: ic.check, t: 'All' }, N = { cls: 'row subtle', d: ic.x, t: 'No' }, O = { cls: 'row tx-blue', d: ic.check, t: 'Own book' }, V = { cls: 'row muted', d: ic.eye, t: 'View' };
+    const perms = [
+      ['Leads & deals', [Y, O, N, N]], ['Merchants', [Y, O, V, V]], ['Boarding applications', [Y, { ...V, t: 'View own' }, Y, V]],
+      ['Support tickets', [Y, { ...V, t: 'View own' }, V, Y]], ['Chargebacks', [Y, { ...V, t: 'View own' }, N, Y]],
+      ['Residuals', [Y, O, N, N]], ['Reports', [Y, O, { ...V, t: 'Boarding' }, { ...V, t: 'Support' }]],
+      ['View sensitive data (reveal EIN) · logged', [Y, N, { ...Y, t: 'Yes' }, N]], ['Export CSV', [Y, O, Y, Y]], ['Settings & integrations', [Y, N, N, N]]
+    ].map(p => ({ n: p[0], cells: p[1] }));
+    const R = IB.roleOf(role);
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6', pg: IB.PI.green,
+      allowed: role === 'manager', denied: role !== 'manager', roleLabel: R.label,
+      hours, evs, sel: { t: s[0], id: s[6], json: s[7] }, users, perms,
+      resyncLabel: syncing ? 'Syncing… 38%' : 'Re-sync now', resync: () => this.setState({ syncing: true }),
+      keys: IB.rowKeys,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

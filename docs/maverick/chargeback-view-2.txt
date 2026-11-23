@@ -1,0 +1,333 @@
+GET https://dashboard.example.com/api/reporting/chargeback/<id>
+
+ By utilizing this endpoint you can view detailed information for a specific chargeback 
+  
+ 
+ 
+ Fields 
+ Description 
+ Type 
+ 
+ 
+ 
+ 
+ id 
+ The unique ID that is assigned by our system to every case. 
+ Integer 
+ 
+ 
+ dba 
+ Object 
+ Object 
+ 
+ 
+ dba.id 
+ The ID of the DBA 
+ Integer 
+ 
+ 
+ mid 
+ The Merchant Identification Number (MID) 
+ Integer 
+ 
+ 
+ merchantRefId 
+ A reference number provided by the merchant or their vendor for this transaction. 
+ String 
+ 
+ 
+ merchantEmail 
+ Merchant email address 
+ String 
+ 
+ 
+ type 
+  Chargeback  or  Retrieval  
+ ENUM 
+ 
+ 
+ visaRDR 
+  Yes  or  No  - Identifies if the chargeback is Visa RDR 
+ ENUM 
+ 
+ 
+ authCode 
+ The authorization code passed with the settlement record 
+ String 
+ 
+ 
+ acquirerReferenceNumber 
+ An identification number for a credit card transaction assigned by the acquirer. 
+ Object 
+ 
+ 
+ gateway 
+ Object 
+ Object 
+ 
+ 
+ gateway.id 
+ If using our internal gateway this is the unique payment ID that is assigned to every transaction 
+ Integer 
+ 
+ 
+ gateway.externalID 
+ If using our internal gateway this is the externalID of the transaction 
+ Integer 
+ 
+ 
+ amount 
+ The amount of the retrieval or chargeback. This is not always equal to the amount of the transaction. 
+ Number 
+ 
+ 
+ transaction 
+ Object 
+ Object 
+ 
+ 
+ transaction.id 
+ The unique payment ID that is assigned per transaction from the system. 
+ String 
+ 
+ 
+ transaction.amount 
+ The original transaction amount or case amount if unable to find the original transaction 
+ Number 
+ 
+ 
+ transaction.date 
+ Transaction Date 
+ Date 
+ 
+ 
+ transaction.card 
+ Object 
+ Object 
+ 
+ 
+ transaction.card.brand 
+ Card Brand 
+ String 
+ 
+ 
+ transaction.card.number 
+ Card Number 
+ String 
+ 
+ 
+ transaction.reason 
+ Object 
+ Object 
+ 
+ 
+ transaction.reason.code 
+ Transaction Auth reason code 
+ String 
+ 
+ 
+ transaction.reason.description 
+ Transaction Auth reason description 
+ String 
+ 
+ 
+ date 
+ Object 
+ Object 
+ 
+ 
+ date.posted 
+ The post date as reported by the issuer. 
+ Date 
+ 
+ 
+ date.loaded 
+ The date the retrieval request or chargeback was loaded in the system. 
+ Date 
+ 
+ 
+ date.lastLoaded 
+ The date of the last case loaded in the system for the chargeback. 
+ Date 
+ 
+ 
+ date.disputed 
+ Date when the dispute was submitted. 
+ Date 
+ 
+ 
+ date.receivedDate 
+ Date the retrieval request or chargeback was submitted by the Issuer. 
+ Date 
+ 
+ 
+ date.lastActionDate 
+ Date the case needs to be resolved. 
+ Date 
+ 
+ 
+ reason 
+ Object 
+ Object 
+ 
+ 
+ reason.code 
+ Chargeback reason code 
+ String 
+ 
+ 
+ reason.description 
+ Chargeback reason description 
+ String 
+ 
+ 
+ fraud 
+  Yes  or  No  
+ ENUM 
+ 
+ 
+ attention 
+  Yes  or  No  If the merchant's attention is required 
+ ENUM 
+ 
+ 
+ cases 
+ Array of objects 
+ Array 
+ 
+ 
+ cases.id 
+ Unique case ID assigned by our system 
+ Integer 
+ 
+ 
+ cases.type 
+  Chargeback  or  Retrieval  
+ ENUM 
+ 
+ 
+ cases.number 
+ Unique case number assigned by the external system(bank) 
+ Integer 
+ 
+ 
+ cases.description 
+ Case description 
+ String 
+ 
+ 
+ cases.date 
+ Object 
+ Object 
+ 
+ 
+ cases.date.loaded 
+ The date the case was loaded in the system. 
+ Date 
+ 
+ 
+ cases.date.disputed 
+ The date and time of the last dispute uploaded to the case 
+ Datetime 
+ 
+ 
+ cases.fraud 
+  Yes  or  No  if the case is considered fraud 
+ ENUM 
+ 
+ 
+ cases.attention 
+  Yes  or  No  if the case requires merchants' attention 
+ ENUM 
+ 
+ 
+ cases.status 
+  Processed ,  Won ,  Lost  
+ ENUM 
+ 
+ 
+ cases.eligibleForAcceptance 
+  Yes  or  No  if the case can be accepted 
+ ENUM 
+ 
+ 
+ cases.attachments 
+ Array of objects listing information for the last uploaded dispute 
+ Array 
+ 
+ 
+ status 
+  Processed ,  Won ,  Lost  
+ ENUM 
+ 
+ 
+ 
+ 
+
+EXAMPLE RESPONSE:
+{
+    "id": 5545,
+    "dba": {
+        "id": 9
+    },
+    "mid": 40111950369,
+    "merchantRefId": "SSS-2023040518402732",
+    "merchantEmail": "",
+    "type": "Chargeback",
+    "visaRDR": "No",
+    "authCode": "049684",
+    "acquirerReferenceNumber": "12345063096900012627661",
+    "gateway": {
+        "id": null,
+        "externalId": null
+    },
+    "amount": "39.00",
+    "transaction": {
+        "id": "445595672279437",
+        "amount": "39.00",
+        "date": "2023-04-06",
+        "card": {
+            "number": "434257******9716",
+            "brand": "Visa"
+        },
+        "reason": null
+    },
+    "date": {
+        "posted": "2023-04-06",
+        "loaded": "2023-04-12",
+        "lastLoaded": "2023-04-12",
+        "disputed": "2023-04-13 17:44:59",
+        "receivedDate": "2023-04-11",
+        "lastActionDate": "2023-05-07"
+    },
+    "reason": {
+        "code": "10.4",
+        "description": "Fraud Card Absent Environment"
+    },
+    "fraud": "Yes",
+    "attention": "Yes",
+    "cases": [
+        {
+            "id": 6233665,
+            "type": "Chargeback",
+            "number": 2023102015720,
+            "description": "Visa Allocation case loaded into the system",
+            "reason": {
+                "code": "10.4",
+                "description": "Fraud Card Absent Environment"
+            },
+            "date": {
+                "loaded": "2023-04-12",
+                "disputed": null,
+                "receivedDate": "2023-04-11",
+                "lastActionDate": "2023-05-07"
+            },
+            "fraud": "Yes",
+            "attention": "Yes",
+            "status": "Lost",
+            "eligibleForAcceptance": "No",
+            "attachments": []
+        }
+    ],
+    "status": "Lost"
+}

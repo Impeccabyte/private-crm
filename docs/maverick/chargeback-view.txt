@@ -1,0 +1,72 @@
+GET https://dashboard.example.com/api/reporting/chargebacks
+
+ You can utilize this endpoint to list all chargebacks 
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "id": 5545,
+            "dba": {
+                "id": 9
+            },
+            "type": "Chargeback",
+            "amount": "39.00",
+            "card": {
+                "number": "434257******9716",
+                "brand": "Visa"
+            },
+            "date": {
+                "posted": "2023-04-06",
+                "loaded": "2023-04-12",
+                "lastLoaded": "2023-04-12",
+                "disputed": "2023-04-13 17:44:59"
+            },
+            "fraud": "Yes",
+            "attention": "Yes",
+            "status": "Lost"
+        },
+        {
+            "id": 5528,
+            "dba": {
+                "id": 9
+            },
+            "type": "Chargeback",
+            "amount": "39.00",
+            "card": {
+                "number": "402347******9171",
+                "brand": "Visa"
+            },
+            "date": {
+                "posted": "2023-04-09",
+                "loaded": "2023-04-12",
+                "lastLoaded": "2023-04-12",
+                "disputed": "2023-04-13 17:49:00"
+            },
+            "fraud": "Yes",
+            "attention": "Yes",
+            "status": "Lost"
+        }
+    ],
+    "_links": {
+        "self": {
+            "href": "https://dashboard.example.com//api/reporting/chargebacks?page=1"
+        },
+        "first": {
+            "href": "https://dashboard.example.com//api/reporting/chargebacks?page=1"
+        },
+        "last": {
+            "href": "https://dashboard.example.com//api/reporting/chargebacks?page=1"
+        },
+        "next": {
+            "href": "https://dashboard.example.com//api/reporting/chargebacks?page=1"
+        }
+    },
+    "_meta": {
+        "totalCount": 2,
+        "pageCount": 1,
+        "currentPage": 1,
+        "perPage": 30
+    }
+}

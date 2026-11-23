@@ -1,0 +1,6 @@
+ We sign the webhook events that are sent to your endpoints. We do so by including a signature in each event's  Webhook-Signature  header. This allows you to verify that the events were sent by us, not by a third party. 
+ 
+  IMPORTANT  You are not required to implement this kind of signature check, but it's  strongly recommended .  
+ 
+  Webhook-Signature  is a  SHA-512  sum of following fields 
+ You can view and manage your  Webhook Signature  in your Dashboard. Keep in mind that every  Webhook URL  has its own 

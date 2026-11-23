@@ -1,0 +1,234 @@
+GET https://dashboard.example.com/api/boarding-application
+
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "id": 606,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-04-16 13:13:02",
+            "createdOn": "2023-03-16 14:57:16"
+        },
+        {
+            "id": 605,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-04-10 13:13:02",
+            "createdOn": "2023-03-10 11:05:22"
+        },
+        {
+            "id": 603,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-04-10 13:13:02",
+            "createdOn": "2023-03-10 10:52:25"
+        },
+        {
+            "id": 601,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-04-10 13:13:02",
+            "createdOn": "2023-03-10 10:33:17"
+        },
+        {
+            "id": 600,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-04-10 13:13:02",
+            "createdOn": "2023-03-10 10:29:43"
+        },
+        {
+            "id": 599,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-04-06 13:13:02",
+            "createdOn": "2023-03-04 16:26:12"
+        },
+        {
+            "id": 597,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Signed"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-03-23 13:13:01",
+            "createdOn": "2023-02-20 18:15:14"
+        },
+        {
+            "id": 596,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Unsigned"
+            },
+            "status": "Cancelled",
+            "updatedOn": "2023-03-23 13:13:01",
+            "createdOn": "2023-02-20 18:14:59"
+        },
+        {
+            "id": 595,
+            "processingMethod": "Acquiring",
+            "company": {
+                "name": null
+            },
+            "dba": {
+                "name": null
+            },
+            "campaign": {
+                "id": 1
+            },
+            "agent": {
+                "id": 14
+            },
+            "signature": {
+                "status": "Signed",
+                "via": "PrintedPDF"
+            },
+            "status": "Approved",
+            "conditionallyApproved": {
+                "value": "Yes",
+                "ticket": {
+                    "id": "24"
+                }
+            },
+            "updatedOn": "2023-03-18 13:13:01",
+            "createdOn": "2023-02-15 10:28:59"
+        }
+    ],
+    "_links": {
+        "self": {
+            "href": "https://dashboard.example.com/api/boarding-application?page=1"
+        },
+        "first": {
+            "href": "https://dashboard.example.com/api/boarding-application?page=1"
+        },
+        "last": {
+            "href": "https://dashboard.example.com/api/boarding-application?page=1"
+        },
+        "next": {
+            "href": "https://dashboard.example.com/api/boarding-application?page=1"
+        }
+    },
+    "_meta": {
+        "totalCount": 7,
+        "pageCount": 1,
+        "currentPage": 1,
+        "perPage": 30
+    }
+}

@@ -1,0 +1,47 @@
+GET https://dashboard.example.com/api/reporting/reserve/<dbaId>
+
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "id": "1700",
+            "type": "Credit",
+            "percentage": "10",
+            "amount": "293.65",
+            "reserve": "89908.71",
+            "description": "Calculated Reserve",
+            "date": "2018-06-06 20:22:22"
+        },
+        {
+            "id": "1673",
+            "type": "Credit",
+            "percentage": "10",
+            "amount": "313.62",
+            "reserve": "89615.06",
+            "description": "Calculated Reserve",
+            "date": "2018-06-05 20:24:00"
+        },
+        {
+            "id": "1647",
+            "type": "Credit",
+            "percentage": "10",
+            "amount": "243.70",
+            "reserve": "89301.44",
+            "description": "Calculated Reserve",
+            "date": "2018-06-04 20:27:21"
+        },
+    ],
+    "_links": {
+        "self": {
+            "href": "https://dashboard.example.com/api/reporting/reserve/1?page=1"
+        },
+    },
+    "_meta": {
+        "totalCount": 3,
+        "pageCount": 1,
+        "currentPage": 1,
+        "perPage": 30
+    }
+}

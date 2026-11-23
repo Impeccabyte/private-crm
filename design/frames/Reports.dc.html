@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reports — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1700px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="reports" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Reports</h1><div class="sub">{{sub}}</div></div>
+        <div class="acts">
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cal}}"></path></svg>Dec 1, 2025 – Nov 21, 2026<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevD}}"></path></svg></button>
+          <span class="row" style="gap: 8px; padding: 0 4px"><button class="{{cmpCls}}" role="switch" aria-checked="{{cmp}}" aria-labelledby="cmp-l" onClick="{{toggleCmp}}"></button><span id="cmp-l" class="sm muted">Compare to previous period</span></span>
+          <span class="row" style="gap: 6px"><span class="sm muted">Group by</span><div class="seg" role="group" aria-label="Group by"><sc-for list="{{groups}}" as="g" hint-placeholder-count="3"><button class="{{g.cls}}" onClick="{{g.pick}}" aria-pressed="{{g.on}}">{{g.label}}</button></sc-for></div></span>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export</button>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Report">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="{{t.cls}}" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for>
+      </div>
+
+      <sc-if value="{{isPort}}" hint-placeholder-val="{{true}}">
+        <section class="kpis" aria-label="Portfolio summary" style="grid-template-columns: repeat(5, minmax(0, 1fr))">
+          <sc-for list="{{pk}}" as="k" hint-placeholder-count="5"><div class="card kpi"><span class="l">{{k.l}}</span><span class="v">{{k.v}}</span><span class="s"><span class="{{k.dc}}">{{k.d}}</span>{{k.s}}</span></div></sc-for>
+        </section>
+        <div class="grid2" style="grid-template-columns: minmax(0, 2fr) minmax(0, 1fr)">
+          <section class="card"><div class="card-h"><h2>Processing volume by month</h2><div class="legend"><span><i class="lg1"></i>This period</span><sc-if value="{{cmp}}" hint-placeholder-val="{{true}}"><span><i class="lg2"></i>Previous period</span></sc-if></div></div>
+            <div class="card-b"><div class="chw"><svg class="ch" viewBox="{{vb.vb}}" role="img" aria-label="Monthly processing volume, December 2025 to November 2026 month to date">
+              <sc-for list="{{vb.yt}}" as="t" hint-placeholder-count="5"><line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line></sc-for>
+              <sc-for list="{{vb.bars}}" as="b" hint-placeholder-count="12"><rect class="{{b.cls}}" x="{{b.x}}" y="{{b.y}}" width="{{b.w}}" height="{{b.h}}" rx="2"></rect><sc-if value="{{cmp}}" hint-placeholder-val="{{true}}"><rect class="b2" x="{{b.x2}}" y="{{b.y2}}" width="{{b.w}}" height="{{b.h2}}" rx="2"></rect></sc-if></sc-for>
+            </svg>
+            <sc-for list="{{vb.yt}}" as="t" hint-placeholder-count="5"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            <sc-for list="{{vb.bars}}" as="b" hint-placeholder-count="12"><span class="cl" aria-hidden="true" style="left: {{b.lp}}%; top: {{b.ltp}}%">{{b.label}}</span></sc-for>
+            </div><div class="subtle sm" style="margin-top: 6px">* November is month to date (Nov 1–21).</div></div>
+          </section>
+          <section class="card"><div class="card-h"><h2>MCC mix</h2><span class="subtle sm">Share of volume</span></div>
+            <div class="card-b" style="display: flex; flex-direction: column; gap: 10px">
+              <sc-for list="{{mcc}}" as="m" hint-placeholder-count="6">
+                <div><div class="row sm"><span class="mono subtle">{{m.c}}</span><span>{{m.n}}</span><span class="sp"></span><b class="num">{{m.p}}%</b></div><div class="prog" style="margin-top: 4px"><i style="width: {{m.w}}%; background: var(--accent)"></i></div></div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+        <div class="grid2" style="grid-template-columns: repeat(2, minmax(0, 1fr))">
+          <section class="card"><div class="card-h"><h2>Active vs closed merchants</h2><div class="legend"><span><i class="lg1"></i>Boarded</span><span><i class="lg2"></i>Closed</span></div></div>
+            <div class="card-b"><div class="chw"><svg class="ch" viewBox="{{ac.vb}}" role="img" aria-label="Merchants boarded and closed per month">
+              <sc-for list="{{ac.yt}}" as="t" hint-placeholder-count="4"><line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line></sc-for>
+              <sc-for list="{{ac.bars}}" as="b" hint-placeholder-count="6"><rect class="b1" x="{{b.x}}" y="{{b.y}}" width="{{b.w}}" height="{{b.h}}" rx="2"></rect><rect class="b2" x="{{b.x2}}" y="{{b.y2}}" width="{{b.w}}" height="{{b.h2}}" rx="2"></rect></sc-for>
+            </svg>
+            <sc-for list="{{ac.yt}}" as="t" hint-placeholder-count="4"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            <sc-for list="{{ac.bars}}" as="b" hint-placeholder-count="6"><span class="cl" aria-hidden="true" style="left: {{b.lp}}%; top: {{b.ltp}}%">{{b.label}}</span></sc-for>
+            </div><div class="row sm muted" style="margin-top: 8px; gap: 16px"><span>Net adds, 6 months: <b class="num" style="color: var(--ink)">+182</b></span><span>Active today: <b class="num" style="color: var(--ink)">1,284</b></span></div></div>
+          </section>
+          <section class="card"><div class="card-h"><h2>Monthly attrition</h2><span class="subtle sm">Closed ÷ active at start of month</span></div>
+            <div class="card-b"><div class="chw"><svg class="ch" viewBox="{{at.vb}}" role="img" aria-label="Monthly attrition rate between 0.6 and 1.0 percent">
+              <sc-for list="{{at.yt}}" as="t" hint-placeholder-count="4"><line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line></sc-for>
+              <path class="ln" d="{{at.d}}"></path>
+              <sc-for list="{{at.pts}}" as="p" hint-placeholder-count="6"><circle class="pt" cx="{{p.x}}" cy="{{p.y}}" r="3"></circle></sc-for>
+            </svg>
+            <sc-for list="{{at.yt}}" as="t" hint-placeholder-count="4"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            <sc-for list="{{at.xt}}" as="t" hint-placeholder-count="6"><span class="cl" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            </div></div>
+          </section>
+        </div>
+        <div class="grid2" style="grid-template-columns: minmax(0, 3fr) minmax(0, 2fr)">
+          <section class="card lv"><div class="card-h"><h2>Top 20 merchants by volume</h2><span class="subtle sm">Last 30 days</span></div>
+            <div class="tblw"><table class="tbl compact">
+              <thead><tr><th class="r w0">#</th><th>Merchant</th><th>MCC</th><th>{{groupCol}}</th><th class="r">Volume</th><th class="r">vs prior</th></tr></thead>
+              <tbody><sc-for list="{{top}}" as="t" hint-placeholder-count="20"><tr><td class="r subtle">{{t.i}}</td><td><a class="rl" href="Merchant.dc.html">{{t.n}}</a></td><td class="mono muted">{{t.mcc}}</td><td class="muted">{{t.g}}</td><td class="r">{{t.v}}</td><td class="r"><span class="{{t.dc}}">{{t.d}}</span></td></tr></sc-for></tbody>
+            </table></div>
+          </section>
+          <section class="card"><div class="card-h"><h2>Chargeback ratio by merchant</h2><span class="subtle sm">Highest 10 · last 30 days</span></div>
+            <div class="card-b"><div role="img" aria-label="Chargeback ratio for the 10 highest merchants, with the 0.65 percent network threshold" style="position: relative; display: flex; flex-direction: column; gap: 8px; padding-bottom: 22px">
+              <span aria-hidden="true" style="position: absolute; top: 0; bottom: 18px; left: calc(162px + (100% - 162px) * 0.52); border-left: 2px dashed var(--r-ink)"></span>
+              <span class="sm" aria-hidden="true" style="position: absolute; bottom: 0; left: calc(162px + (100% - 162px) * 0.52); transform: translateX(-50%); color: var(--r-ink); white-space: nowrap">0.65% threshold</span>
+              <sc-for list="{{cbr}}" as="c" hint-placeholder-count="10">
+                <div class="hbar"><span class="sm" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{c.n}}</span><div class="tr2" style="height: 18px"><div class="bk" style="width: {{c.wp}}%"><sc-if value="{{c.over}}" hint-placeholder-val="{{false}}"><div class="fg" style="width: 100%"></div></sc-if></div><b class="sm num" style="font-weight: 600">{{c.v}}</b></div></div>
+              </sc-for>
+            </div></div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isPipe}}" hint-placeholder-val="{{false}}">
+        <div class="grid2" style="grid-template-columns: minmax(0, 3fr) minmax(0, 2fr)">
+          <section class="card"><div class="card-h"><h2>Conversion funnel by stage</h2><span class="subtle sm">Deals that entered each stage</span></div>
+            <div class="card-b" style="display: flex; flex-direction: column; gap: 8px">
+              <sc-for list="{{funnel}}" as="f" hint-placeholder-count="6">
+                <div class="row" style="gap: 12px"><span style="width: 130px; font-weight: 500">{{f.n}}</span><div style="flex: 1; display: flex; align-items: center; gap: 10px"><div style="width: {{f.w}}%; height: 28px; border-radius: 6px; background: color-mix(in srgb, var(--accent) {{f.a}}%, var(--surface))" aria-hidden="true"></div><b class="num" style="font-weight: 600">{{f.c}}</b></div><span style="width: 120px; text-align: right" class="sm muted num">{{f.conv}}</span></div>
+              </sc-for>
+            </div>
+          </section>
+          <section class="card"><div class="card-h"><h2>Average days in stage</h2></div>
+            <div class="card-b" style="display: flex; flex-direction: column; gap: 10px">
+              <sc-for list="{{days}}" as="d" hint-placeholder-count="5">
+                <div><div class="row sm"><span>{{d.n}}</span><span class="sp"></span><b class="num">{{d.v}} days</b><sc-if value="{{cmp}}" hint-placeholder-val="{{true}}"><span class="{{d.dc}}" style="width: 64px; text-align: right">{{d.d}}</span></sc-if></div><div class="prog" style="margin-top: 4px"><i style="width: {{d.w}}%; background: var(--accent)"></i></div></div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+        <section class="card"><div class="card-h"><h2>Boarding cycle time</h2><span class="subtle sm">Median days · application created → approved → first batch</span></div>
+          <div class="card-b" style="display: flex; flex-direction: column; gap: 14px">
+            <div class="row w" style="gap: 32px">
+              <div><div class="subtle sm">Created → approved</div><div style="font-size: 22px; font-weight: 600" class="num">6.4 days</div></div>
+              <div><div class="subtle sm">Approved → first batch</div><div style="font-size: 22px; font-weight: 600" class="num">3.1 days</div></div>
+              <div><div class="subtle sm">End to end</div><div style="font-size: 22px; font-weight: 600" class="num">9.5 days</div></div>
+              <div><div class="subtle sm">Approval rate</div><div style="font-size: 22px; font-weight: 600" class="num">87.0%</div></div>
+            </div>
+            <table class="tbl compact">
+              <thead><tr><th>{{groupCol}}</th><th style="width: 50%">Created → approved → first batch</th><th class="r">Apps</th><th class="r">Median total</th></tr></thead>
+              <tbody><sc-for list="{{cycle}}" as="c" hint-placeholder-count="5"><tr><td>{{c.n}}</td><td><div style="display: flex; height: 12px; border-radius: 3px; overflow: hidden; background: var(--sunken)"><span style="width: {{c.a}}%; background: var(--accent)"></span><span style="width: {{c.b}}%; background: color-mix(in srgb, var(--accent) 35%, var(--surface))"></span></div></td><td class="r">{{c.n2}}</td><td class="r">{{c.t}} days</td></tr></sc-for></tbody>
+            </table>
+            <div class="legend"><span><i class="lg1"></i>Created → approved</span><span><i class="lg0"></i>Approved → first batch</span></div>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{isSup}}" hint-placeholder-val="{{false}}">
+        <section class="kpis" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+          <div class="card kpi"><span class="l">Opened · 8 weeks</span><span class="v">412</span><span class="s"><span class="delta dn">+6%</span>vs previous</span></div>
+          <div class="card kpi"><span class="l">Closed · 8 weeks</span><span class="v">398</span><span class="s"><span class="delta up">+9%</span>vs previous</span></div>
+          <div class="card kpi"><span class="l">First response (median)</span><span class="v">38m</span><span class="s"><span class="delta up">−6m</span>vs previous</span></div>
+          <div class="card kpi"><span class="l">Resolution (median)</span><span class="v">7.2h</span><span class="s"><span class="delta up">−1.1h</span>vs previous</span></div>
+        </section>
+        <div class="grid2" style="grid-template-columns: repeat(2, minmax(0, 1fr))">
+          <section class="card"><div class="card-h"><h2>Tickets opened vs closed</h2><div class="legend"><span><i class="lg1"></i>Opened</span><span><i class="lg2"></i>Closed</span></div></div>
+            <div class="card-b"><div class="chw"><svg class="ch" viewBox="{{oc.vb}}" role="img" aria-label="Tickets opened and closed per week, last 8 weeks">
+              <sc-for list="{{oc.yt}}" as="t" hint-placeholder-count="4"><line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line></sc-for>
+              <sc-for list="{{oc.bars}}" as="b" hint-placeholder-count="8"><rect class="b1" x="{{b.x}}" y="{{b.y}}" width="{{b.w}}" height="{{b.h}}" rx="2"></rect><rect class="b2" x="{{b.x2}}" y="{{b.y2}}" width="{{b.w}}" height="{{b.h2}}" rx="2"></rect></sc-for>
+            </svg>
+            <sc-for list="{{oc.yt}}" as="t" hint-placeholder-count="4"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            <sc-for list="{{oc.bars}}" as="b" hint-placeholder-count="8"><span class="cl" aria-hidden="true" style="left: {{b.lp}}%; top: {{b.ltp}}%">{{b.label}}</span></sc-for>
+            </div></div>
+          </section>
+          <section class="card"><div class="card-h"><h2>First response time</h2><span class="subtle sm">Median minutes per week · target 60</span></div>
+            <div class="card-b"><div class="chw"><svg class="ch" viewBox="{{fr.vb}}" role="img" aria-label="Median first response time per week, falling from 58 to 38 minutes">
+              <sc-for list="{{fr.yt}}" as="t" hint-placeholder-count="4"><line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line></sc-for>
+              <path class="ar" d="{{fr.area}}"></path><path class="ln" d="{{fr.d}}"></path>
+              <sc-for list="{{fr.pts}}" as="p" hint-placeholder-count="8"><circle class="pt" cx="{{p.x}}" cy="{{p.y}}" r="3"></circle></sc-for>
+            </svg>
+            <sc-for list="{{fr.yt}}" as="t" hint-placeholder-count="4"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            <sc-for list="{{fr.xt}}" as="t" hint-placeholder-count="8"><span class="cl" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+            </div></div>
+          </section>
+        </div>
+        <section class="card lv"><div class="card-h"><h2>Resolution time by category</h2><span class="subtle sm">Median hours · last 8 weeks</span></div>
+          <div class="tblw"><table class="tbl">
+            <thead><tr><th>Category</th><th class="r">Tickets</th><th style="width: 40%">Median resolution</th><th class="r">Hours</th><th class="r">Escalated to Maverick</th><th class="r">Reopened</th></tr></thead>
+            <tbody><sc-for list="{{rescat}}" as="r" hint-placeholder-count="6"><tr><td style="font-weight: 500">{{r.n}}</td><td class="r">{{r.c}}</td><td><div class="prog"><i style="width: {{r.w}}%; background: var(--accent)"></i></div></td><td class="r">{{r.h}}</td><td class="r">{{r.e}}</td><td class="r">{{r.ro}}</td></tr></sc-for></tbody>
+          </table></div>
+        </section>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"startTab":{"editor":"enum","options":["portfolio","pipeline","support"],"default":"portfolio"},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const tab = this.state?.tab ?? this.props.startTab ?? 'portfolio';
+    const cmp = this.state?.cmp ?? true, grp = this.state?.grp ?? 'agent';
+    const tabs = [['portfolio', 'Portfolio'], ['pipeline', 'Pipeline'], ['support', 'Support']].map(t => ({ label: t[1], on: tab === t[0], cls: 'tab' + (tab === t[0] ? ' on' : ''), pick: () => this.setState({ tab: t[0] }) }));
+    const groups = [['agent', 'Agent'], ['processor', 'Processor'], ['mcc', 'MCC']].map(g => ({ label: g[1], on: grp === g[0], cls: grp === g[0] ? 'on' : '', pick: () => this.setState({ grp: g[0] }) }));
+    const M = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+    const cur = [29.8, 28.1, 30.4, 31.2, 32.9, 33.5, 34.1, 34.8, 35.2, 36.1, 36.97, 27.86], prev = [26.9, 25.2, 27.1, 27.8, 29.0, 29.9, 30.6, 31.0, 31.9, 32.4, 33.1, 34.5];
+    const vb = IB.bars(cur.map((v, i) => ({ label: i === 11 ? 'Nov*' : M[i], v, v2: prev[i], cls: i === 11 ? 'b0' : 'b1' })), { w: 760, h: 240, max: 40, steps: 4, fmt: x => '$' + x + 'M', bw: 18 });
+    const pk = [
+      { l: 'Volume · 12 months', v: '$390.93M', d: '+11.8%', dc: 'delta up', s: 'vs previous' },
+      { l: 'Active merchants', v: '1,284', d: '+12.4%', dc: 'delta up', s: 'vs Nov 2025' },
+      { l: 'Closed · 6 months', v: '57', d: '−9', dc: 'delta up', s: 'vs previous' },
+      { l: 'Avg monthly attrition', v: '0.8%', d: '−0.1 pts', dc: 'delta up', s: 'vs previous' },
+      { l: 'Portfolio CB ratio', v: '0.09%', d: '+0.01 pts', dc: 'delta dn', s: 'vs previous' }
+    ];
+    const mcc = [['5812', 'Restaurants', 24.1], ['5251', 'Hardware', 11.8], ['7538', 'Auto service', 10.6], ['5551', 'Boat dealers', 8.9], ['8021', 'Dentists', 7.4], ['5941', 'Sporting goods', 6.2], ['—', 'All other (41 MCCs)', 31.0]].map(m => ({ c: m[0], n: m[1], p: m[2].toFixed(1), w: +(m[2] / 31 * 100).toFixed(1) }));
+    const ac = IB.bars([['Jun', 34, 9], ['Jul', 41, 11], ['Aug', 38, 8], ['Sep', 45, 12], ['Oct', 52, 10], ['Nov', 29, 7]].map(r => ({ label: r[0], v: r[1], v2: r[2] })), { w: 520, h: 210, max: 60, steps: 3, fmt: x => '' + x, l: 32 });
+    const at = IB.lineChart([0.8, 0.9, 0.7, 1.0, 0.8, 0.6], { w: 520, h: 210, min: 0, max: 1.2, steps: 3, fmt: x => x.toFixed(1) + '%', labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'], l: 40 });
+    const extra = [['Cedar Lane Medical Group', '8011', 'tw', 188420.10], ['Bridgeport Furniture Gallery', '5712', 'mo', 176905.55], ['Sunfield Grocery Co-op', '5411', 'dr', 164230.00], ['Kestrel Aviation Services', '4582', 'mo', 151880.40], ['Blue Heron Veterinary', '0742', 'tw', 133402.75], ['Midtown Optical', '8043', 'sk', 128115.20], ['Ironwood Brewing Co.', '5813', 'dr', 111930.65], ['Prairie Wind Tire & Lube', '7538', 'jl', 104788.30], ['Silver Birch Dental', '8021', 'tw', 99412.80], ['Westfield Garden Center', '5261', 'sk', 92877.15], ['Lighthouse Pet Hospital', '0742', 'mo', 88140.60], ['Crescent Moon Café', '5814', 'jl', 69320.45], ['Fairway Golf Supply', '5941', 'sk', 64810.90], ['Rosewood Boutique', '5621', 'tw', 58905.30]];
+    const all = IB.M.filter(m => m.vol > 0).map(m => [m.dba, m.mcc, m.owner, m.vol, m.prev]).concat(extra.map(e => [e[0], e[1], e[2], e[3], e[3] * 0.95])).sort((a, b) => b[3] - a[3]).slice(0, 20);
+    const groupCol = grp === 'agent' ? 'Agent' : grp === 'processor' ? 'Processor' : 'MCC group';
+    const mccGroup = c => ({ '58': 'Food & drink', '52': 'Home & hardware', '75': 'Auto', '80': 'Healthcare', '07': 'Pet & vet', '55': 'Auto & marine', '59': 'Retail', '45': 'Travel', '54': 'Grocery', '56': 'Apparel', '79': 'Recreation' }[c.slice(0, 2)] || 'Other');
+    const top = all.map((r, i) => { const d = (r[3] - r[4]) / r[4] * 100; return { i: i + 1, n: r[0], mcc: r[1], g: grp === 'agent' ? IB.agent(r[2]).name : grp === 'processor' ? 'Maverick' : mccGroup(r[1]), v: IB.usd(r[3]), d: (d >= 0 ? '+' : '−') + Math.abs(d).toFixed(1) + '%', dc: d >= 0 ? 'tx-green' : 'tx-red' }; });
+    const CB = [['Mesa Verde Auto Repair', 0.78], ['Westgate Liquor', 0.61], ['Kestrel Aviation Services', 0.44], ['Lakeshore Yoga Collective', 0.26], ['Granite Peak Outfitters', 0.18], ['Midtown Optical', 0.15], ['Tidewater Marine Supply', 0.11], ['Oak & Ember Pizzeria', 0.10], ['Rosewood Boutique', 0.08], ['Northline Hardware & Supply', 0.04]];
+    const sc = w => +(w / 1.0 * 230).toFixed(1);
+    const cbr = CB.map((c, i) => ({ n: c[0], wp: +(c[1] * 80).toFixed(1), over: c[1] >= 0.65, y: i * 33 + 4, ty: i * 33 + 17, w: sc(c[1]), vx: +(150 + sc(c[1]) + 6).toFixed(1), v: c[1].toFixed(2) + '%', cls: c[1] >= 0.65 ? 'b1' : 'b0' }));
+    const F = [['New Lead', 640], ['Contacted', 452], ['Qualified', 268], ['Pricing/Proposal', 171], ['Application Sent', 118], ['Won', 96]];
+    const funnel = F.map((f, i) => ({ n: f[0], c: IB.num(f[1]), w: +(f[1] / 640 * 88).toFixed(1), a: 100 - i * 14, tc: i < 3 ? '#fff' : 'var(--ink)', conv: i === 0 ? '100% of leads' : Math.round(f[1] / F[i - 1][1] * 100) + '% from prior' }));
+    const D = [['New Lead', 3.2, -0.4], ['Contacted', 5.8, 0.6], ['Qualified', 7.1, -1.2], ['Pricing/Proposal', 6.4, -0.3], ['Application Sent', 4.9, -0.8]];
+    const days = D.map(d => ({ n: d[0], v: d[1].toFixed(1), w: +(d[1] / 8 * 100).toFixed(1), d: (d[2] > 0 ? '+' : '−') + Math.abs(d[2]).toFixed(1) + 'd', dc: d[2] > 0 ? 'sm tx-red' : 'sm tx-green' }));
+    const CY = grp === 'mcc' ? [['Food & drink', 5.1, 2.6, 41], ['Healthcare', 8.9, 3.4, 22], ['Auto & marine', 6.2, 3.0, 18], ['Retail', 5.8, 3.3, 27], ['Other', 7.0, 3.1, 31]] : grp === 'processor' ? [['Maverick', 6.4, 3.1, 139]] : [['Dana Reyes', 5.9, 2.8, 34], ['Marcus Okafor', 6.1, 3.0, 41], ['Tess Whitaker', 8.2, 3.6, 29], ['Jordan Lee', 6.6, 3.2, 18], ['Sam Kowalski', 7.4, 3.3, 17]];
+    const cycle = CY.map(c => ({ n: c[0], a: +(c[1] / 13 * 100).toFixed(1), b: +(c[2] / 13 * 100).toFixed(1), n2: c[3], t: (c[1] + c[2]).toFixed(1) }));
+    const oc = IB.bars([['Oct 6', 48, 45], ['Oct 13', 52, 50], ['Oct 20', 47, 49], ['Oct 27', 55, 51], ['Nov 3', 50, 53], ['Nov 10', 58, 52], ['Nov 17', 54, 56], ['Nov 21', 48, 42]].map(r => ({ label: r[0], v: r[1], v2: r[2] })), { w: 520, h: 210, max: 60, steps: 3, fmt: x => '' + x, l: 32 });
+    const fr = IB.lineChart([58, 55, 51, 49, 46, 44, 40, 38], { w: 520, h: 210, min: 0, max: 60, steps: 3, fmt: x => Math.round(x) + 'm', labels: ['Oct 6', 'Oct 13', 'Oct 20', 'Oct 27', 'Nov 3', 'Nov 10', 'Nov 17', 'Nov 21'], l: 40 });
+    const rescat = [['Funding & deposits', 74, 11.4, 31, 3], ['Hardware & terminals', 112, 8.6, 22, 7], ['Chargebacks', 41, 9.8, 12, 2], ['Account changes', 68, 5.2, 4, 1], ['Billing & statements', 63, 3.9, 2, 4], ['Risk & holds', 54, 14.2, 38, 5]].map(r => ({ n: r[0], c: r[1], h: r[2].toFixed(1), w: +(r[2] / 15 * 100).toFixed(1), e: r[3], ro: r[4] }));
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      sub: role === 'agent' ? 'Scoped to your book of merchants' : 'Whole portfolio · data refreshed from Maverick at 9:40 AM',
+      tabs, groups, cmp, cmpCls: 'switch' + (cmp ? ' on' : ''), toggleCmp: () => this.setState({ cmp: !cmp }),
+      isPort: tab === 'portfolio', isPipe: tab === 'pipeline', isSup: tab === 'support',
+      pk, vb, mcc, ac, at, top, groupCol, cbr, thx: 150 + sc(0.65), funnel, days, cycle, oc, fr, rescat,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Harbor Street Coffee Co. — Merchant</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1640px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="merchants" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content" style="gap: 16px">
+      <div class="row">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="Merchants.dc.html">Merchants</a><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg><b aria-current="page">{{crumb}}</b></nav>
+        <span class="sp"></span>
+        <div class="seg" role="group" aria-label="Prototype: preview state" style="border-style: dashed">
+          <sc-for list="{{states}}" as="s" hint-placeholder-count="3"><button class="{{s.cls}}" onClick="{{s.pick}}" aria-pressed="{{s.on}}">{{s.label}}</button></sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{loading}}" hint-placeholder-val="{{false}}">
+        <div aria-busy="true" aria-label="Loading merchant" style="display: flex; flex-direction: column; gap: 16px">
+          <div class="row" style="gap: 14px"><span class="sk" style="width: 48px; height: 48px; border-radius: 10px"></span><div style="display: flex; flex-direction: column; gap: 8px"><span class="sk" style="width: 280px; height: 18px"></span><span class="sk" style="width: 420px"></span></div><span class="sp"></span><span class="sk" style="width: 320px; height: 30px; border-radius: 7px"></span></div>
+          <div class="hs"><sc-for list="{{seven}}" as="x" hint-placeholder-count="7"><div><span class="sk" style="width: 70%"></span><span class="sk" style="width: 85%; height: 16px; margin-top: 6px"></span><span class="sk" style="width: 50%; height: 8px; margin-top: 6px"></span></div></sc-for></div>
+          <div class="g-main">
+            <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 14px"><span class="sk" style="width: 60%; height: 14px"></span><sc-for list="{{seven}}" as="x" hint-placeholder-count="7"><div class="row" style="gap: 12px"><span class="sk" style="width: 32px; height: 32px; border-radius: 16px"></span><span class="sk" style="flex: 1"></span></div></sc-for></div>
+            <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px"><sc-for list="{{seven}}" as="x" hint-placeholder-count="7"><span class="sk" style="width: 90%"></span></sc-for></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{error}}" hint-placeholder-val="{{false}}">
+        <div class="card"><div class="empty" role="alert">
+          <span class="ei" style="background: var(--r-bg); color: var(--r-ink); border-color: transparent"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg></span>
+          <h3>We couldn’t load this merchant</h3>
+          <p>Merchant data comes partly from Maverick, and that request failed (HTTP 503). Notes, tasks and contacts saved in Impeccabyte are safe.</p>
+          <div class="row"><button class="btn pri" onClick="{{retry}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.refresh}}"></path></svg>Try again</button><a class="btn" href="Merchants.dc.html">Back to merchants</a></div>
+          <span class="subtle sm mono">Error ref: req_Q9x31B · Nov 21, 2026 9:44 AM</span>
+        </div></div>
+      </sc-if>
+
+      <sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+        <header class="row w" style="align-items: flex-start; gap: 14px">
+          <span style="width: 48px; height: 48px; border-radius: 10px; background: var(--sunken); border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink-2); flex: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><path d="{{ic.store}}"></path></svg></span>
+          <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 6px">
+            <div class="row w" style="gap: 10px"><h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -.02em">Driftwood Pet Grooming</h1><span class="pill t-neutral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pn}}"></path></svg>Prospect</span><span class="proc" style="border-style: dashed; color: var(--ink-3)">No MID yet</span></div>
+            <div class="row w muted" style="gap: 10px"><span>Driftwood Pets LLC</span><span aria-hidden="true">·</span><span>MCC <span class="mono">0742</span> Veterinary &amp; pet</span><span aria-hidden="true">·</span><span class="who"><span class="av av-4">JL</span>Jordan Lee</span></div>
+          </div>
+          <div class="row w" style="gap: 6px"><button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.phone}}"></path></svg>Log call</button><button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.mail}}"></path></svg>Email</button><button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.task}}"></path></svg>New task</button></div>
+        </header>
+        <section class="hs" aria-label="Highlights">
+          <sc-for list="{{hsEmpty}}" as="h" hint-placeholder-count="7"><div><span class="l">{{h}}</span><span class="v subtle">—</span><span class="s">No data yet</span></div></sc-for>
+        </section>
+        <div class="card"><div class="empty">
+          <span class="ei"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.card}}"></path></svg></span>
+          <h3>No processing data yet</h3>
+          <p>Driftwood Pet Grooming is a prospect. Volume, payouts, chargebacks and residuals show up here once a MID goes live with a processor.</p>
+          <div class="row"><a class="btn pri" href="Application.dc.html"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.app}}"></path></svg>Start boarding application</a><a class="btn" href="Deals.dc.html">View deal</a></div>
+        </div></div>
+      </sc-if>
+
+      <sc-if value="{{ready}}" hint-placeholder-val="{{true}}">
+        <header class="row w" style="align-items: flex-start; gap: 14px">
+          <span style="width: 48px; height: 48px; border-radius: 10px; background: var(--sunken); border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink-2); flex: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><path d="{{ic.store}}"></path></svg></span>
+          <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 6px">
+            <div class="row w" style="gap: 10px">
+              <h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -.02em">Harbor Street Coffee Co.</h1>
+              <span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Live</span>
+              <span class="proc" title="Processor for MID 527104400128731"><span class="pm">M</span>Maverick</span>
+              <span class="proc" title="Processor for MID 527104400128749"><span class="pm">M</span>Maverick · e-com</span>
+            </div>
+            <div class="row w muted" style="gap: 10px; font-size: 13px">
+              <span>Harbor Street Hospitality LLC</span>
+              <span class="rel">
+                <button class="locsw" onClick="{{toggleLoc}}" aria-expanded="{{locOpen}}" aria-haspopup="menu"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.building}}"></path></svg>3 locations<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevD}}"></path></svg></button>
+                <sc-if value="{{locOpen}}" hint-placeholder-val="{{false}}">
+                  <div class="pop" role="menu" style="left: 0; right: auto; width: 340px">
+                    <div class="subtle sm" style="padding: 6px 8px">Same legal entity · EIN <span class="mask">••-•••4821</span></div>
+                    <sc-for list="{{locs}}" as="l" hint-placeholder-count="3">
+                      <a class="{{l.cls}}" role="menuitem" href="Merchant.dc.html" style="height: auto; padding: 8px"><span style="flex: 1; min-width: 0"><span style="display: block">{{l.n}}</span><span class="subtle sm" style="display: block; font-weight: 400">{{l.s}}</span></span><span class="{{l.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{l.p.d}}"></path></svg>{{l.p.label}}</span></a>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </span>
+              <span aria-hidden="true">·</span><span>MCC <span class="mono">5812</span> Restaurants</span>
+              <span aria-hidden="true">·</span><span class="who"><span class="av av-1">DR</span>Dana Reyes</span>
+              <span aria-hidden="true">·</span><span>Live since Mar 3, 2024</span>
+            </div>
+          </div>
+          <div class="row w" style="gap: 6px">
+            <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.phone}}"></path></svg>Log call</button>
+            <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.mail}}"></path></svg>Email</button>
+            <a class="btn" href="Support.dc.html"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.support}}"></path></svg>New ticket</a>
+            <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.task}}"></path></svg>New task</button>
+            <button class="btn icon" aria-label="More actions"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.more}}"></path></svg></button>
+          </div>
+        </header>
+
+        <section class="hs" aria-label="Highlights">
+          <sc-for list="{{hs}}" as="h" hint-placeholder-count="7">
+            <div><span class="l">{{h.l}}</span><span class="v">{{h.v}}</span><span class="s"><span class="{{h.sc}}">{{h.s}}</span></span></div>
+          </sc-for>
+        </section>
+
+        <div class="tabs" role="tablist" aria-label="Merchant sections" style="margin-bottom: -4px">
+          <sc-for list="{{tabs}}" as="t" hint-placeholder-count="10">
+            <button class="{{t.cls}}" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.c}}" hint-placeholder-val="{{false}}"><span class="c">{{t.c}}</span></sc-if></button>
+          </sc-for>
+        </div>
+        <div class="g-main">
+          <section class="card" style="min-width: 0" role="tabpanel">
+
+            <sc-if value="{{T.overview}}" hint-placeholder-val="{{true}}">
+              <div class="card-b" style="display: flex; flex-direction: column; gap: 18px">
+                <div class="grid2" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr)">
+                  <div>
+                    <div class="row"><h3 class="sec-t" style="margin: 0">Monthly volume</h3><span class="sp"></span><span class="legend"><span><i class="lg1"></i>2026</span><span><i class="lg2"></i>2025</span></span></div>
+                    <div class="chw" style="margin-top: 8px">
+                    <svg class="ch" viewBox="{{ov.vb}}" role="img" aria-label="Monthly volume June to November 2026 compared with 2025">
+                      <sc-for list="{{ov.yt}}" as="t" hint-placeholder-count="4"><line class="gl" x1="{{t.x1}}" x2="{{t.x2}}" y1="{{t.y}}" y2="{{t.y}}"></line></sc-for>
+                      <sc-for list="{{ov.bars}}" as="b" hint-placeholder-count="6"><rect class="b1" x="{{b.x}}" y="{{b.y}}" width="{{b.w}}" height="{{b.h}}" rx="2"></rect><rect class="b2" x="{{b.x2}}" y="{{b.y2}}" width="{{b.w}}" height="{{b.h2}}" rx="2"></rect></sc-for>
+                    </svg>
+                    <sc-for list="{{ov.yt}}" as="t" hint-placeholder-count="4"><span class="cl r" aria-hidden="true" style="left: {{t.lp}}%; top: {{t.tp}}%">{{t.label}}</span></sc-for>
+                    <sc-for list="{{ov.bars}}" as="b" hint-placeholder-count="6"><span class="cl" aria-hidden="true" style="left: {{b.lp}}%; top: {{b.ltp}}%">{{b.label}}</span></sc-for>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 8px">
+                    <h3 class="sec-t" style="margin: 0">Open items</h3>
+                    <a class="att" href="Support.dc.html" style="border: 1px solid var(--line); border-radius: 8px"><span class="ai t-blue"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.support}}"></path></svg></span><span style="min-width: 0"><span class="t1" style="display: block">TCK-3322 · Drive-thru terminal declining contactless</span><span class="t2" style="display: block">Maverick · In Progress · Omar Haddad</span></span><span class="pill t-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pb}}"></path></svg>In Progress</span></a>
+                    <a class="att" href="Chargebacks.dc.html" style="border: 1px solid var(--line); border-radius: 8px"><span class="ai t-red"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cb}}"></path></svg></span><span style="min-width: 0"><span class="t1" style="display: block">CB-88190 · $86.40 · Not as described</span><span class="t2" style="display: block">Respond by Nov 27, 2026 · 6 days left</span></span><span class="pill t-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pb}}"></path></svg>Processed</span></a>
+                    <a class="att" href="Application.dc.html" style="border: 1px solid var(--line); border-radius: 8px"><span class="ai t-amber"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.app}}"></path></svg></span><span style="min-width: 0"><span class="t1" style="display: block">APP-20419 · Hawthorne location</span><span class="t2" style="display: block">Underwriting for 6 days · bank statements requested</span></span><span class="pill t-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pa}}"></path></svg>Underwriting</span></a>
+                  </div>
+                </div>
+                <hr class="divider">
+                <div>
+                  <div class="row" style="margin-bottom: 10px"><h3 class="sec-t" style="margin: 0">Recent activity</h3><span class="sp"></span><button class="lnk" onClick="{{goActivity}}">View all activity<svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg></button></div>
+                  <div class="tl">
+                    <sc-for list="{{recent}}" as="e" hint-placeholder-count="3">
+                      <div class="{{e.cls}}"><span class="ico"><sc-if value="{{e.sys}}" hint-placeholder-val="{{false}}"><span class="pm" style="width: 12px; height: 12px; font-size: 8px; line-height: 12px">M</span></sc-if><sc-if value="{{e.human}}" hint-placeholder-val="{{true}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{e.d}}"></path></svg></sc-if></span><div style="min-width: 0"><div class="hd"><b>{{e.t}}</b><span class="muted">{{e.by}}</span><span class="when">{{e.w}}</span></div></div></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{T.activity}}" hint-placeholder-val="{{false}}">
+              <div class="card-b" style="display: flex; flex-direction: column; gap: 14px">
+                <div class="row w">
+                  <div class="seg" role="group" aria-label="Filter activity">
+                    <sc-for list="{{afs}}" as="f" hint-placeholder-count="6"><button class="{{f.cls}}" onClick="{{f.pick}}" aria-pressed="{{f.on}}">{{f.label}}<span class="subtle num" style="font-size: 11px">{{f.c}}</span></button></sc-for>
+                  </div>
+                  <span class="sp"></span>
+                  <button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.note}}"></path></svg>Add note</button>
+                </div>
+                <div class="composer int" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px">
+                  <svg class="i s14" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-2)"><path d="{{ic.note}}"></path></svg>
+                  <label class="sr" for="quicknote">Add an internal note</label>
+                  <input id="quicknote" class="inp" style="flex: 1; border: 0; background: transparent; padding: 0" placeholder="Add an internal note… use @ to mention a teammate">
+                  <span class="subtle sm">Internal only</span>
+                </div>
+                <div class="tl" role="feed" aria-label="Activity timeline">
+                  <sc-for list="{{feed}}" as="e" hint-placeholder-count="9">
+                    <article class="{{e.cls}}">
+                      <span class="ico" title="{{e.kind}}"><sc-if value="{{e.sys}}" hint-placeholder-val="{{false}}"><span class="pm" style="width: 12px; height: 12px; font-size: 8px; line-height: 12px" aria-label="Maverick">M</span></sc-if><sc-if value="{{e.human}}" hint-placeholder-val="{{true}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{e.d}}"></path></svg></sc-if></span>
+                      <div style="min-width: 0">
+                        <div class="hd"><b>{{e.t}}</b><span class="muted">{{e.by}}</span><sc-if value="{{e.tag}}" hint-placeholder-val="{{false}}"><span class="tag">{{e.tag}}</span></sc-if><span class="when">{{e.w}}</span></div>
+                        <sc-if value="{{e.body}}" hint-placeholder-val="{{false}}"><div class="{{e.bcls}}">{{e.body}}</div></sc-if>
+                      </div>
+                    </article>
+                  </sc-for>
+                </div>
+                <div class="subtle sm" style="text-align: center">Showing activity since Nov 10, 2026 · <button class="lnk">Load older</button></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{T.mids}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; flex-direction: column">
+                <div class="lt"><span class="muted sm">2 MIDs · 3 terminals · grouped by MID</span><span class="sp"></span><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cols}}"></path></svg>Columns</button><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Add MID</button></div>
+                <div class="tblw"><table class="tbl">
+                  <thead><tr><th>MID / TID</th><th>Processor</th><th>Type</th><th>Status</th><th>Model / gateway</th><th>Location</th><th class="r">30-day volume</th><th>Last batch</th></tr></thead>
+                  <tbody>
+                    <sc-for list="{{mids}}" as="m" hint-placeholder-count="5">
+                      <tr class="{{m.trc}}">
+                        <td><span class="row" style="gap: 6px"><sc-if value="{{m.isTid}}" hint-placeholder-val="{{false}}"><span style="width: 18px"></span><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-3)"><path d="{{ic.terminal}}"></path></svg></sc-if><span class="subtle sm">{{m.kind}}</span><span class="mono" style="color: var(--ink)">{{m.id}}</span></span></td>
+                        <td><sc-if value="{{m.proc}}" hint-placeholder-val="{{true}}"><span class="proc"><span class="pm">M</span>Maverick</span></sc-if></td>
+                        <td class="muted">{{m.type}}</td>
+                        <td><span class="{{m.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{m.p.d}}"></path></svg>{{m.p.label}}</span></td>
+                        <td class="muted">{{m.model}}</td><td class="muted">{{m.loc}}</td><td class="r">{{m.vol}}</td><td class="muted num">{{m.batch}}</td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table></div>
+                <div class="lfoot"><span>A DBA can hold MIDs from more than one processor. Each MID shows its own processor badge.</span></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{T.apps}}" hint-placeholder-val="{{false}}">
+              <div class="tblw"><table class="tbl">
+                <thead><tr><th>Application</th><th>For</th><th>Status</th><th>Signature</th><th>Created</th><th>Last change</th><th>Specialist</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{apps}}" as="a" hint-placeholder-count="3">
+                    <tr><td><a class="rl mono" href="Application.dc.html">{{a.id}}</a></td><td>{{a.f}}</td><td><span class="row" style="gap: 4px"><span class="{{a.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{a.p.d}}"></path></svg>{{a.p.label}}</span><sc-if value="{{a.cond}}" hint-placeholder-val="{{false}}"><span class="pill t-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pa}}"></path></svg>Conditional</span></sc-if></span></td><td><span class="{{a.s.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{a.s.d}}"></path></svg>{{a.s.label}}</span></td><td class="muted">{{a.c}}</td><td class="muted">{{a.l}}</td><td><span class="who"><span class="av av-7">LB</span>Leah Brooks</span></td></tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </sc-if>
+
+            <sc-if value="{{T.tickets}}" hint-placeholder-val="{{false}}">
+              <div class="tblw"><table class="tbl">
+                <thead><tr><th>Ticket</th><th>Subject</th><th>Source</th><th>Status</th><th>Assignee</th><th>Opened</th><th>Updated</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{tix}}" as="t" hint-placeholder-count="3">
+                    <tr><td><a class="rl mono" href="Support.dc.html">{{t.id}}</a></td><td>{{t.s}}</td><td><span class="tag">{{t.src}}</span></td><td><span class="{{t.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.p.d}}"></path></svg>{{t.p.label}}</span></td><td><span class="who"><span class="av av-8">OH</span>Omar Haddad</span></td><td class="muted">{{t.o}}</td><td class="muted">{{t.u}}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </sc-if>
+
+            <sc-if value="{{T.cbs}}" hint-placeholder-val="{{false}}">
+              <div class="tblw"><table class="tbl">
+                <thead><tr><th>Case ID</th><th>MID</th><th class="r">Amount</th><th>Reason</th><th>Received</th><th>Respond by</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td><a class="rl mono" href="Chargebacks.dc.html">CB-88190</a></td><td class="mono">527104400128731</td><td class="r num">$86.40</td><td>13.3 Not as described</td><td class="muted">Nov 17, 2026</td><td>Nov 27, 2026 <span class="subtle sm">· 6 days</span></td><td><span class="pill t-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pb}}"></path></svg>Processed</span></td></tr>
+                  <tr><td><a class="rl mono" href="Chargebacks.dc.html">CB-87012</a></td><td class="mono">527104400128749</td><td class="r num">$24.50</td><td>4837 No cardholder authorization</td><td class="muted">Sep 2, 2026</td><td class="muted">Sep 12, 2026</td><td><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Won</span></td></tr>
+                </tbody>
+              </table></div>
+            </sc-if>
+
+            <sc-if value="{{T.payouts}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; flex-direction: column">
+                <div class="lt"><div class="seg" role="group" aria-label="Show"><button class="on" aria-pressed="true">Payouts</button><button>Batches</button></div><span class="sp"></span><span class="muted sm">Net deposit = gross sales − fees − chargebacks − reserve</span><button class="btn sm"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button></div>
+                <div class="tblw"><table class="tbl compact">
+                  <thead><tr><th>Deposit date</th><th class="r">Batches</th><th class="r">Gross sales</th><th class="r">Fees</th><th class="r">Chargebacks</th><th class="r">Reserve</th><th class="r">Net deposit</th><th>Account</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <sc-for list="{{pays}}" as="p" hint-placeholder-count="8">
+                      <tr><td>{{p.d}}</td><td class="r">{{p.b}}</td><td class="r">{{p.g}}</td><td class="r muted">{{p.f}}</td><td class="r"><span class="{{p.cbc}}">{{p.cb}}</span></td><td class="r muted">{{p.r}}</td><td class="r" style="font-weight: 600">{{p.n}}</td><td class="muted mask">•••• 6620</td><td><span class="{{p.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{p.p.d}}"></path></svg>{{p.p.label}}</span></td></tr>
+                    </sc-for>
+                  </tbody>
+                  <tfoot><tr><td>7 days</td><td class="r">{{payT.b}}</td><td class="r">{{payT.g}}</td><td class="r">{{payT.f}}</td><td class="r">{{payT.cb}}</td><td class="r">{{payT.r}}</td><td class="r">{{payT.n}}</td><td></td><td></td></tr></tfoot>
+                </table></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{T.res}}" hint-placeholder-val="{{false}}">
+              <div class="tblw"><table class="tbl">
+                <thead><tr><th>Month</th><th>MID</th><th class="r">Sales count</th><th class="r">Sales volume</th><th class="r">Revenue</th><th class="r">Expense</th><th class="r">Split %</th><th class="r">Adjustments</th><th class="r">Profit</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{resid}}" as="r" hint-placeholder-count="3">
+                    <tr><td>{{r.m}}</td><td class="mono muted">527104400128731</td><td class="r">{{r.c}}</td><td class="r">{{r.v}}</td><td class="r">{{r.rv}}</td><td class="r muted">{{r.e}}</td><td class="r">75%</td><td class="r"><span class="{{r.ac}}">{{r.a}}</span></td><td class="r" style="font-weight: 600">{{r.p}}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </sc-if>
+
+            <sc-if value="{{T.docs}}" hint-placeholder-val="{{false}}">
+              <div class="tblw"><table class="tbl">
+                <thead><tr><th>Document</th><th>Category</th><th>Linked to</th><th>Uploaded</th><th>By</th><th>Access</th><th class="w0"></th></tr></thead>
+                <tbody>
+                  <sc-for list="{{docs}}" as="d" hint-placeholder-count="6">
+                    <tr><td><span class="row" style="gap: 8px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--ink-3)"><path d="{{ic.file}}"></path></svg><span style="font-weight: 500">{{d.n}}</span></span></td><td class="muted">{{d.c}}</td><td class="muted">{{d.l}}</td><td class="muted">{{d.u}}</td><td class="muted">{{d.b}}</td><td><sc-if value="{{d.lock}}" hint-placeholder-val="{{false}}"><span class="tag"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true" style="margin-right: 4px"><path d="{{ic.lock}}"></path></svg>Restricted</span></sc-if><sc-if value="{{d.open}}" hint-placeholder-val="{{true}}"><span class="subtle sm">Team</span></sc-if></td><td><button class="btn sm ghost icon" aria-label="{{d.dlLabel}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg></button></td></tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </sc-if>
+
+            <sc-if value="{{T.contacts}}" hint-placeholder-val="{{false}}">
+              <div class="tblw"><table class="tbl">
+                <thead><tr><th>Name</th><th>Role</th><th>Ownership</th><th>Tags</th><th>Phone</th><th>Email</th><th>Last contacted</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{contacts}}" as="c" hint-placeholder-count="3">
+                    <tr><td><span class="who"><span class="{{c.av}}">{{c.ini}}</span><b style="font-weight: 500">{{c.n}}</b></span></td><td class="muted">{{c.r}}</td><td class="num">{{c.o}}</td><td><span class="row" style="gap: 4px"><sc-for list="{{c.tags}}" as="t" hint-placeholder-count="2"><span class="tag">{{t}}</span></sc-for></span></td><td class="num">{{c.ph}}</td><td><a href="#" style="text-decoration: none">{{c.em}}</a></td><td class="muted">{{c.lc}}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table></div>
+            </sc-if>
+          </section>
+
+          <aside class="stack" aria-label="Merchant details">
+            <section class="card">
+              <div class="card-h"><h2>Legal entity</h2><button class="btn ghost sm">Edit</button></div>
+              <div class="card-b" style="display: flex; flex-direction: column; gap: 12px">
+                <dl class="dl">
+                  <dt>Legal name</dt><dd>Harbor Street Hospitality LLC</dd>
+                  <dt>Entity type</dt><dd>LLC · Oregon</dd>
+                  <dt>EIN</dt><dd><span class="row" style="gap: 8px"><span class="mask">••-•••4821</span><button class="lnk" onClick="{{toggleReveal}}" aria-expanded="{{revealOpen}}"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.eye}}"></path></svg>Reveal</button></span></dd>
+                </dl>
+                <sc-if value="{{revealOpen}}" hint-placeholder-val="{{false}}">
+                  <sc-if value="{{canReveal}}" hint-placeholder-val="{{true}}">
+                    <div style="border: 1px solid var(--line-strong); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; background: var(--sunken)">
+                      <div class="row" style="gap: 6px; font-weight: 600"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.shield}}"></path></svg>Reveal full EIN?</div>
+                      <div class="sm muted">It shows for 30 seconds and is recorded in the audit log with your name, the time and your reason.</div>
+                      <div class="field"><label for="rr">Reason</label><select id="rr" class="inp"><option>Verifying with processor (Maverick)</option><option>Tax form (1099-K) question</option><option>Merchant requested</option></select></div>
+                      <div class="row" style="justify-content: flex-end"><button class="btn sm ghost" onClick="{{toggleReveal}}">Cancel</button><button class="btn sm pri">Reveal and log</button></div>
+                      <span class="subtle sm">This prototype never shows full EINs.</span>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{noReveal}}" hint-placeholder-val="{{false}}">
+                    <div class="banner amber" style="padding: 10px 12px"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 3px"><path d="{{ic.lock}}"></path></svg><div><div class="bt sm">You need the “View sensitive data” permission</div><div class="bd sm">Ask a Manager/Admin. Requests are logged.</div><button class="btn sm" style="margin-top: 8px">Request access</button></div></div>
+                  </sc-if>
+                </sc-if>
+                <div style="border: 1px solid var(--line); border-radius: 8px; overflow: hidden">
+                  <div class="row" style="padding: 8px 10px; background: var(--sunken); font-size: 12px; font-weight: 500"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.building}}"></path></svg>3 locations under this EIN</div>
+                  <sc-for list="{{locs}}" as="l" hint-placeholder-count="3">
+                    <a class="row" href="Merchant.dc.html" style="padding: 7px 10px; border-top: 1px solid var(--line); text-decoration: none; color: var(--ink); font-size: 12px"><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{l.short}}</span><span class="{{l.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{l.p.d}}"></path></svg>{{l.p.label}}</span></a>
+                  </sc-for>
+                </div>
+              </div>
+            </section>
+            <section class="card">
+              <div class="card-h"><h2>Addresses &amp; service</h2></div>
+              <div class="card-b">
+                <dl class="dl">
+                  <dt>Legal</dt><dd>612 NW Everett St<br>Portland, OR 97209</dd>
+                  <dt>Location</dt><dd>Same as legal</dd>
+                  <dt>Mailing</dt><dd>PO Box 4471<br>Portland, OR 97208</dd>
+                  <dt>CS phone</dt><dd class="num">(503) 555-0142</dd>
+                  <dt>CS email</dt><dd><a href="#" style="text-decoration: none">hello@harborstreet.example</a></dd>
+                </dl>
+              </div>
+            </section>
+            <section class="card">
+              <div class="card-h"><h2>Principals</h2><span class="subtle sm">100% listed</span></div>
+              <div>
+                <div class="ck"><span class="av av-5 lg">ML</span><div style="flex: 1; min-width: 0"><div class="t">Maya Lindqvist</div><div class="d">Managing member · 60%</div></div><span class="row" style="gap: 4px"><span class="tag">Signer</span><span class="tag">Guarantor</span></span></div>
+                <div class="ck"><span class="av av-4 lg">JP</span><div style="flex: 1; min-width: 0"><div class="t">Jonah Pierce</div><div class="d">Member · 40%</div></div><span class="tag">Signer</span></div>
+              </div>
+            </section>
+            <section class="card">
+              <div class="card-h"><h2>Bank account</h2><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Verified</span></div>
+              <div class="card-b">
+                <dl class="dl">
+                  <dt>Bank</dt><dd>Cascade Valley Credit Union</dd>
+                  <dt>Account</dt><dd class="mask">Checking •••• 6620</dd>
+                  <dt>Routing</dt><dd class="mask">•••••0417</dd>
+                  <dt>Used for</dt><dd>Deposits &amp; fees</dd>
+                </dl>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"startTab":{"editor":"enum","options":["overview","activity","mids","apps","tickets","cbs","payouts","res","docs","contacts"],"default":"overview"},"variant":{"editor":"enum","options":["ready","loading","empty","error"],"default":"ready"},"$preview":{"width":1440,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const v = this.state?.v ?? this.props.variant ?? 'ready';
+    const tab = this.state?.tab ?? this.props.startTab ?? 'overview';
+    const af = this.state?.af ?? 'all';
+    const locOpen = this.state?.locOpen ?? false;
+    const revealOpen = this.state?.revealOpen ?? false;
+    const showRes = role === 'manager' || role === 'agent';
+    const TABS = [['overview', 'Overview'], ['activity', 'Activity', 24], ['mids', 'MIDs & Terminals', 5], ['apps', 'Applications', 3], ['tickets', 'Tickets', 3], ['cbs', 'Chargebacks', 2], ['payouts', 'Payouts & Batches'], ['res', 'Residuals'], ['docs', 'Documents', 6], ['contacts', 'Contacts', 3]].filter(t => t[0] !== 'res' || showRes);
+    const tabs = TABS.map(t => ({ label: t[1], c: t[2] || '', on: tab === t[0], cls: 'tab' + (tab === t[0] ? ' on' : ''), pick: () => this.setState({ tab: t[0] }) }));
+    const T = {}; TABS.forEach(t => T[t[0]] = tab === t[0]);
+    const hs = [
+      { l: '30-day volume', v: '$84,212.55', s: '+5.4% vs prior 30', sc: 'tx-green' },
+      { l: 'Transactions', v: '6,214', s: '+3.1% vs prior 30', sc: 'tx-green' },
+      { l: 'Average ticket', v: '$13.55', s: 'Restaurants median $14.20', sc: '' },
+      { l: 'Chargeback ratio', v: '0.03%', s: '2 of 6,214 · under 0.65%', sc: '' },
+      { l: 'Last payout', v: '$2,741.18', s: 'Nov 20, 2026', sc: '' },
+      { l: 'Reserve balance', v: '$4,836.50', s: 'Target $5,000.00', sc: '' },
+      { l: 'Residual · Oct', v: '$412.29', s: '+7.2% vs Sep', sc: 'tx-green' }
+    ];
+    const FEED = [
+      ['note', 'Internal note', 'Dana Reyes', 'Nov 21, 2026 9:18 AM', 'Maya wants a third terminal for the Hawthorne opening on Dec 6. Quote the Mobile M1 at the same rate as the catering unit.', ic.note, ''],
+      ['system', 'Application APP-20419 moved to Underwriting', 'Maverick', 'Nov 20, 2026 4:12 PM', '', '', 'Hawthorne'],
+      ['email', 'Email sent: “Hawthorne application — next steps”', 'Dana Reyes → Maya Lindqvist', 'Nov 20, 2026 2:05 PM', 'Hi Maya, thanks for signing. Underwriting will ask for three months of bank statements for the new location. You can upload them from the completion link I sent.', ic.mail, ''],
+      ['system', 'Signature completed — Maya Lindqvist', 'Maverick', 'Nov 20, 2026 1:47 PM', '', '', 'APP-20419'],
+      ['call', 'Outbound call · 12 min · Reached', 'Dana Reyes', 'Nov 19, 2026 11:30 AM', 'Walked through Hawthorne pricing (same IC+ campaign). Maya confirmed Jonah will co-sign. Follow-up: send completion link.', ic.phone, ''],
+      ['task', 'Task completed: Send equipment agreement for catering terminal', 'Leah Brooks', 'Nov 18, 2026 3:40 PM', '', ic.task, ''],
+      ['system', 'Terminal added — TID 71044218 · Mobile M1', 'Maverick', 'Nov 18, 2026 10:15 AM', '', '', 'MID ••8731'],
+      ['system', 'Payout deposited $2,945.70', 'Maverick', 'Nov 18, 2026 6:00 AM', '', '', ''],
+      ['system', 'New chargeback $86.40', 'Maverick', 'Nov 17, 2026 8:02 AM', '', '', 'CB-88190']
+    ];
+    const kindLabel = { note: 'Note', system: 'System event', email: 'Email', call: 'Call', task: 'Task' };
+    const feed = FEED.filter(e => af === 'all' || e[0] === af).map(e => ({ kind: kindLabel[e[0]], t: e[1], by: e[0] === 'system' ? 'via ' + e[2] : e[2], w: e[3], body: e[4], d: e[5], tag: e[6], sys: e[0] === 'system', human: e[0] !== 'system', cls: 'ev' + (e[0] === 'system' ? ' sys' : ''), bcls: 'body' + (e[0] === 'note' ? ' note-y' : '') }));
+    const cnt = k => FEED.filter(e => k === 'all' || e[0] === k).length;
+    const afs = [['all', 'All'], ['call', 'Calls'], ['email', 'Emails'], ['note', 'Notes'], ['task', 'Tasks'], ['system', 'System']].map(f => ({ label: f[1], c: cnt(f[0]), on: af === f[0], cls: af === f[0] ? 'on' : '', pick: () => this.setState({ af: f[0] }) }));
+    const recent = FEED.slice(0, 4).map(e => ({ t: e[1], by: e[0] === 'system' ? 'via Maverick' : e[2], w: e[3], d: e[5], sys: e[0] === 'system', human: e[0] !== 'system', cls: 'ev' + (e[0] === 'system' ? ' sys' : '') }));
+    const ov = IB.bars([['Jun', 76.2, 64.1], ['Jul', 79.8, 66.0], ['Aug', 83.9, 69.4], ['Sep', 79.1, 68.2], ['Oct', 81.5, 70.3], ['Nov', 57.9, 49.8]].map(r => ({ label: r[0] === 'Nov' ? 'Nov MTD' : r[0], v: r[1], v2: r[2] })), { w: 420, h: 180, max: 100, steps: 4, fmt: x => '$' + x + 'K', l: 44 });
+    const mids = [
+      { kind: 'MID', id: '527104400128731', proc: true, type: 'Card present', p: P('Live'), model: '3 terminals', loc: '612 NW Everett St', vol: '$71,480.35', batch: 'Nov 20, 11:58 PM', trc: 'grp2' },
+      { kind: 'TID', id: '71044216', isTid: true, proc: false, type: 'Countertop', p: P('Active'), model: 'Smart Terminal S2', loc: 'Front counter', vol: '$48,903.10', batch: 'Nov 20, 11:58 PM' },
+      { kind: 'TID', id: '71044217', isTid: true, proc: false, type: 'Countertop', p: P('Active'), model: 'Smart Terminal S2', loc: 'Drive-thru', vol: '$19,882.45', batch: 'Nov 20, 11:57 PM' },
+      { kind: 'TID', id: '71044218', isTid: true, proc: false, type: 'Mobile', p: P('Active'), model: 'Mobile M1', loc: 'Catering', vol: '$2,694.80', batch: 'Nov 19, 8:41 PM' },
+      { kind: 'MID', id: '527104400128749', proc: true, type: 'Card not present', p: P('Live'), model: 'Maverick Gateway · online ordering', loc: 'harborstreet.example', vol: '$12,732.20', batch: 'Nov 20, 11:59 PM', trc: 'grp2' }
+    ];
+    const apps = [
+      { id: 'APP-20419', f: 'Hawthorne location (new DBA)', p: P('Underwriting'), s: P('Signed'), c: 'Nov 12, 2026', l: 'Nov 20, 2026' },
+      { id: 'APP-19960', f: 'E-commerce MID', p: P('Approved'), cond: true, s: P('Signed'), c: 'Jun 2, 2026', l: 'Jun 9, 2026' },
+      { id: 'APP-18802', f: 'Original boarding', p: P('Approved'), s: P('Signed'), c: 'Feb 19, 2024', l: 'Mar 1, 2024' }
+    ];
+    const tix = [
+      { id: 'TCK-3322', s: 'Drive-thru terminal declining contactless', src: 'Maverick', p: P('In Progress'), o: 'Nov 20, 2026', u: '2h ago' },
+      { id: 'TCK-3290', s: 'Add tip prompt to mobile terminal', src: 'Internal', p: P('Closed'), o: 'Nov 11, 2026', u: 'Nov 12, 2026' },
+      { id: 'TCK-3104', s: '1099-K address correction', src: 'Internal', p: P('Closed'), o: 'Jan 28, 2026', u: 'Feb 3, 2026' }
+    ];
+    const PAY = [['Nov 21, 2026', 2, 0, 0, 0, 0, 'Pending'], ['Nov 20, 2026', 2, 2894.10, 98.42, 0, 54.50], ['Nov 19, 2026', 2, 2610.35, 88.75, 86.40, 0], ['Nov 18, 2026', 3, 3105.80, 105.60, 0, 54.50], ['Nov 17, 2026', 2, 2788.45, 94.81, 0, 0], ['Nov 16, 2026', 2, 3342.90, 113.66, 0, 0], ['Nov 15, 2026', 3, 3519.25, 119.65, 0, 54.50], ['Nov 14, 2026', 2, 2701.60, 91.85, 0, 0]];
+    const tot = { b: 0, g: 0, f: 0, cb: 0, r: 0, n: 0 };
+    const pays = PAY.map(p => {
+      const pend = p[6] === 'Pending', n = p[2] - p[3] - p[4] - p[5];
+      if (!pend) { tot.b += p[1]; tot.g += p[2]; tot.f += p[3]; tot.cb += p[4]; tot.r += p[5]; tot.n += n; }
+      return { d: p[0], b: p[1], g: pend ? 'Batch open' : IB.usd(p[2]), f: pend ? '—' : IB.usd(-p[3]), cb: pend ? '—' : (p[4] ? IB.usd(-p[4]) : '$0.00'), cbc: p[4] ? 'tx-red' : 'subtle', r: pend ? '—' : (p[5] ? IB.usd(-p[5]) : '$0.00'), n: pend ? '—' : IB.usd(n), p: P(pend ? 'Pending' : 'Deposited') };
+    });
+    tot.n = Math.round(tot.n * 100) / 100;
+    const payT = { b: tot.b, g: IB.usd(tot.g), f: IB.usd(-tot.f), cb: IB.usd(-tot.cb), r: IB.usd(-tot.r), n: IB.usd(tot.n) };
+    const resid = [['Oct 2026', 6021, 81540.22, 1140.12, 590.40, 0], ['Sep 2026', 5880, 79102.40, 1104.10, 571.20, -15], ['Aug 2026', 6104, 83880.15, 1175.30, 603.10, 0]].map(r => { const pr = Math.round(((r[3] - r[4]) * 0.75 + r[5]) * 100) / 100; return { m: r[0], c: IB.num(r[1]), v: IB.usd(r[2]), rv: IB.usd(r[3]), e: IB.usd(-r[4]), a: r[5] ? IB.usd(r[5]) : '$0.00', ac: r[5] ? 'tx-red' : 'subtle', p: IB.usd(pr) }; });
+    const docs = [['Merchant processing agreement — signed.pdf', 'Agreement', 'APP-18802', 'Mar 1, 2024', 'Maverick', false], ['Voided check — Cascade Valley CU.pdf', 'Banking', 'Bank account', 'Feb 20, 2024', 'Maya Lindqvist', true], ['Driver’s license — M. Lindqvist.jpg', 'Identity', 'Principal', 'Feb 20, 2024', 'Maya Lindqvist', true], ['Bank statements Aug–Oct 2026.pdf', 'Underwriting', 'APP-20419', 'Nov 20, 2026', 'Maya Lindqvist', true], ['W-9 — Harbor Street Hospitality.pdf', 'Tax', 'Legal entity', 'Feb 19, 2024', 'Dana Reyes', true], ['Equipment agreement — Mobile M1.pdf', 'Equipment', 'TID 71044218', 'Nov 18, 2026', 'Leah Brooks', false]].map(d => ({ n: d[0], c: d[1], l: d[2], u: d[3], b: d[4], lock: d[5], open: !d[5], dlLabel: 'Download ' + d[0] }));
+    const contacts = [
+      { n: 'Maya Lindqvist', ini: 'ML', av: 'av av-5', r: 'Managing member', o: '60%', tags: ['Signer', 'Guarantor', 'Primary'], ph: '(503) 555-0142', em: 'maya@harborstreet.example', lc: 'Nov 20, 2026' },
+      { n: 'Jonah Pierce', ini: 'JP', av: 'av av-4', r: 'Member', o: '40%', tags: ['Signer'], ph: '(503) 555-0176', em: 'jonah@harborstreet.example', lc: 'Oct 2, 2026' },
+      { n: 'Talia Brooks', ini: 'TB', av: 'av av-6', r: 'Store manager', o: '—', tags: ['Billing'], ph: '(503) 555-0199', em: 'talia@harborstreet.example', lc: 'Nov 14, 2026' }
+    ];
+    const locs = [['Harbor Street Coffee Co.', 'NW Everett St · MID ••8731', 'Live', 'Everett St (this record)', true], ['Harbor Street Coffee Co. – Pearl District', 'NW 11th Ave · MID ••3906', 'Live', 'Pearl District'], ['Harbor Street Coffee Co. – Hawthorne', 'SE Hawthorne Blvd · boarding', 'Boarding', 'Hawthorne']].map(l => ({ n: l[0], s: l[1], p: P(l[2]), short: l[3], cls: 'mi' + (l[4] ? ' act' : '') }));
+    const states = ['ready', 'loading', 'empty', 'error'].map(s => ({ label: s === 'ready' ? 'Data' : s[0].toUpperCase() + s.slice(1), on: v === s, cls: v === s ? 'on' : '', pick: () => this.setState({ v: s }) }));
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      ready: v === 'ready', loading: v === 'loading', error: v === 'error', empty: v === 'empty', crumb: v === 'empty' ? 'Driftwood Pet Grooming' : 'Harbor Street Coffee Co.', states, seven: [1, 2, 3, 4, 5, 6, 7],
+      hsEmpty: ['30-day volume', 'Transactions', 'Average ticket', 'Chargeback ratio', 'Last payout', 'Reserve balance', 'Residual · Oct'], pn: IB.PI.neutral,
+      retry: () => this.setState({ v: 'ready' }),
+      pg: IB.PI.green, pb: IB.PI.blue, pa: IB.PI.amber,
+      hs, tabs, T, feed, afs, recent, ov, mids, apps, tix, pays, payT, resid, docs, contacts, locs,
+      locOpen, toggleLoc: () => this.setState({ locOpen: !locOpen }),
+      revealOpen, canReveal: role === 'manager' || role === 'onboarding', noReveal: role !== 'manager' && role !== 'onboarding',
+      toggleReveal: () => this.setState({ revealOpen: !revealOpen }),
+      goActivity: () => this.setState({ tab: 'activity' }),
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

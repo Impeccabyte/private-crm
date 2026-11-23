@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Component sheet — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; width: 1440px; min-height: 1700px; box-sizing: border-box; padding: 40px 48px; display: flex; flex-direction: column; gap: 28px">
+  <div class="row" style="align-items: flex-end">
+    <div>
+      <div class="row" style="gap: 10px"><span class="logo">IB</span><h1 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.02em">Component sheet</h1></div>
+      <div class="muted" style="margin-top: 6px">Neutral graphite base. One brand color, <span class="mono">--accent</span> in app.css, is a placeholder for the real brand. Inter with tabular numerals for all money and counts.</div>
+    </div>
+    <span class="sp"></span>
+    <button class="btn" onClick="{{toggleTheme}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{themeIc}}"></path></svg>{{themeLabel}}</button>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start">
+    <section class="card card-b cs-sec" aria-labelledby="c-color">
+      <h2 id="c-color">Status colors · light and dark</h2>
+      <div class="subtle sm">Each status always shows an icon and a label, never color alone.</div>
+      <table class="tbl compact" style="border: 1px solid var(--line); border-radius: 8px; overflow: hidden">
+        <thead><tr><th>Tone</th><th>Light</th><th>Dark</th></tr></thead>
+        <tbody>
+          <sc-for list="{{tones}}" as="t" hint-placeholder-count="6">
+            <tr><td><div style="font-weight: 500">{{t.n}}</div><div class="subtle sm" style="white-space: normal">{{t.u}}</div></td>
+              <td style="background: #FFFFFF"><div style="--n-bg: #EDEFF2; --n-ink: #344054; --b-bg: #E5EEFC; --b-ink: #1849A9; --a-bg: #FCF0D9; --a-ink: #86370A; --g-bg: #E2F3E9; --g-ink: #0B6A39; --r-bg: #FBE8E7; --r-ink: #B42318; --x-bg: #EBEDF0; --x-ink: #565F6E"><span class="{{t.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.p.d}}"></path></svg>{{t.p.label}}</span></div></td>
+              <td class="dark" style="background: #14171C"><span class="{{t.p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.p.d}}"></path></svg>{{t.p.label}}</span></td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <div class="row w" style="gap: 6px">
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--accent)" title="--accent"></span>
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--line)" title="--accent-soft"></span>
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--ink)" title="--ink"></span>
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--ink-2)" title="--ink-2"></span>
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--line-strong)" title="--line-strong"></span>
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--sunken); box-shadow: inset 0 0 0 1px var(--line)" title="--sunken"></span>
+        <span style="width: 40px; height: 28px; border-radius: 6px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line)" title="--bg"></span>
+      </div>
+    </section>
+
+    <div class="stack" style="gap: 20px">
+      <section class="card card-b cs-sec" aria-labelledby="c-btn">
+        <h2 id="c-btn">Buttons</h2>
+        <div class="row w"><button class="btn pri"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Primary</button><button class="btn">Secondary</button><button class="btn ghost">Ghost</button><button class="btn danger">Accept chargeback</button></div>
+        <div class="row w"><button class="btn pri dis" aria-disabled="true">Disabled</button><button class="btn sm">Small</button><button class="btn icon" aria-label="More"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.more}}"></path></svg></button><button class="btn" style="outline: 2px solid var(--accent); outline-offset: 2px">Focus visible</button></div>
+        <div class="subtle sm">Hit area at least 24 × 24 px. Focus ring 2px accent, 2px offset, on every control.</div>
+      </section>
+      <section class="card card-b cs-sec" aria-labelledby="c-inp">
+        <h2 id="c-inp">Inputs</h2>
+        <div class="field"><label for="cs1">DBA name</label><input id="cs1" class="inp" value="Harbor Street Coffee Co."><span class="hint">As it appears on card statements</span></div>
+        <div class="field"><label for="cs2">MID</label><input id="cs2" class="inp err mono" value="52710440012"><span class="errt"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>MIDs are 12–16 digits. This one has 11.</span></div>
+        <div class="row w"><label class="inpw" style="flex: 1"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.search}}"></path></svg><span class="sr">Search</span><input placeholder="Search merchants"><span class="kbd">⌘K</span></label><select class="inp" aria-label="Status"><option>Live</option></select></div>
+        <div class="row w" style="gap: 14px"><label class="row" style="gap: 6px"><input type="checkbox" checked="{{true}}">Signer</label><span class="row" style="gap: 6px"><button class="switch on" role="switch" aria-checked="true" aria-label="Notify merchant"></button><span class="sm">Notify merchant</span></span><div class="seg" role="group" aria-label="Density"><button class="on">Comfortable</button><button>Compact</button></div></div>
+      </section>
+    </div>
+
+    <div class="stack" style="gap: 20px">
+      <section class="card card-b cs-sec" aria-labelledby="c-pill">
+        <h2 id="c-pill">Status pills, badges, tags</h2>
+        <div class="row w" style="gap: 6px">
+          <sc-for list="{{allPills}}" as="p" hint-placeholder-count="18"><span class="{{p.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{p.d}}"></path></svg>{{p.label}}</span></sc-for>
+        </div>
+        <div class="row w" style="gap: 6px"><span class="proc"><span class="pm">M</span>Maverick</span><span class="proc" style="border-style: dashed; color: var(--ink-3)"><span class="pm" style="background: var(--line-strong); color: var(--ink)">?</span>Future processor</span><span class="tag">Signer</span><span class="tag">Guarantor</span><span class="tag acc">EIN last 4</span><span class="tag">Internal</span><span class="tag acc">Maverick</span></div>
+        <div class="row" style="gap: 10px"><span class="mask">••-•••1234</span><span class="mask muted">Checking •••• 6620</span><span class="who"><span class="av av-1">DR</span>Dana Reyes</span></div>
+      </section>
+      <section class="cs-sec" aria-labelledby="c-kpi">
+        <h2 id="c-kpi">KPI tile</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+          <div class="card kpi"><span class="l">Volume · Nov MTD</span><span class="v">$27.86M</span><span class="s"><span class="delta up"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.arrowUp}}"></path></svg>5.5%</span>vs $26.41M</span></div>
+          <div class="card kpi"><span class="l">Open tickets</span><span class="v">37</span><span class="s"><span class="delta dn"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.arrowDn}}"></path></svg>6</span>at SLA risk</span></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="cs-sec" aria-labelledby="c-row">
+    <h2 id="c-row">Table rows · comfortable, compact, selected</h2>
+    <div class="card lv">
+      <table class="tbl">
+        <thead><tr><th class="w0"><input type="checkbox" aria-label="Select all"></th><th>DBA</th><th>Status</th><th>MID</th><th class="r">30-day volume</th><th class="r">CB ratio</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" aria-label="Select row"></td><td><a class="rl" href="Merchant.dc.html">Harbor Street Coffee Co.</a></td><td><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pi.green}}"></path></svg>Live</span></td><td><span class="row" style="gap: 6px"><span class="mono">527104400128731</span><span class="proc"><span class="pm">M</span>Maverick</span></span></td><td class="r">$84,212.55</td><td class="r">0.03%</td><td><span class="who"><span class="av av-1">DR</span>Dana Reyes</span></td></tr>
+          <tr class="sel"><td><input type="checkbox" checked="{{true}}" aria-label="Select row"></td><td><a class="rl" href="Merchant.dc.html">Mesa Verde Auto Repair</a></td><td><span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pi.green}}"></path></svg>Live</span></td><td><span class="row" style="gap: 6px"><span class="mono">527104400109254</span><span class="proc"><span class="pm">M</span>Maverick</span></span></td><td class="r">$142,906.40</td><td class="r"><span class="tx-red">0.78%</span></td><td><span class="who"><span class="av av-2">MO</span>Marcus Okafor</span></td></tr>
+        </tbody>
+      </table>
+      <table class="tbl compact"><tbody><tr><td class="w0"><input type="checkbox" aria-label="Select row"></td><td><a class="rl" href="Merchant.dc.html">Bluebird Pediatric Dental</a> <span class="subtle sm">compact · 34px</span></td><td><span class="pill t-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pi.blue}}"></path></svg>Boarding</span></td><td class="mono muted">—</td><td class="r">—</td><td class="r">—</td><td><span class="who"><span class="av av-3">TW</span>Tess Whitaker</span></td></tr></tbody></table>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.9fr); gap: 20px; align-items: start">
+    <section class="card card-b cs-sec" aria-labelledby="c-tl">
+      <h2 id="c-tl">Timeline · human vs system events</h2>
+      <div class="tl">
+        <div class="ev"><span class="ico"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.phone}}"></path></svg></span><div><div class="hd"><b>Outbound call · 12 min</b><span class="muted">Dana Reyes</span><span class="when">Nov 19, 11:30 AM</span></div><div class="body">Walked through Hawthorne pricing. Maya confirmed Jonah will co-sign.</div></div></div>
+        <div class="ev"><span class="ico"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.note}}"></path></svg></span><div><div class="hd"><b>Internal note</b><span class="muted">Dana Reyes</span><span class="when">Nov 21, 9:18 AM</span></div><div class="body note-y">Quote the Mobile M1 at the catering rate.</div></div></div>
+        <div class="ev sys"><span class="ico"><span class="pm" style="width: 12px; height: 12px; font-size: 8px; line-height: 12px">M</span></span><div class="hd"><b>Application moved to Underwriting</b><span>via Maverick</span><span class="when">Nov 20, 4:12 PM</span></div></div>
+        <div class="ev sys"><span class="ico"><span class="pm" style="width: 12px; height: 12px; font-size: 8px; line-height: 12px">M</span></span><div class="hd"><b>New chargeback $86.40</b><span>via Maverick</span><span class="when">Nov 17, 8:02 AM</span></div></div>
+      </div>
+      <div class="subtle sm">Human: 32px icon, card body. System: small processor mark, one muted line, no card.</div>
+    </section>
+
+    <section class="cs-sec" aria-labelledby="c-sheet">
+      <h2 id="c-sheet">Side sheet</h2>
+      <div style="position: relative; height: 340px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg)">
+        <div style="padding: 14px; display: flex; flex-direction: column; gap: 8px"><span class="sk" style="width: 60%"></span><span class="sk" style="width: 80%"></span><span class="sk" style="width: 50%"></span></div>
+        <div class="scrim" style="z-index: 1"></div>
+        <aside class="sheet" style="position: absolute; top: 0; right: 0; bottom: 0; width: 72%; z-index: 2" aria-label="Example side sheet">
+          <div class="sheet-h" style="padding: 12px 14px"><div style="flex: 1"><div class="subtle sm">CB-88213</div><b style="font-weight: 600">$412.50 · Mesa Verde</b></div><button class="btn ghost sm icon" aria-label="Close"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+          <div class="sheet-b" style="padding: 12px 14px; gap: 10px"><div class="banner red" style="padding: 8px 10px"><div class="bt sm">Respond by Nov 23, 2026 · 2 days</div></div><span class="sk" style="width: 90%"></span><span class="sk" style="width: 70%"></span><span class="sk" style="width: 80%"></span></div>
+          <div class="sheet-f" style="padding: 10px 14px"><button class="btn sm">Accept</button><button class="btn sm pri">Build response</button></div>
+        </aside>
+      </div>
+      <div class="subtle sm">Opens from the right over a light scrim. Lists stay visible; Esc or the scrim closes it.</div>
+    </section>
+
+    <section class="cs-sec" aria-labelledby="c-kc">
+      <h2 id="c-kc">Kanban card</h2>
+      <div class="col" style="min-height: 0">
+        <div class="col-h"><div class="t"><span class="pill t-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pi.blue}}"></path></svg>Qualified</span><span class="ct">3</span></div><div class="m">40% · weighted <b style="color: var(--ink)">$45.4K</b></div></div>
+        <div class="kc"><div class="n">Summit Ridge Veterinary</div><div class="meta"><span>$64,000/mo</span><span>·</span><span>40% probability</span></div><div class="meta"><span class="av av-2">MO</span><span>Marcus Okafor</span><span class="sp"></span><span>3 days</span></div></div>
+        <div class="kc"><div class="n">Westgate Liquor</div><div class="meta"><span>$33,000/mo</span><span>·</span><span>20% probability</span></div><div class="meta"><span class="av av-2">MO</span><span>Marcus Okafor</span><span class="sp"></span><span class="over">19 days</span></div></div>
+        <div class="kc drag"><div class="n">Golden Spoon Thai</div><div class="meta"><span>$31,000/mo</span><span>·</span><span>Dragging</span></div></div>
+        <div class="kc ghostc" aria-hidden="true"></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card card-b cs-sec" aria-labelledby="c-type">
+    <h2 id="c-type">Type scale · Inter</h2>
+    <div class="row w" style="gap: 32px; align-items: baseline">
+      <span style="font-size: 22px; font-weight: 600; letter-spacing: -.02em">Record title 22/28</span>
+      <span style="font-size: 20px; font-weight: 600; letter-spacing: -.015em">Page title 20/28</span>
+      <span style="font-size: 13px; font-weight: 600">Card title 13/20</span>
+      <span>Body 13/20</span>
+      <span class="sm muted">Meta 12/16</span>
+      <span class="num" style="font-size: 22px; font-weight: 600">$1,234,567.89</span>
+      <span class="mono">527104400128731</span>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I, P = IB.pill;
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const tones = [['Neutral', 'New, Unsigned, Prospect', 'New'], ['Blue', 'Pending, In Progress, Processed, Boarding', 'Pending'], ['Amber', 'Underwriting, On Hold, Partially Signed, Conditional', 'Underwriting'], ['Green', 'Approved, Signed, Won, Live, Passed', 'Approved'], ['Red', 'Declined, Rejected, Lost, Failed, overdue', 'Declined'], ['Gray', 'Cancelled, Closed', 'Cancelled']].map(t => ({ n: t[0], u: t[1], p: P(t[2]) }));
+    const allPills = ['New', 'Unsigned', 'Pending', 'In Progress', 'Processed', 'Underwriting', 'On Hold', 'Partially Signed', 'Conditional', 'Approved', 'Signed', 'Won', 'Live', 'Passed', 'Declined', 'Rejected', 'Lost', 'Failed', 'Overdue', 'Cancelled', 'Closed'].map(l => P(l));
+    return {
+      ic, pi: IB.PI, tones, allPills, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      themeIc: dark ? ic.sun : ic.moon, themeLabel: dark ? 'Light theme' : 'Dark theme',
+      toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

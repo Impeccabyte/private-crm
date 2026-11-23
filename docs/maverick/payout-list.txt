@@ -1,0 +1,189 @@
+GET https://dashboard.example.com/api/reporting/payouts/acq/<dbaId>?filter[processingDate][gte]=2023-04-01&filter[processingDate][lte]=2023-04-30
+
+ 
+  NOTE  Keep in mind that running this request without specifying a processingDate filter will return all available records for the current month 
+ 
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "processingDate": "2023-04-12",
+            "deposit": 9731.14,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-12",
+                "amount": "9731.14",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-11",
+            "deposit": 11717.87,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-11",
+                "amount": "11717.87",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-10",
+            "deposit": 10473.83,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-10",
+                "amount": "10473.83",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-09",
+            "deposit": 5779.3,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-09",
+                "amount": "8881.54",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-07",
+            "deposit": 10971.79,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-07",
+                "amount": "10971.79",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-06",
+            "deposit": 12333.28,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-06",
+                "amount": "12333.28",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-05",
+            "deposit": 13538.1,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-05",
+                "amount": "13538.10",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-04",
+            "deposit": 15223,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-04",
+                "amount": "15223.00",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-03",
+            "deposit": 18818.1,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-03",
+                "amount": "18818.10",
+                "sequence": "391"
+            }
+        },
+        {
+            "processingDate": "2023-04-02",
+            "deposit": 17091.86,
+            "feeTotalAmount": 0,
+            "chargeback": {
+                "totalCount": 0,
+                "totalAmount": 0
+            },
+            "reservedAmount": 0,
+            "releasedAmount": 0,
+            "batches": {
+                "date": "2023-04-02",
+                "amount": "27719.63",
+                "sequence": "391"
+            }
+        }
+    ],
+    "_links": {
+        "self": {
+            "href": "https://dashboard.example.com/api/reporting/payouts/acq/9?filter%5BprocessingDate%5D%5Bgte%5D=2023-04-01&filter%5BprocessingDate%5D%5Blte%5D=2023-04-30&page=1"
+        },
+        "first": {
+            "href": "https://dashboard.example.com/api/reporting/payouts/acq/9?filter%5BprocessingDate%5D%5Bgte%5D=2023-04-01&filter%5BprocessingDate%5D%5Blte%5D=2023-04-30&page=1"
+        },
+        "last": {
+            "href": "https://dashboard.example.com/api/reporting/payouts/acq/9?filter%5BprocessingDate%5D%5Bgte%5D=2023-04-01&filter%5BprocessingDate%5D%5Blte%5D=2023-04-30&page=1"
+        }
+    },
+    "_meta": {
+        "totalCount": 10,
+        "pageCount": 1,
+        "currentPage": 1,
+        "perPage": 30
+    }
+}

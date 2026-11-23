@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Top bar</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<header class="tb" style="font-family: Inter, system-ui, sans-serif; color: var(--ink)">
+  <button class="search" onClick="{{openPal}}" aria-haspopup="dialog" aria-label="Search merchants (Command K)">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.search}}"></path></svg>
+    <span class="t">Search DBA, MID, EIN last 4, contact, phone, email…</span>
+    <span class="kbd">⌘K</span>
+  </button>
+  <div style="flex: 1"></div>
+  <label class="rolesw" title="Preview the app as a different role">
+    <svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.eye}}"></path></svg>
+    <span>Viewing as</span>
+    <select value="{{role}}" onChange="{{pickRole}}" aria-label="Preview as role">
+      <sc-for list="{{roles}}" as="r" hint-placeholder-count="4"><option value="{{r.v}}">{{r.label}}</option></sc-for>
+    </select>
+  </label>
+  <button class="btn ghost icon" onClick="{{theme}}" aria-label="{{themeLabel}}" title="{{themeLabel}}">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{themeIcon}}"></path></svg>
+  </button>
+  <div class="rel">
+    <button class="btn ghost icon" onClick="{{toggleBell}}" aria-label="Notifications, 4 unread" aria-expanded="{{bellOpen}}">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.bell}}"></path></svg>
+      <span class="dotbadge" aria-hidden="true">4</span>
+    </button>
+    <sc-if value="{{bellOpen}}" hint-placeholder-val="{{false}}">
+      <div class="pop" style="width: 360px; padding: 0" role="dialog" aria-label="Notifications">
+        <div class="row" style="padding: 10px 14px; border-bottom: 1px solid var(--line)"><b style="font-weight: 600">Notifications</b><span class="sp"></span><button class="lnk">Mark all read</button></div>
+        <sc-for list="{{notes}}" as="n" hint-placeholder-count="4">
+          <a class="att" href="{{n.href}}" style="padding: 10px 14px">
+            <span class="ai {{n.tone}}"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{n.d}}"></path></svg></span>
+            <span style="min-width: 0"><span class="t1" style="display: block">{{n.t}}</span><span class="t2" style="display: block">{{n.s}}</span></span>
+            <span class="subtle sm">{{n.w}}</span>
+          </a>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+  <div class="rel">
+    <button class="btn pri" onClick="{{toggleNew}}" aria-expanded="{{newOpen}}" aria-haspopup="menu">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>New
+      <svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevD}}"></path></svg>
+    </button>
+    <sc-if value="{{newOpen}}" hint-placeholder-val="{{false}}">
+      <div class="pop" role="menu" style="width: 220px">
+        <a class="mi" role="menuitem" href="Leads.dc.html"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.leads}}"></path></svg>Lead<span class="kbd">L</span></a>
+        <a class="mi" role="menuitem" href="Merchants.dc.html"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.store}}"></path></svg>Merchant<span class="kbd">M</span></a>
+        <a class="mi" role="menuitem" href="Support.dc.html"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.support}}"></path></svg>Ticket<span class="kbd">T</span></a>
+        <button class="mi" role="menuitem"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.task}}"></path></svg>Task<span class="kbd">K</span></button>
+      </div>
+    </sc-if>
+  </div>
+  <button class="btn ghost" style="padding: 0 4px; gap: 8px" aria-label="{{userLabel}}">
+    <span class="{{userAv}}">{{userIni}}</span>
+  </button>
+
+  <sc-if value="{{palOpen}}" hint-placeholder-val="{{false}}">
+    <div class="palette" role="dialog" aria-label="Command palette" onKeyDown="{{palKeys}}">
+      <div class="pin">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.search}}"></path></svg>
+        <input data-nav="1" value="{{q}}" onChange="{{onQ}}" placeholder="Search DBA, MID, EIN last 4, contact, phone, email" aria-label="Search" autoFocus="{{true}}">
+        <button class="btn ghost sm" onClick="{{closePal}}" aria-label="Close search"><span class="kbd">esc</span></button>
+      </div>
+      <div class="grp">{{resLabel}}</div>
+      <sc-for list="{{results}}" as="r" hint-placeholder-count="5">
+        <a class="res" data-nav="1" href="Merchant.dc.html">
+          <span class="ei" style="width: 28px; height: 28px; border-radius: 7px; background: var(--sunken); border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink-2)"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.store}}"></path></svg></span>
+          <span style="min-width: 0">
+            <span style="display: block; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.dba}}</span>
+            <span class="subtle sm num" style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">MID {{r.mid}} · EIN <span class="mask">{{r.ein}}</span> · {{r.contact}} · {{r.phone}}</span>
+          </span>
+          <span class="row" style="gap: 6px"><span class="tag acc">{{r.why}}</span><span class="{{r.st.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.st.d}}"></path></svg>{{r.st.label}}</span></span>
+        </a>
+      </sc-for>
+      <sc-if value="{{noRes}}" hint-placeholder-val="{{false}}"><div class="subtle" style="padding: 14px">No merchants match “{{q}}”. Try a MID, the last 4 of an EIN, or a phone number.</div></sc-if>
+      <div class="grp">Actions</div>
+      <a class="res" data-nav="1" href="Leads.dc.html"><span class="ei" style="width: 28px; height: 28px; display: grid; place-items: center; color: var(--ink-2)"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg></span><span>Create lead</span><span class="kbd">L</span></a>
+      <a class="res" data-nav="1" href="Support.dc.html"><span class="ei" style="width: 28px; height: 28px; display: grid; place-items: center; color: var(--ink-2)"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.support}}"></path></svg></span><span>Create ticket</span><span class="kbd">T</span></a>
+      <div class="foot"><span class="row" style="gap: 4px"><span class="kbd">↑</span><span class="kbd">↓</span> navigate</span><span class="row" style="gap: 4px"><span class="kbd">↵</span> open</span><span class="row" style="gap: 4px"><span class="kbd">esc</span> close</span><span class="sp"></span><span>EINs are always masked</span></div>
+    </div>
+  </sc-if>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"dark":{"editor":"boolean","default":false},"startOpen":{"editor":"enum","options":["","palette","new","bell"],"default":""},"startQ":{"editor":"text","default":""},"onRole":{"editor":null},"onTheme":{"editor":null},"$preview":{"width":1208,"height":560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const open = this.state?.open ?? (this.props.startOpen || '');
+    const q = this.state?.q ?? (this.props.startQ || '');
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.props.dark ?? this.state?.dark ?? false;
+    const R = IB.roleOf(role), u = IB.agent(R.user);
+    const set = (k) => () => this.setState({ open: open === k ? '' : k });
+    const ql = q.trim().toLowerCase(), qd = ql.replace(/\D/g, '');
+    let results = IB.M.filter(m => IB.canSee(role, m.owner)).map(m => {
+      let why = 'Recent';
+      if (ql) {
+        if (m.dba.toLowerCase().indexOf(ql) >= 0) why = 'DBA name';
+        else if (qd.length === 4 && m.ein4 === qd) why = 'EIN last 4';
+        else if (qd.length >= 4 && m.mid.indexOf(qd) >= 0) why = 'MID';
+        else if (qd.length >= 4 && m.phone.replace(/\D/g, '').indexOf(qd) >= 0) why = 'Phone';
+        else if (m.contact.toLowerCase().indexOf(ql) >= 0) why = 'Contact';
+        else if (m.email.toLowerCase().indexOf(ql) >= 0) why = 'Email';
+        else why = '';
+      }
+      return { dba: m.dba, mid: m.mid, ein: IB.mask(m.ein4), contact: m.contact, phone: m.phone, why, st: IB.pill(m.status) };
+    }).filter(r => r.why);
+    results = results.slice(0, ql ? 6 : 4);
+    const notes = [
+      { t: 'New chargeback $412.50', s: 'Mesa Verde Auto Repair · due Nov 23, 2026', w: '12m', d: ic.cb, tone: 't-red', href: 'Chargebacks.dc.html' },
+      { t: 'Signature completed', s: 'Bluebird Pediatric Dental · Dr. Anika Shah', w: '1h', d: ic.sign, tone: 't-green', href: 'Application.dc.html' },
+      { t: 'Ticket TCK-3318 breached SLA', s: 'Oak & Ember Pizzeria · Terminal not batching', w: '2h', d: ic.clock, tone: 't-amber', href: 'Support.dc.html' },
+      { t: 'Underwriting check failed', s: 'Saguaro Family Pharmacy · OFAC name screen', w: '3h', d: ic.alert, tone: 't-red', href: 'Application.dc.html' }
+    ];
+    return {
+      ic, q, role, roles: IB.ROLES, notes, results,
+      noRes: !!ql && results.length === 0,
+      resLabel: ql ? 'Merchants · ' + results.length + ' match' + (results.length === 1 ? '' : 'es') : 'Recent merchants',
+      palOpen: open === 'palette', newOpen: open === 'new', bellOpen: open === 'bell',
+      openPal: () => this.setState({ open: 'palette' }), closePal: () => this.setState({ open: '' }),
+      toggleNew: set('new'), toggleBell: set('bell'),
+      onQ: (e) => this.setState({ q: e.target.value }),
+      palKeys: (e) => { if (e.key === 'Escape') { this.setState({ open: '' }); return; } IB.rowKeys(e); },
+      pickRole: (e) => { const v = e.target.value; this.setState({ role: v }); if (this.props.onRole) this.props.onRole(v); },
+      theme: () => { if (this.props.onTheme) this.props.onTheme(); else this.setState({ dark: !dark }); },
+      themeIcon: dark ? ic.sun : ic.moon,
+      themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
+      userAv: u.av + ' lg', userIni: u.ini, userLabel: u.name + ', ' + R.label + ' — account menu'
+    };
+  }
+}
+</script>
+</body>
+</html>

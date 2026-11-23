@@ -1,0 +1,215 @@
+ Chargeback group of events you can subscribe to. 
+   Chargeback Object   
+  
+ 
+ 
+ Fields 
+ Description 
+ Type 
+ 
+ 
+ 
+ 
+ id 
+ The unique ID assigned by our system to every case. 
+ Integer 
+ 
+ 
+ dba 
+ Object 
+ Object 
+ 
+ 
+ dba.id 
+ The ID of the DBA 
+ Integer 
+ 
+ 
+ identifier 
+ The Merchant Identification Number (MID) 
+ Integer 
+ 
+ 
+ disputeId 
+ We assign a unique ID to the first case of a dispute. Every related case update will have a unique id and the same disputeId. 
+ Integer 
+ 
+ 
+ merchantRefId 
+ A reference number provided by merchant or their vendor for this transaction. 
+ String 
+ 
+ 
+ merchantEmail 
+ Merchant email address 
+ String 
+ 
+ 
+ number 
+ The unique number assigned by the bank system to every case. 
+ String 
+ 
+ 
+ type 
+  Chargeback  or  Retrieval  
+ ENUM 
+ 
+ 
+ visaRDR 
+  Yes  or  No  Identifies if the chargeback is Visa RDR 
+ ENUM 
+ 
+ 
+ authCode 
+ The authorization code passed with the settlement record 
+ String 
+ 
+ 
+ acquirerReferenceNumber 
+ Unique number assigned to a credit card transaction as it moves through the payment flow. 
+ String 
+ 
+ 
+ gatewayId 
+ Unique ID of the Payment Gateway 
+ Integer 
+ 
+ 
+ gatewayExternalId 
+ Unique record identifiers from a system outside of Payment Gateway 
+ String 
+ 
+ 
+ amount 
+ The amount of the retrieval or chargeback. This is not always equal to the amount of the transaction. 
+ Number 
+ 
+ 
+ transaction 
+ Object 
+ Object 
+ 
+ 
+ transaction.number 
+ The unique payment ID that is assigned per transaction from the system. 
+ String 
+ 
+ 
+ transaction.amount 
+ The original transaction amount. 
+ Number 
+ 
+ 
+ transaction.date 
+ Transaction Date 
+ Date 
+ 
+ 
+ transaction.card 
+ Object 
+ Object 
+ 
+ 
+ transaction.card.brand 
+ Card Brand 
+ String 
+ 
+ 
+ transaction.card.number 
+ Card Number 
+ String 
+ 
+ 
+ date 
+ Object 
+ Object 
+ 
+ 
+ date.posted 
+ The post date as reported by the issuer. 
+ Date 
+ 
+ 
+ date.loaded 
+ The date the retrieval request or chargeback was loaded in the system. 
+ Date 
+ 
+ 
+ date.disputed 
+ Date when the dispute was submitted. 
+ Date 
+ 
+ 
+ date.receivedDate 
+ Date the retrieval request or chargeback was submitted by the Issuer. 
+ Date 
+ 
+ 
+ date.lastActionDate 
+ Date the case needs to be resolved. 
+ Date 
+ 
+ 
+ description 
+ Case information. 
+ String 
+ 
+ 
+ fraud 
+  Yes  or  No  
+ ENUM 
+ 
+ 
+ attention 
+  Yes  or  No  If the merchant's attention is required 
+ ENUM 
+ 
+ 
+ status 
+  Processed ,  Won ,  Lost  
+ ENUM 
+ 
+ 
+ 
+    Example   
+  {
+    "id": "200",
+    "dba": {
+        "id": "1217"
+    },
+    "identifier": "201100000000",
+    "disputeId": "100",
+    "merchantRefId": "0123456",
+    "merchantEmail": "jhon@example.com",
+    "number": "2019248118022",
+    "type": "Chargeback",
+    "visaRDR": "No",
+    "authCode": "1233123R",
+    "acquirerReferenceNumber": null,
+    "gateway": {
+        "id": 24,
+        "externalId": null
+    },
+    "amount": 33.49,
+    "transaction": {
+        "number": "111119380905678",
+        "amount": 33.49,
+        "date": "2019-12-01",
+        "card": {
+            "brand": "Visa",
+            "number": "412345XXXXXX1234"
+        }
+    },
+    "date": {
+        "posted": "2019-12-10",
+        "loaded": "2019-12-15",
+        "disputed": "2019-12-09",
+        "receivedDate": "2019-12-09",
+        "lastActionDate": "2019-12-19"
+    },
+    "description": "Cancelled Recurring Transaction",
+    "fraud": "No",
+    "attention": "Yes",
+    "status": "Lost"
+}
+  

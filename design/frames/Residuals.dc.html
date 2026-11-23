@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Residuals — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}; min-height: 1240px">
+<div class="app">
+  <div class="side-col"><dc-import name="Sidebar" active="residuals" view-role="{{role}}" hint-size="232px,900px"></dc-import></div>
+  <main class="main">
+    <dc-import name="Topbar" view-role="{{role}}" dark="{{dark}}" on-role="{{setRole}}" on-theme="{{toggleTheme}}" hint-size="100%,52px"></dc-import>
+    <div class="content">
+      <div class="ph">
+        <div><h1>Residuals</h1><div class="sub">{{sub}}</div></div>
+        <div class="acts">
+          <div class="row" style="gap: 2px"><button class="btn icon" aria-label="Previous month"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevL}}"></path></svg></button><label class="sr" for="period">Period</label><select id="period" class="inp" style="width: 150px; font-weight: 500"><option>October 2026</option><option>September 2026</option><option>August 2026</option></select><button class="btn icon dis" aria-label="Next month (not available yet)" aria-disabled="true"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevR}}"></path></svg></button></div>
+          <span class="pill t-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{pg}}"></path></svg>Final · imported from Maverick Nov 15, 2026</span>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.dl}}"></path></svg>Export CSV</button>
+        </div>
+      </div>
+      <section class="kpis" style="grid-template-columns: repeat(5, minmax(0, 1fr))" aria-label="Residual totals">
+        <sc-for list="{{tiles}}" as="k" hint-placeholder-count="5"><div class="card kpi"><span class="l">{{k.l}}</span><span class="{{k.vc}}">{{k.v}}</span><span class="s">{{k.s}}</span></div></sc-for>
+      </section>
+      <section class="card lv" aria-label="Residuals by agent">
+        <div class="lt">
+          <div class="views" role="tablist" aria-label="Saved views"><button class="vt on" role="tab" aria-selected="true">By agent</button><button class="vt" role="tab" aria-selected="false">Held only<span class="c">3</span></button><button class="vt" role="tab" aria-selected="false">With adjustments<span class="c">5</span></button><button class="vt"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Save view</button></div>
+          <span class="sp"></span>
+          <button class="btn" onClick="{{expandAll}}">Expand all</button><button class="btn" onClick="{{collapseAll}}">Collapse all</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.filter}}"></path></svg>Filter</button>
+          <button class="btn"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.cols}}"></path></svg>Columns</button>
+          <div class="seg" role="group" aria-label="Row density"><button class="{{dComf}}" onClick="{{setComf}}">Comfortable</button><button class="{{dComp}}" onClick="{{setComp}}">Compact</button></div>
+        </div>
+        <div class="tblw">
+          <table class="{{tblCls}}" role="treegrid" aria-label="Residuals grouped by agent, sub-agent and merchant">
+            <thead><tr><th>Agent / sub-agent / merchant · MID</th><th class="r">Sales count</th><th class="r">Sales volume</th><th class="r">Revenue</th><th class="r">Expense</th><th class="r">Split</th><th class="r">Adjustments</th><th class="r">Profit</th><th class="r">Held</th></tr></thead>
+            <tbody onKeyDown="{{keys}}">
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="14">
+                <tr class="{{r.cls}}" aria-level="{{r.lvl}}">
+                  <td style="padding-left: {{r.pad}}px">
+                    <span class="row" style="gap: 6px">
+                      <sc-if value="{{r.canExp}}" hint-placeholder-val="{{true}}"><button class="btn ghost sm icon" data-nav="1" onClick="{{r.toggle}}" aria-expanded="{{r.exp}}" aria-label="{{r.expLabel}}" style="width: 24px; height: 24px"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.chev}}"></path></svg></button></sc-if>
+                      <sc-if value="{{r.hasAv}}" hint-placeholder-val="{{true}}"><span class="{{r.av}}">{{r.ini}}</span></sc-if>
+                      <span>{{r.n}}</span>
+                      <sc-if value="{{r.tag}}" hint-placeholder-val="{{false}}"><span class="tag">{{r.tag}}</span></sc-if>
+                      <sc-if value="{{r.mid}}" hint-placeholder-val="{{false}}"><span class="mono subtle">{{r.mid}}</span></sc-if>
+                    </span>
+                  </td>
+                  <td class="r">{{r.c}}</td><td class="r">{{r.v}}</td><td class="r">{{r.rv}}</td><td class="r muted">{{r.e}}</td><td class="r">{{r.sp}}</td>
+                  <td class="r"><span class="{{r.ac}}">{{r.a}}</span></td>
+                  <td class="r" style="font-weight: 600">{{r.p}}</td>
+                  <td class="r">
+                    <sc-if value="{{r.held}}" hint-placeholder-val="{{false}}">
+                      <span class="tipw" style="justify-content: flex-end">
+                        <button class="score" aria-describedby="{{r.tipId}}" style="color: var(--a-ink)"><svg class="i s14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.lock}}"></path></svg>{{r.h}}</button>
+                        <span class="tip right" role="tooltip" id="{{r.tipId}}"><b style="display: block; margin-bottom: 4px">Held · {{r.h}}</b>{{r.note}}</span>
+                      </span>
+                    </sc-if>
+                    <sc-if value="{{r.noHeld}}" hint-placeholder-val="{{true}}"><span class="subtle">—</span></sc-if>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+            <tfoot><tr><td>Total · October 2026</td><td class="r">{{tot.c}}</td><td class="r">{{tot.v}}</td><td class="r">{{tot.rv}}</td><td class="r">{{tot.e}}</td><td class="r"></td><td class="r">{{tot.a}}</td><td class="r">{{tot.p}}</td><td class="r">{{tot.h}}</td></tr></tfoot>
+          </table>
+        </div>
+        <div class="lfoot"><span>Profit = (revenue − expense) × split % + adjustments. Held amounts are paid when the hold clears.</span><span>{{scope}}</span></div>
+      </section>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"viewRole":{"editor":"enum","options":["manager","agent","onboarding","support"],"default":"manager"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const role = this.state?.role ?? this.props.viewRole ?? 'manager';
+    const dark = this.state?.dark ?? (this.props.theme === 'dark');
+    const density = this.state?.density ?? 'compact';
+    const ex = this.state?.ex ?? { dr: true, 'dr-d': true, 'dr-jl': true };
+    // group totals: [count, volume, revenue, expense, split, adjustments, held, heldNote, profit]
+    const G = {
+      'dr-d': { n: 'Dana Reyes · direct', ag: 'dr', t: [158240, 1986410.55, 27604.12, 11699.32, 0.75, -86.00, 0, ''], mids: [['Harbor Street Coffee Co.', '••8731', 6021, 81540.22, 1140.12, 590.40, 0], ['Harbor Street – Pearl District', '••3906', 4790, 62110.40, 869.55, 447.20, 0], ['Northline Hardware & Supply', '••7718', 2402, 121877.60, 1584.41, 852.04, 0], ['Oak & Ember Pizzeria', '••8302', 3851, 71260.40, 997.65, 520.10, -25.00]] },
+      'dr-jl': { n: 'Jordan Lee', tag: 'Sub-agent', ag: 'jl', t: [29110, 512880.40, 7190.65, 2509.05, 0.5, 0, 114.11, 'Sub-agent W-9 expired Oct 31, 2026. Released when a new W-9 is on file.'], mids: [['Copper Kettle Bakery', '••1160', 3190, 35110.25, 491.54, 263.33, 0, 114.11, 'Held with Jordan Lee’s W-9 hold.']] },
+      'mo-d': { n: 'Marcus Okafor · direct', ag: 'mo', t: [96402, 3118730.60, 41220.85, 17972.25, 0.75, -230.00, 329.79, ''], mids: [['Mesa Verde Auto Repair', '••9254', 498, 138220.00, 1658.64, 912.25, -230.00, 329.79, 'Chargeback ratio 0.78% is above 0.65%. Risk review opened Nov 3, 2026.'], ['Granite Peak Outfitters', '••5837', 1090, 74410.90, 967.34, 520.92, 0], ['Tidewater Marine Supply', '••2077', 851, 188730.15, 2264.76, 1245.62, 0]] },
+      'mo-sk': { n: 'Sam Kowalski', tag: 'Sub-agent', ag: 'sk', t: [18206, 408115.20, 6120.44, 2199.78, 0.5, -45.00, 0, ''], mids: [['Lakeshore Yoga Collective', '••2485', 401, 22950.00, 344.25, 172.13, 0], ['Riverbend Dry Cleaners', '••4419', 61, 4120.00, 65.92, 39.55, -45.00]] },
+      'tw-d': { n: 'Tess Whitaker · direct', ag: 'tw', t: [61880, 1377402.85, 19540.10, 7667.94, 0.75, 0, 0, ''], mids: [['Cedar Lane Medical Group', '••1002', 1210, 188420.10, 2261.04, 1205.89, 0], ['Silver Birch Dental', '••1877', 520, 99412.80, 1292.36, 695.89, 0]] },
+      'ib-d': { n: 'House accounts', ag: 'am', t: [1402118, 29566442.67, 389412.30, 215995.08, 1, -1240.00, 2180.40, ''], mids: [['Legacy portfolio (1,024 MIDs)', '', 1402118, 29566442.67, 389412.30, 215995.08, -1240.00, 2180.40, '3 MIDs pending Maverick reconciliation for Oct 2026.']] }
+    };
+    const A = [
+      { k: 'dr', n: 'Dana Reyes', ag: 'dr', kids: ['dr-d', 'dr-jl'] },
+      { k: 'mo', n: 'Marcus Okafor', ag: 'mo', kids: ['mo-d', 'mo-sk'] },
+      { k: 'tw', n: 'Tess Whitaker', ag: 'tw', kids: ['tw-d'] },
+      { k: 'ib', n: 'Impeccabyte house', ag: 'am', kids: ['ib-d'] }
+    ].filter(a => role !== 'agent' || a.k === 'dr');
+    const r2 = x => Math.round(x * 100) / 100;
+    const prof = t => r2((t[2] - t[3]) * t[4] + t[5]);
+    const fmt = (t, held, note) => ({ c: IB.num(t[0]), v: IB.usd(t[1]), rv: IB.usd(t[2]), e: IB.usd(-t[3]), a: t[5] ? IB.usd(t[5]) : '$0.00', ac: t[5] ? 'tx-red' : 'subtle', p: IB.usd(prof(t)), held: held > 0, noHeld: !(held > 0), h: IB.usd(held), note });
+    const tog = k => () => this.setState({ ex: { ...ex, [k]: !ex[k] } });
+    const rows = [];
+    const T = [0, 0, 0, 0, 0, 0, 0];
+    let tid = 0;
+    A.forEach(a => {
+      const sum = [0, 0, 0, 0, 0, 0, 0];
+      a.kids.forEach(k => { const t = G[k].t; [0, 1, 2, 3, 5, 6].forEach(j => sum[j] += t[j]); sum[4] += prof(t); });
+      const ag = IB.agent(a.ag);
+      rows.push({ lvl: 1, cls: 'grp', pad: 10, canExp: true, exp: !!ex[a.k], chev: ex[a.k] ? ic.chevD : ic.chevR, toggle: tog(a.k), expLabel: (ex[a.k] ? 'Collapse ' : 'Expand ') + a.n, hasAv: true, av: ag.av, ini: ag.ini, n: a.n, tag: a.k === 'ib' ? '' : 'Agent', c: IB.num(sum[0]), v: IB.usd(sum[1]), rv: IB.usd(sum[2]), e: IB.usd(-sum[3]), sp: 'Blended', a: sum[5] ? IB.usd(sum[5]) : '$0.00', ac: sum[5] ? 'tx-red' : 'subtle', p: IB.usd(r2(sum[4])), held: sum[6] > 0, noHeld: !(sum[6] > 0), h: IB.usd(sum[6]), note: 'Includes holds on sub-agent and merchant rows below.', tipId: 'h' + (tid++) });
+      [0, 1, 2, 3, 5, 6].forEach(j => T[j] += sum[j]); T[4] += sum[4];
+      if (!ex[a.k]) return;
+      a.kids.forEach(k => {
+        const g = G[k], gt = g.t, ga = IB.agent(g.ag);
+        rows.push({ lvl: 2, cls: 'grp2', pad: 38, canExp: true, exp: !!ex[k], chev: ex[k] ? ic.chevD : ic.chevR, toggle: tog(k), expLabel: (ex[k] ? 'Collapse ' : 'Expand ') + g.n, hasAv: k.indexOf('-d') < 0, av: ga.av, ini: ga.ini, n: g.n, tag: g.tag || '', sp: Math.round(gt[4] * 100) + '%', ...fmt(gt, gt[6], gt[7]), tipId: 'h' + (tid++) });
+        if (!ex[k]) return;
+        const shown = [0, 0, 0, 0, 0, 0];
+        g.mids.forEach(m => {
+          const t = [m[2], m[3], m[4], m[5], gt[4], m[6]];
+          shown[0] += m[2]; shown[1] += m[3]; shown[2] += m[4]; shown[3] += m[5]; shown[4] += m[6]; shown[5] += prof(t);
+          rows.push({ lvl: 3, cls: '', pad: 72, canExp: false, hasAv: false, n: m[0], mid: m[1] ? 'MID ' + m[1] : '', sp: Math.round(gt[4] * 100) + '%', ...fmt(t, m[7] || 0, m[8] || ''), tipId: 'h' + (tid++) });
+        });
+        const restCount = gt[0] - shown[0];
+        if (restCount > 0) {
+          const restProfit = r2(prof(gt) - shown[5]);
+          rows.push({ lvl: 3, cls: '', pad: 72, canExp: false, hasAv: false, n: 'Other MIDs in this book', mid: '', sp: Math.round(gt[4] * 100) + '%', c: IB.num(restCount), v: IB.usd(gt[1] - shown[1]), rv: IB.usd(gt[2] - shown[2]), e: IB.usd(-(gt[3] - shown[3])), a: IB.usd(gt[5] - shown[4]), ac: (gt[5] - shown[4]) ? 'tx-red' : 'subtle', p: IB.usd(restProfit), held: false, noHeld: true, h: '', note: '', tipId: 'h' + (tid++) });
+        }
+      });
+    });
+    const tot = { c: IB.num(T[0]), v: IB.usd(T[1]), rv: IB.usd(T[2]), e: IB.usd(-T[3]), a: IB.usd(T[5]), p: IB.usd(r2(T[4])), h: IB.usd(T[6]) };
+    const tiles = [
+      { l: 'Total revenue', v: IB.usd(T[2]), s: 'Oct 2026 · ' + IB.short(T[1]) + ' volume', vc: 'v' },
+      { l: 'Expense', v: IB.usd(-T[3]), s: 'Interchange, dues, processor cost', vc: 'v' },
+      { l: 'Adjustments', v: IB.usd(T[5]), s: 'Chargeback & closure fees', vc: 'v tx-red' },
+      { l: role === 'agent' ? 'My profit' : 'Profit', v: IB.usd(r2(T[4])), s: role === 'agent' ? 'Includes Jordan Lee (sub-agent)' : '+3.2% vs Sep 2026', vc: 'v' },
+      { l: 'Held', v: IB.usd(T[6]), s: 'Hover a held amount for the reason', vc: 'v tx-amber' }
+    ];
+    const allKeys = { dr: true, 'dr-d': true, 'dr-jl': true, mo: true, 'mo-d': true, 'mo-sk': true, tw: true, 'tw-d': true, ib: true, 'ib-d': true };
+    return {
+      ic, role, dark, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6', pg: IB.PI.green,
+      sub: role === 'agent' ? 'Your residuals and your sub-agents’. Other agents’ rows are hidden.' : 'Monthly commission per MID, rolled up from merchant to sub-agent to agent',
+      tiles, rows, tot, scope: role === 'agent' ? 'Showing your book only' : 'All agents and house accounts',
+      expandAll: () => this.setState({ ex: allKeys }), collapseAll: () => this.setState({ ex: {} }),
+      tblCls: 'tbl tight' + (density === 'compact' ? ' compact' : ''),
+      dComf: density === 'comfortable' ? 'on' : '', dComp: density === 'compact' ? 'on' : '',
+      setComf: () => this.setState({ density: 'comfortable' }), setComp: () => this.setState({ density: 'compact' }),
+      keys: IB.rowKeys,
+      setRole: (x) => this.setState({ role: x }), toggleTheme: () => this.setState({ dark: !dark })
+    };
+  }
+}
+</script>
+</body>
+</html>

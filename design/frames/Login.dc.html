@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign in — Impeccabyte CRM</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="login.css">
+<script src="app.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="{{rootCls}}" style="--accent: {{accent}}">
+<div class="lg">
+  <main class="lg-form">
+    <div class="lg-top">
+      <span class="logo" aria-hidden="true">IB</span>
+      <span style="font-weight: 600">Impeccabyte CRM</span>
+      <span class="sp"></span>
+      <button class="btn ghost icon" onClick="{{toggleTheme}}" aria-label="{{themeLabel}}" title="{{themeLabel}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{themeIc}}"></path></svg></button>
+    </div>
+
+    <div class="lg-mid">
+      <div class="lg-card">
+
+        <sc-if value="{{isSignin}}" hint-placeholder-val="{{true}}">
+          <div>
+            <h1>Sign in</h1>
+            <p class="lede">For Impeccabyte staff and agents. Use your work email.</p>
+          </div>
+
+          <sc-if value="{{formErr}}" hint-placeholder-val="{{false}}">
+            <div class="banner red" role="alert">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="{{ic.alert}}"></path></svg>
+              <div><div class="bt">That email and password don’t match</div><div class="bd sm">Check both and try again. {{left}}</div></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{locked}}" hint-placeholder-val="{{false}}">
+            <div class="banner amber" role="alert">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="{{ic.lock}}"></path></svg>
+              <div><div class="bt">Sign-in paused for 15 minutes</div><div class="bd sm">Too many attempts. Try again at 4:47 PM, or reset your password now.</div><button class="lnk" onClick="{{toForgot}}" style="margin-top: 6px">Reset password</button></div>
+            </div>
+          </sc-if>
+
+          <form class="lg-fields" onSubmit="{{submit}}" novalidate="{{true}}">
+            <div class="field">
+              <label for="email">Work email</label>
+              <input id="email" class="{{emailCls}}" type="email" autocomplete="username" placeholder="name@impeccabyte.example" value="{{email}}" onChange="{{onEmail}}" onKeyDown="{{enterSubmit}}" aria-invalid="{{emailBad}}" aria-describedby="email-err">
+              <sc-if value="{{emailErr}}" hint-placeholder-val="{{false}}"><span class="errt" id="email-err"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>{{emailErr}}</span></sc-if>
+            </div>
+            <div class="field">
+              <div class="lg-row"><label for="pw">Password</label><button type="button" class="lnk" onClick="{{toForgot}}">Forgot password?</button></div>
+              <div class="{{pwWrapCls}}">
+                <input id="pw" type="{{pwType}}" autocomplete="current-password" value="{{pw}}" onChange="{{onPw}}" onKeyUp="{{onCaps}}" onKeyDown="{{enterSubmit}}" aria-invalid="{{pwBad}}" aria-describedby="pw-err pw-caps">
+                <button type="button" class="pw-btn" onClick="{{toggleShow}}" aria-label="{{showLabel}}" aria-pressed="{{show}}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{showIc}}"></path></svg></button>
+              </div>
+              <sc-if value="{{pwErr}}" hint-placeholder-val="{{false}}"><span class="errt" id="pw-err"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>{{pwErr}}</span></sc-if>
+              <sc-if value="{{caps}}" hint-placeholder-val="{{false}}"><span class="hint" id="pw-caps" style="color: var(--a-ink)">Caps Lock is on</span></sc-if>
+            </div>
+            <label class="row" style="gap: 8px; cursor: pointer; min-height: 24px"><input type="checkbox" checked="{{remember}}" onChange="{{toggleRemember}}">Keep me signed in for 7 days</label>
+            <button type="button" class="{{submitCls}}" disabled="{{locked}}" onClick="{{submit}}">Sign in</button>
+          </form>
+
+          <div class="hint">Access is role-based and sign-ins are logged. Don’t have an account? Ask your manager to invite you.</div>
+        </sc-if>
+
+        <sc-if value="{{isForgot}}" hint-placeholder-val="{{false}}">
+          <button class="lnk" onClick="{{toSignin}}" style="align-self: flex-start"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.chevL}}"></path></svg>Back to sign in</button>
+          <div>
+            <h1>Reset your password</h1>
+            <p class="lede">Enter your work email and we’ll send a link to choose a new password.</p>
+          </div>
+          <form class="lg-fields" onSubmit="{{sendReset}}" novalidate="{{true}}">
+            <div class="field">
+              <label for="remail">Work email</label>
+              <input id="remail" class="{{emailCls}}" type="email" autocomplete="username" placeholder="name@impeccabyte.example" value="{{email}}" onChange="{{onEmail}}" onKeyDown="{{enterReset}}" aria-invalid="{{emailBad}}" aria-describedby="remail-err">
+              <sc-if value="{{emailErr}}" hint-placeholder-val="{{false}}"><span class="errt" id="remail-err"><svg class="i s12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>{{emailErr}}</span></sc-if>
+            </div>
+            <button type="button" class="btn pri block" onClick="{{sendReset}}">Send reset link</button>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{isSent}}" hint-placeholder-val="{{false}}">
+          <span class="lg-ok t-green"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><path d="{{ic.mail}}"></path></svg></span>
+          <div role="status">
+            <h1>Check your email</h1>
+            <p class="lede">If an account exists for <b style="color: var(--ink)">{{emailShown}}</b>, we’ve sent a link to reset your password. It expires in 30 minutes.</p>
+          </div>
+          <div class="row w"><button class="btn" onClick="{{resend}}">{{resendLabel}}</button><button class="btn ghost" onClick="{{toSignin}}">Back to sign in</button></div>
+          <div class="hint">Nothing after a few minutes? Check spam, or contact support@impeccabyte.example.</div>
+        </sc-if>
+
+        <sc-if value="{{isSuccess}}" hint-placeholder-val="{{false}}">
+          <div role="status" style="display: flex; flex-direction: column; gap: 14px">
+            <span class="lg-ok t-green"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px"><path d="{{ic.check}}"></path></svg></span>
+            <div><h1>Signing you in…</h1><p class="lede">Taking you to Home.</p></div>
+            <div class="btn pri block" aria-live="polite" style="cursor: default"><span class="spin" aria-hidden="true"></span>Loading your workspace</div>
+            <button class="lnk" onClick="{{toSignin}}" style="align-self: flex-start">Reset prototype</button>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+
+    <footer class="lg-foot">
+      <span>© 2026 Impeccabyte</span><a href="#">Privacy</a><a href="#">Acceptable use</a><span class="sp"></span><span>Internal system · authorized users only</span>
+    </footer>
+  </main>
+
+  <aside class="lg-side" aria-label="About Impeccabyte CRM">
+    <div class="row" style="gap: 10px"><span class="logo" style="background: #E6E9EE; color: #111827" aria-hidden="true">IB</span><span style="font-weight: 600">Impeccabyte</span></div>
+    <div style="display: flex; flex-direction: column; gap: 28px; max-width: 440px">
+      <h2 style="margin: 0; font-size: 26px; line-height: 34px; font-weight: 600; letter-spacing: -.02em">Merchants, boarding, support and residuals, in one place.</h2>
+      <div style="display: flex; flex-direction: column; gap: 18px">
+        <div class="lg-feat"><span class="fi"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.refresh}}"></path></svg></span><div><div style="font-weight: 600">Synced with Maverick</div><div class="muted2 sm" style="margin-top: 2px">Applications, chargebacks and payouts update on their own.</div></div></div>
+        <div class="lg-feat"><span class="fi"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.users}}"></path></svg></span><div><div style="font-weight: 600">Built around your role</div><div class="muted2 sm" style="margin-top: 2px">Agents see their own book. Managers see the whole portfolio.</div></div></div>
+        <div class="lg-feat"><span class="fi"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{{ic.shield}}"></path></svg></span><div><div style="font-weight: 600">Sensitive data stays masked</div><div class="muted2 sm" style="margin-top: 2px">EINs and bank accounts are hidden by default, and every reveal is logged.</div></div></div>
+      </div>
+    </div>
+    <div class="muted2 sm">Need help signing in? support@impeccabyte.example</div>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["signin","error","locked","forgot","sent"],"default":"signin"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"accent":{"editor":"color","default":"#5B5BD6","options":["#5B5BD6","#0E7C86","#C2410C","#1F2733"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IB = window.IB, ic = IB.I;
+    const v0 = this.props.variant ?? 'signin';
+    const preset = { error: { email: 'dana.reyes@impeccabyte.example', pw: 'winter2026', attempts: 1, formErr: true }, locked: { email: 'dana.reyes@impeccabyte.example', pw: '', attempts: 5 }, sent: { email: 'dana.reyes@impeccabyte.example' } }[v0] || {};
+    const s = this.state || {};
+    const view = s.view ?? (v0 === 'error' || v0 === 'locked' ? 'signin' : v0);
+    const email = s.email ?? preset.email ?? '';
+    const pw = s.pw ?? preset.pw ?? '';
+    const attempts = s.attempts ?? preset.attempts ?? 0;
+    const formErr = s.formErr ?? preset.formErr ?? false;
+    const show = s.show ?? false, remember = s.remember ?? true, caps = s.caps ?? false;
+    const dark = s.dark ?? (this.props.theme === 'dark');
+    const emailErr = s.emailErr ?? '', pwErr = s.pwErr ?? '';
+    const locked = attempts >= 5;
+    const validEmail = x => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.trim());
+    const checkEmail = () => !email.trim() ? 'Enter your work email.' : (!validEmail(email) ? 'Enter an email like name@impeccabyte.example.' : '');
+    const left = 5 - attempts;
+    const submit = e => {
+      if (e && e.preventDefault) e.preventDefault();
+      if (locked) return;
+      const ee = checkEmail(), pe = pw ? '' : 'Enter your password.';
+      if (ee || pe) { this.setState({ emailErr: ee, pwErr: pe, formErr: false }); return; }
+      if (pw === 'demo1234' && /@impeccabyte\.example$/i.test(email.trim())) { this.setState({ view: 'success', formErr: false }); return; }
+      this.setState({ attempts: attempts + 1, formErr: true, pw: '' });
+    };
+    const sendReset = e => { if (e && e.preventDefault) e.preventDefault(); const ee = checkEmail(); if (ee) { this.setState({ emailErr: ee }); return; } this.setState({ view: 'sent' }); };
+    return {
+      submit, sendReset,
+      enterSubmit: e => { if (e.key === 'Enter') submit(e); },
+      enterReset: e => { if (e.key === 'Enter') sendReset(e); },
+      ic, rootCls: 'ib' + (dark ? ' dark' : ''), accent: this.props.accent ?? '#5B5BD6',
+      themeIc: dark ? ic.sun : ic.moon, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
+      toggleTheme: () => this.setState({ dark: !dark }),
+      isSignin: view === 'signin', isForgot: view === 'forgot', isSent: view === 'sent', isSuccess: view === 'success',
+      email, pw, show, remember, caps, locked, formErr: formErr && !locked,
+      left: left === 1 ? '1 attempt left before sign-in is paused for 15 minutes.' : left + ' attempts left before sign-in is paused for 15 minutes.',
+      emailErr, pwErr, emailBad: !!emailErr, pwBad: !!pwErr,
+      emailCls: 'inp' + (emailErr ? ' err' : ''), pwWrapCls: 'inpw' + (pwErr ? ' err' : ''),
+      pwType: show ? 'text' : 'password', showIc: show ? ic.x : ic.eye, showLabel: show ? 'Hide password' : 'Show password',
+      submitCls: 'btn pri block' + (locked ? ' dis' : ''),
+      emailShown: email || 'your email',
+      resendLabel: s.resent ? 'Sent again' : 'Resend link',
+      onEmail: e => this.setState({ email: e.target.value, emailErr: '' }),
+      onPw: e => this.setState({ pw: e.target.value, pwErr: '' }),
+      onCaps: e => this.setState({ caps: !!(e.getModifierState && e.getModifierState('CapsLock')) }),
+      toggleShow: () => this.setState({ show: !show }),
+      toggleRemember: () => this.setState({ remember: !remember }),
+      toForgot: () => this.setState({ view: 'forgot', emailErr: '' }),
+      toSignin: () => this.setState({ view: 'signin', emailErr: '', pwErr: '', formErr: false, attempts: 0, pw: '', resent: false }),
+      resend: () => this.setState({ resent: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

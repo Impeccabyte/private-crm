@@ -1,0 +1,74 @@
+GET https://dashboard.example.com/api/residual
+
+ Use this endpoint to list all available residuals 
+
+
+EXAMPLE RESPONSE:
+{
+    "items": [
+        {
+            "id": "1",
+            "mid": "1111111111",
+            "date": "2022-02-28",
+            "acquirer": {
+                "id": 1
+            },
+            "merchant": {
+                "id": "1",
+                "dba": {
+                    "id": "1"
+                },
+                "sales": {
+                    "count": 7,
+                    "amount": "1000.50"
+                }
+            },
+            "user": {
+                "id": "1"
+            },
+            "split": "93.00",
+            "revenue": "326.82",
+            "expense": "210.85",
+            "adjustment": {
+                "amount": "1.00",
+                "details": [
+                    {
+                        "amount": "1.00",
+                        "category": "equipment",
+                        "note": "Adjustment Note"
+                    }
+                ]
+            },
+            "profit": "115.97",
+            "publishedOn": "2022-03-01 14:55:00",
+            "held": {
+                "on": null,
+                "note": null,
+                "releasedOn": null
+            },
+            "residual": {
+                "id": 1
+            },
+            "subAgent": {
+                "user": {
+                    "id": "2"
+                },
+                "revenue": "210.85",
+                "expense": "140.57",
+                "profit": "70.28",
+                "publishedOn": "2022-03-01 15:39:19",
+                "held": {
+                    "on": null,
+                    "note": null,
+                    "releasedOn": null
+                }
+            }
+        }
+    ],
+    "_meta": {
+        "totalCount": 1,
+        "pageCount": 1,
+        "currentPage": 1,
+        "perPage": 30
+    }
+}
