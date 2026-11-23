@@ -44,7 +44,7 @@ export default async function LeadFormsPage({ searchParams }: { searchParams: Pr
               <tbody>
                 {forms.map(({ f, total, last30, lastAt }) => (
                   <tr key={f.id}>
-                    <td><Link className="rl" href={`/leads/forms/${f.id}`}>{f.name}</Link><div className="subtle sm">{(f.fields as unknown[]).length} fields</div></td>
+                    <td><Link className="rl" href={`/leads/forms/${f.id}`}>{f.name}</Link><div className="subtle sm">{(f.fields as { type?: string }[]).filter((x) => x.type !== "break").length} fields</div></td>
                     <td>{f.archivedAt ? <Pill status="Inactive" label="Archived" /> : f.status === "published" ? <Pill status="Live" label="Published" /> : <Pill status="draft" label="Draft" />}</td>
                     <td className="r">{last30}</td><td className="r">{total}</td>
                     <td className="muted">{lastAt ? relTime(new Date(lastAt)) : "—"}</td>

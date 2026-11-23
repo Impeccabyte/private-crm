@@ -10,7 +10,7 @@ import { confirmDialog, notify } from "@/components/confirm";
 import { renderFormHtml } from "@/lib/lead-forms/render";
 import {
   blankField, BUTTON_FILL_LABEL, BUTTON_FILLS, BUTTON_RADII, BUTTON_RADIUS_LABEL, BUTTON_SIZE_LABEL, BUTTON_SIZES, BUTTON_WIDTH_LABEL, BUTTON_WIDTHS,
-  FIELD_TYPE_LABEL, FIELD_TYPES, MAP_LABEL, MAP_TARGETS, publishProblems,
+  FIELD_TYPE_LABEL, FIELD_TYPES, MAP_LABEL, MAP_TARGETS, publishProblems, splitSteps, stepIndexOf,
   type ButtonFill, type ButtonRadius, type ButtonSize, type ButtonWidth, type FieldType, type FormField, type FormSettings,
 } from "@/lib/lead-forms/types";
 import { duplicateForm, saveForm, setArchived, setPublished } from "../actions";
@@ -53,13 +53,17 @@ export function Builder({ form, owners, defaultAccent, baseUrl, submissions }: P
   }, [dirty]);
 
   // Live preview: the exact HTML the public page serves, debounced.
+  // Multi-step forms open on the selected field's page; Settings shows the last page (submit button, consent).
   const [previewHtml, setPreviewHtml] = useState("");
   useEffect(() => {
-    const t = setTimeout(() => setPreviewHtml(renderFormHtml({ publicId: form.publicId, name, fields, settings }, { action: "#", embed: false, preview: true, defaultAccent })), 150);
+    const t = setTimeout(() => setPreviewHtml(renderFormHtml({ publicId: form.publicId, name, fields, settings }, { action: "#", embed: false, preview: true, defaultAccent, startStep: tab === "settings" ? splitSteps(fields).length - 1 : stepIndexOf(fields, selected) })), 150);
     return () => clearTimeout(t);
-  }, [form.publicId, name, fields, settings, defaultAccent]);
+  }, [form.publicId, name, fields, settings, defaultAccent, selected, tab]);
 
   const localProblems = useMemo(() => publishProblems(fields), [fields]);
+  // Page breaks that really split the form; one with nothing on either side of it is skipped when rendering.
+  const steps = useMemo(() => splitSteps(fields), [fields]);
+  const liveBreaks = useMemo(() => new Set(steps.map((s) => s.breakId)), [steps]);
 
   const save = () => start(async () => {
     const r = await saveForm(form.id, { name, fields, settings });
@@ -123,7 +127,7 @@ export function Builder({ form, owners, defaultAccent, baseUrl, submissions }: P
             {tab === "build" ? (
               <>
                 <section className="card">
-                  <div className="card-h"><h2>Fields <span className="ct">{fields.length}</span></h2>
+                  <div className="card-h"><h2>Fields <span className="ct">{fields.filter((f) => f.type !== "break").length}</span>{steps.length > 1 && <span className="subtle sm" style={{ fontWeight: 400 }}> · {steps.length} pages</span>}</h2>
                     <label className="row" style={{ gap: 6 }}><span className="sr">Add a field</span>
                       <select className="inp" value="" onChange={(e) => { if (e.target.value) add(e.target.value as FieldType); }} style={{ height: 28 }} aria-label="Add a field">
                         <option value="">+ Add field…</option>{FIELD_TYPES.map((t) => <option key={t} value={t}>{FIELD_TYPE_LABEL[t]}</option>)}
@@ -132,36 +136,42 @@ export function Builder({ form, owners, defaultAccent, baseUrl, submissions }: P
                   </div>
                   {fields.length === 0 && <div className="card-b subtle">No fields yet. Add one to get started.</div>}
                   <ol className="lf-list" aria-label="Fields in order">
-                    {fields.map((f, i) => (
-                      <li key={f.id} className={`lf-item ${selected === f.id ? "on" : ""}`}>
+                    {fields.map((f, i) => { const what = f.type === "break" ? "page break" : f.label; return (
+                      <li key={f.id} className={`lf-item ${f.type === "break" ? "lf-break" : ""} ${selected === f.id ? "on" : ""}`}>
                         <button type="button" className="lf-sel" onClick={() => setSelected(f.id)} aria-current={selected === f.id}>
-                          <span className="lf-l">{f.label || <i className="subtle">No label</i>}{f.required && <span className="tx-red" aria-label="required"> *</span>}</span>
+                          {f.type === "break"
+                            ? <span className="lf-l">Page break</span>
+                            : <span className="lf-l">{f.label || <i className="subtle">No label</i>}{f.required && <span className="tx-red" aria-label="required"> *</span>}</span>}
                           <span className="row" style={{ gap: 6, flexWrap: "wrap" }}>
-                            <span className="tag">{FIELD_TYPE_LABEL[f.type]}</span>
+                            {f.type === "break"
+                              ? (liveBreaks.has(f.id) ? <span className="tag">Button: {f.label || "Next"}</span> : <span className="tag">Skipped: needs fields before and after</span>)
+                              : <span className="tag">{FIELD_TYPE_LABEL[f.type]}</span>}
                             {f.mapTo !== "none" && <span className="tag acc">{MAP_LABEL[f.mapTo].replace("Lead · ", "→ ")}</span>}
                             {f.width === "half" && <span className="tag">Half width</span>}
                             {f.type === "file" && <span className="tag">Up to {f.maxFiles ?? 3} file{(f.maxFiles ?? 3) > 1 ? "s" : ""}</span>}
                           </span>
                         </button>
                         <span className="row" style={{ gap: 2 }}>
-                          <button type="button" className="btn ghost sm icon" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Move ${f.label} up`}><ArrowUp size={14} aria-hidden="true" /></button>
-                          <button type="button" className="btn ghost sm icon" onClick={() => move(i, 1)} disabled={i === fields.length - 1} aria-label={`Move ${f.label} down`}><ArrowDown size={14} aria-hidden="true" /></button>
-                          <button type="button" className="btn ghost sm icon danger" onClick={() => remove(f.id)} aria-label={`Remove ${f.label}`}><Trash2 size={14} aria-hidden="true" /></button>
+                          <button type="button" className="btn ghost sm icon" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Move ${what} up`}><ArrowUp size={14} aria-hidden="true" /></button>
+                          <button type="button" className="btn ghost sm icon" onClick={() => move(i, 1)} disabled={i === fields.length - 1} aria-label={`Move ${what} down`}><ArrowDown size={14} aria-hidden="true" /></button>
+                          <button type="button" className="btn ghost sm icon danger" onClick={() => remove(f.id)} aria-label={`Remove ${what}`}><Trash2 size={14} aria-hidden="true" /></button>
                         </span>
                       </li>
-                    ))}
+                    ); })}
                   </ol>
                 </section>
                 {sel && (
                   <section className="card expand-in" key={sel.id}>
-                    <div className="card-h"><h2>Field settings</h2><span className="subtle sm">{FIELD_TYPE_LABEL[sel.type]}</span></div>
+                    <div className="card-h"><h2>{sel.type === "break" ? "Page break" : "Field settings"}</h2><span className="subtle sm">{FIELD_TYPE_LABEL[sel.type]}</span></div>
                     <div className="card-b form-grid">
-                      <label className="field full"><span className="lab">Label</span><input className="inp" value={sel.label} onChange={(e) => setField(sel.id, { label: e.target.value })} /></label>
+                      <label className="field full"><span className="lab">{sel.type === "break" ? "Next button label" : "Label"}</span><input className="inp" value={sel.label} onChange={(e) => setField(sel.id, { label: e.target.value })} /></label>
                       <label className="field"><span className="lab">Type</span>
-                        <select className="inp" value={sel.type} onChange={(e) => { const t = e.target.value as FieldType; setField(sel.id, { type: t, ...(t === "select" && !sel.options?.length ? { options: ["Option 1", "Option 2"] } : {}), ...(t === "file" ? { mapTo: "none", width: "full", maxFiles: sel.maxFiles ?? 3 } : {}) }); }}>
+                        <select className="inp" value={sel.type} onChange={(e) => { const t = e.target.value as FieldType; setField(sel.id, { type: t, ...(t === "select" && !sel.options?.length ? { options: ["Option 1", "Option 2"] } : {}), ...(t === "file" ? { mapTo: "none", width: "full", maxFiles: sel.maxFiles ?? 3 } : {}), ...(t === "break" ? { label: "Next", required: false, mapTo: "none", width: "full" } : {}) }); }}>
                           {FIELD_TYPES.map((t) => <option key={t} value={t}>{FIELD_TYPE_LABEL[t]}</option>)}
                         </select></label>
-                      {sel.type === "file" ? (
+                      {sel.type === "break" ? (
+                        <p className="hint full" style={{ margin: 0 }}>Fields below this start a new page. Visitors must complete this page before the button takes them on, and can go back without losing answers. The submit button and consent checkbox sit on the last page.</p>
+                      ) : sel.type === "file" ? (
                         <label className="field"><span className="lab">Files allowed</span>
                           <select className="inp" value={sel.maxFiles ?? 3} onChange={(e) => setField(sel.id, { maxFiles: Number(e.target.value) })}>
                             {[1, 2, 3, 4, 5, 6, 8, 10].map((n) => <option key={n} value={n}>{n === 1 ? "1 file" : `Up to ${n} files`}</option>)}
@@ -173,15 +183,15 @@ export function Builder({ form, owners, defaultAccent, baseUrl, submissions }: P
                         </select></label>
                       )}
                       {sel.type === "file" && <p className="hint full" style={{ margin: 0 }}>Accepts PDF, JPG, PNG, HEIC, CSV and Excel, up to 10 MB each. Files are encrypted and attached to the lead; only staff who can see the lead can download them.</p>}
-                      {sel.type !== "checkbox" && sel.type !== "file" && <label className="field full"><span className="lab">{sel.type === "select" ? "Empty choice text" : "Placeholder"}</span><input className="inp" value={sel.placeholder ?? ""} onChange={(e) => setField(sel.id, { placeholder: e.target.value })} /></label>}
-                      <label className="field full"><span className="lab">Help text</span><input className="inp" value={sel.help ?? ""} onChange={(e) => setField(sel.id, { help: e.target.value })} placeholder="Shown under the field" /></label>
+                      {sel.type !== "checkbox" && sel.type !== "file" && sel.type !== "break" && <label className="field full"><span className="lab">{sel.type === "select" ? "Empty choice text" : "Placeholder"}</span><input className="inp" value={sel.placeholder ?? ""} onChange={(e) => setField(sel.id, { placeholder: e.target.value })} /></label>}
+                      {sel.type !== "break" && <label className="field full"><span className="lab">Help text</span><input className="inp" value={sel.help ?? ""} onChange={(e) => setField(sel.id, { help: e.target.value })} placeholder="Shown under the field" /></label>}
                       {sel.type === "select" && (
                         <label className="field full"><span className="lab">Options (one per line)</span>
                           <textarea className="inp" rows={5} value={(sel.options ?? []).join("\n")} onChange={(e) => setField(sel.id, { options: e.target.value.split("\n").map((x) => x.trimStart()).filter((x, i, a) => x || i === a.length - 1) })} />
                         </label>
                       )}
-                      <label className="row" style={{ gap: 8 }}><input type="checkbox" checked={sel.required} onChange={(e) => setField(sel.id, { required: e.target.checked })} />Required</label>
-                      {sel.type !== "checkbox" && sel.type !== "file" && <label className="row" style={{ gap: 8 }}><input type="checkbox" checked={sel.width === "half"} onChange={(e) => setField(sel.id, { width: e.target.checked ? "half" : "full" })} />Half width (pairs with the next field)</label>}
+                      {sel.type !== "break" && <label className="row" style={{ gap: 8 }}><input type="checkbox" checked={sel.required} onChange={(e) => setField(sel.id, { required: e.target.checked })} />Required</label>}
+                      {sel.type !== "checkbox" && sel.type !== "file" && sel.type !== "break" && <label className="row" style={{ gap: 8 }}><input type="checkbox" checked={sel.width === "half"} onChange={(e) => setField(sel.id, { width: e.target.checked ? "half" : "full" })} />Half width (pairs with the next field)</label>}
                     </div>
                   </section>
                 )}

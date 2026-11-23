@@ -3,7 +3,7 @@
  * The public page at /f/{publicId} serves this, and the builder shows the same output in an iframe preview,
  * so what you build is exactly what visitors see. Every user-provided string goes through esc().
  */
-import type { FormField, FormSettings } from "./types";
+import { splitSteps, type FormField, type FormSettings } from "./types";
 
 // Kept in sync with src/lib/files.ts (that module is server-only).
 const FILE_ACCEPT = ".pdf,.jpg,.jpeg,.png,.heic,.heif,.csv,.xlsx,.xls";
@@ -28,6 +28,8 @@ export type RenderOpts = {
   defaultAccent: string;
   /** Shown instead of the form (e.g. not allowed on this site). */
   notice?: string;
+  /** Multi-step forms: the step to open on (builder preview follows the selected field). */
+  startStep?: number;
 };
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -40,6 +42,7 @@ const BTN_SIZE: Record<string, string> = { small: "height:40px;padding:0 16px;fo
 const pick = (table: Record<string, string>, key: unknown, fallback: string) => (typeof key === "string" && Object.hasOwn(table, key) ? table[key] : table[fallback]);
 
 function fieldHtml(f: FormField) {
+  if (f.type === "break") return ""; // page breaks become steps (splitSteps), never inputs
   const id = `f_${f.id}`;
   const req = f.required ? " required" : "";
   const ph = f.placeholder ? ` placeholder="${esc(f.placeholder)}"` : "";
@@ -83,22 +86,33 @@ export function renderFormHtml(form: { publicId: string; name: string; fields: F
   const accent = hex(s.accentColor, hex(o.defaultAccent, "#5B5BD6"));
   const dark = s.theme === "dark";
   const outline = s.buttonFill === "outline";
-  const btnCss = `border-radius:${pick(BTN_RADIUS, s.buttonRadius, "rounded")};${pick(BTN_SIZE, s.buttonSize, "medium")};${s.buttonWidth === "full" ? "width:100%;" : ""}${
+  const btnShape = `border-radius:${pick(BTN_RADIUS, s.buttonRadius, "rounded")};${pick(BTN_SIZE, s.buttonSize, "medium")}`;
+  const btnCss = `${btnShape};${s.buttonWidth === "full" ? "width:100%;" : ""}${
     outline ? `color:${dark ? "color-mix(in srgb,var(--a) 60%,#fff)" : "var(--a)"};background:transparent;border:1.5px solid currentColor` : "color:#fff;background:var(--a);border:0"}`;
   const nonce = o.nonce ? ` nonce="${esc(o.nonce)}"` : "";
+  // Page breaks split the form into steps. Every step is rendered visible and the script pages through them,
+  // so without JavaScript it is still one long form that posts normally. No breaks = the same markup as before.
+  const steps = splitSteps(form.fields);
+  const multi = steps.length > 1;
+  const consent = s.consentText ? `<div class="fld full chk"><label><input type="checkbox" name="consent" value="yes" required aria-describedby="consent_e"> <span>${esc(s.consentText)} <span class="req" aria-hidden="true">*</span></span></label><span class="err" id="consent_e" role="alert"></span></div>` : "";
+  const submitBtn = `<button type="submit" class="btn">${esc(s.submitLabel || "Send")}</button>`;
+  const fieldsHtml = multi
+    ? `<div class="prog" id="ibf_prog" tabindex="-1" hidden><span id="ibf_pt">Step 1 of ${steps.length}</span><span class="bar" aria-hidden="true"><i id="ibf_pb"></i></span></div>${steps.map((st, i) =>
+        `<div class="step" role="group" aria-label="Step ${i + 1} of ${steps.length}" data-next="${esc(st.next || "Next")}"><div class="grid">${st.fields.map(fieldHtml).join("")}</div>${i === steps.length - 1 ? consent : ""}</div>`).join("")}`
+    : `<div class="grid">${form.fields.map(fieldHtml).join("")}</div>
+    ${consent}`;
   const body = o.notice
     ? `<div class="box"><p class="intro">${esc(o.notice)}</p></div>`
     : `<div class="box">
   ${s.title ? `<h1>${esc(s.title)}</h1>` : ""}${s.intro ? `<p class="intro">${esc(s.intro)}</p>` : ""}
   <form id="ibf" method="post" action="${esc(o.action)}" novalidate${o.sent ? " hidden" : ""}>
-    <div class="grid">${form.fields.map(fieldHtml).join("")}</div>
-    ${s.consentText ? `<div class="fld full chk"><label><input type="checkbox" name="consent" value="yes" required aria-describedby="consent_e"> <span>${esc(s.consentText)} <span class="req" aria-hidden="true">*</span></span></label><span class="err" id="consent_e" role="alert"></span></div>` : ""}
+    ${fieldsHtml}
     <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="website_url" tabindex="-1" autocomplete="off"></label></div>
     ${o.token ? `<input type="hidden" name="t" value="${esc(o.token)}">` : ""}
     <input type="hidden" name="page_url" value="${esc(o.pageUrl ?? "")}">
     ${o.embed ? `<input type="hidden" name="embed" value="1">` : ""}
     <p class="formerr" role="alert" id="ibf_err"></p>
-    <button type="submit" class="btn">${esc(s.submitLabel || "Send")}</button>
+    ${multi ? `<div class="nav"><button type="button" class="back" id="ibf_back" hidden>Back</button><button type="button" class="btn" id="ibf_next" hidden>Next</button>${submitBtn}</div>` : submitBtn}
     ${o.preview ? `<p class="pv">Preview: submissions are turned off here.</p>` : ""}
   </form>
   <div id="ibf_done" class="done"${o.sent ? "" : " hidden"} role="status" tabindex="-1">
@@ -145,6 +159,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--a);outline-offse
 .btn{margin-top:18px;font-family:inherit;font-weight:600;line-height:1;cursor:pointer;min-width:120px;transition:filter .15s,background-color .15s,transform .1s;${btnCss}}
 .btn:hover{${outline ? "background:color-mix(in srgb,var(--a) 10%,transparent)" : "filter:brightness(.93)"}}.btn:active{transform:scale(.98)}.btn[disabled]{opacity:.6;cursor:progress}
 .btn:focus-visible{outline:2px solid var(--a);outline-offset:3px}
+.prog{display:flex;flex-direction:column;gap:6px;margin:0 0 18px;font-size:12.5px;font-weight:600;color:var(--ink2);outline:0}
+.bar{display:block;height:4px;border-radius:999px;background:color-mix(in srgb,var(--ink) 12%,transparent);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--a);transition:width .25s ease-out}
+.step+.step{margin-top:14px}.paged .step{margin-top:0}
+.nav{display:flex;align-items:center;gap:10px;margin-top:18px}.nav .btn{margin-top:0}
+.back{flex:none;font-family:inherit;font-weight:600;line-height:1;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);transition:background-color .15s;${btnShape}}
+.back:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}.back:focus-visible{outline:2px solid var(--a);outline-offset:3px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .pv{font-size:12.5px;color:var(--ink2);margin:10px 0 0}
 .done{text-align:center;padding:24px 8px;animation:in .3s ease-out}.done p{color:var(--ink2);margin:0}
@@ -154,12 +175,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--a);outline-offse
 [hidden]{display:none!important}`;
 
   const js = `(function(){
-var ID=${JSON.stringify(form.publicId)},EMBED=${o.embed ? "true" : "false"},PREVIEW=${o.preview ? "true" : "false"};
+var ID=${JSON.stringify(form.publicId)},EMBED=${o.embed ? "true" : "false"},PREVIEW=${o.preview ? "true" : "false"},START=${Number.isInteger(o.startStep) && o.startStep! > 0 ? o.startStep : 0};
 var f=document.getElementById("ibf"),done=document.getElementById("ibf_done"),ferr=document.getElementById("ibf_err");
 function post(m){if(EMBED&&window.parent!==window){m.ibForm=ID;window.parent.postMessage(m,"*");}}
 function size(){post({height:Math.ceil(document.body.getBoundingClientRect().height)});}
 if(window.ResizeObserver){new ResizeObserver(size).observe(document.body);}window.addEventListener("load",size);size();
 if(!f)return;
+var steps=f.querySelectorAll(".step"),N=steps.length,cur=0,nextB=document.getElementById("ibf_next"),backB=document.getElementById("ibf_back"),prog=document.getElementById("ibf_prog");
+function show(i,move){cur=i;Array.prototype.forEach.call(steps,function(s,j){s.hidden=j!==i;});
+ backB.hidden=i===0;nextB.hidden=i===N-1;f.querySelector("button[type=submit]").hidden=i!==N-1;nextB.textContent=steps[i].getAttribute("data-next")||"Next";
+ document.getElementById("ibf_pt").textContent="Step "+(i+1)+" of "+N;document.getElementById("ibf_pb").style.width=Math.round((i+1)/N*100)+"%";
+ ferr.textContent="";size();
+ if(move){prog.focus();if(EMBED)post({scroll:true});else if(prog.getBoundingClientRect().top<0)prog.scrollIntoView();}}
+function reveal(el){var s=el&&el.closest?el.closest(".step"):null,i=s?Array.prototype.indexOf.call(steps,s):-1;if(i>-1&&i!==cur)show(i,false);}
+function next(){if(!PREVIEW&&!check(steps[cur]))return;show(cur+1,true);}
+if(N>1){f.classList.add("paged");prog.hidden=false;show(Math.min(START,N-1),false);nextB.addEventListener("click",next);backB.addEventListener("click",function(){show(cur-1,true);});}
 function fmt(n){return n<1024?n+" B":n<1048576?Math.round(n/1024)+" KB":(n/1048576).toFixed(1)+" MB";}
 var OK=/\.(pdf|jpe?g|png|heic|heif|csv|xlsx|xls)$/i,MAXB=10485760;
 Array.prototype.forEach.call(f.querySelectorAll(".drop"),function(d){
@@ -172,16 +202,18 @@ Array.prototype.forEach.call(f.querySelectorAll(".drop"),function(d){
 });
 Array.prototype.forEach.call(f.querySelectorAll("select"),function(el){function u(){if(el.value)el.removeAttribute("data-empty");else el.setAttribute("data-empty","");}u();el.addEventListener("change",u);});
 function setErr(name,msg){var el=f.elements[name];var e=document.getElementById(name+"_e");if(e)e.textContent=msg||"";if(el&&el.setAttribute){if(msg)el.setAttribute("aria-invalid","true");else el.removeAttribute("aria-invalid");}}
-function check(){var ok=true,first=null;Array.prototype.forEach.call(f.querySelectorAll("input,select,textarea"),function(el){if(!el.name||el.type==="hidden"||el.closest(".hp"))return;var msg="";
+function check(scope){var ok=true,first=null;Array.prototype.forEach.call((scope||f).querySelectorAll("input,select,textarea"),function(el){if(!el.name||el.type==="hidden"||el.closest(".hp"))return;var msg="";
  if(el.validity&&!el.validity.valid){msg=el.validity.valueMissing?(el.type==="checkbox"?"Please tick this box.":el.type==="file"?"Please attach a file.":"This field is required."):el.type==="email"?"Enter a valid email address.":el.getAttribute("data-kind")==="url"?"Enter a website address, e.g. example.com":"Check this field.";}
- setErr(el.name,msg);if(msg){ok=false;if(!first)first=el;}});if(first)first.focus();return ok;}
+ setErr(el.name,msg);if(msg){ok=false;if(!first)first=el;}});if(first){reveal(first);first.focus();}return ok;}
 f.addEventListener("input",function(e){if(e.target.getAttribute("aria-invalid"))setErr(e.target.name,"");});
-f.addEventListener("submit",function(e){e.preventDefault();ferr.textContent="";if(!check())return;
+f.addEventListener("submit",function(e){e.preventDefault();ferr.textContent="";
+ if(N>1&&cur<N-1){next();return;}
+ if(!check())return;
  if(PREVIEW){ferr.textContent="Preview only: nothing was sent.";return;}
  var b=f.querySelector("button[type=submit]");b.disabled=true;var label=b.textContent;b.textContent="Sending…";
  fetch(f.action,{method:"POST",body:new FormData(f),headers:{"Accept":"application/json"},credentials:"omit"}).then(function(r){return r.json().catch(function(){return {error:"Something went wrong. Please try again."};});}).then(function(d){
   if(d&&d.ok){f.hidden=true;done.hidden=false;done.focus();post({submitted:true});size();if(d.redirect){if(EMBED)post({redirect:d.redirect});else window.location.href=d.redirect;}return;}
-  if(d&&d.errors){var first=null;Object.keys(d.errors).forEach(function(k){var n=k==="consent"?"consent":"f_"+k;setErr(n,d.errors[k]);if(!first)first=f.elements[n];});if(first&&first.focus)first.focus();}
+  if(d&&d.errors){var first=null;Object.keys(d.errors).forEach(function(k){var n=k==="consent"?"consent":"f_"+k;setErr(n,d.errors[k]);if(!first)first=f.elements[n];});if(first&&first.focus){reveal(first);first.focus();}}
   ferr.textContent=(d&&d.error)||(d&&d.errors?"":"Something went wrong. Please try again.");
  }).catch(function(){ferr.textContent="Couldn’t send. Check your connection and try again.";}).finally(function(){b.disabled=false;b.textContent=label;size();});
 });})();`;

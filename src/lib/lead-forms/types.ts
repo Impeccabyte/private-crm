@@ -4,11 +4,11 @@
  */
 import { z } from "zod";
 
-export const FIELD_TYPES = ["text", "email", "phone", "textarea", "select", "number", "url", "checkbox", "file"] as const;
+export const FIELD_TYPES = ["text", "email", "phone", "textarea", "select", "number", "url", "checkbox", "file", "break"] as const;
 export type FieldType = (typeof FIELD_TYPES)[number];
 
 export const FIELD_TYPE_LABEL: Record<FieldType, string> = {
-  text: "Short text", email: "Email", phone: "Phone", textarea: "Long text", select: "Dropdown", number: "Number", url: "Website", checkbox: "Checkbox", file: "File upload",
+  text: "Short text", email: "Email", phone: "Phone", textarea: "Long text", select: "Dropdown", number: "Number", url: "Website", checkbox: "Checkbox", file: "File upload", break: "Page break",
 };
 
 /** Lead columns a field can fill. "notes" goes into the lead's first activity; "none" is kept with the submission only. */
@@ -21,6 +21,10 @@ export const MAP_LABEL: Record<MapTarget, string> = {
   currentProcessor: "Lead · Current processor", notes: "Lead · Notes",
 };
 
+/**
+ * A "break" field is a page break, not an input: it ends a step, and its label is that step's Next button.
+ * It is never required, mapped or submitted.
+ */
 export type FormField = {
   id: string;
   type: FieldType;
@@ -110,6 +114,7 @@ export function starterFields(): FormField[] {
 }
 
 export function blankField(type: FieldType): FormField {
+  if (type === "break") return { id: newFieldId(), type, label: "Next", required: false, mapTo: "none", width: "full" };
   if (type === "file") return { id: newFieldId(), type, label: "Recent merchant statements", help: "Your last three months, if you have them. Optional.", required: false, mapTo: "none", width: "full", maxFiles: 3 };
   const label = { text: "Question", email: "Email", phone: "Phone", textarea: "Message", select: "Choose one", number: "Number", url: "Website", checkbox: "I agree" }[type];
   const mapTo: MapTarget = type === "email" ? "email" : type === "phone" ? "phone" : type === "url" ? "website" : "none";
@@ -128,7 +133,10 @@ const fieldSchema = z.object({
   mapTo: z.enum(MAP_TARGETS),
   width: z.enum(["full", "half"]),
   maxFiles: z.number().int().min(1).max(10).optional(),
-}).transform((f) => (f.type === "file" ? { ...f, mapTo: "none" as const, width: "full" as const, maxFiles: f.maxFiles ?? 3 } : f));
+}).transform((f) => (
+  f.type === "file" ? { ...f, mapTo: "none" as const, width: "full" as const, maxFiles: f.maxFiles ?? 3 }
+  : f.type === "break" ? { ...f, required: false, mapTo: "none" as const, width: "full" as const }
+  : f));
 
 const emailList = (v: string) => v.split(",").map((x) => x.trim()).filter(Boolean).every((x) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x));
 const domainList = (v: string) => v.split(",").map((x) => x.trim()).filter(Boolean).every((x) => /^(\*\.)?[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(x) || /^localhost(:\d+)?$/.test(x));
@@ -155,7 +163,7 @@ export const settingsSchema = z.object({
 /** Problems that block publishing (a draft can be saved with them). */
 export function publishProblems(fields: FormField[]): string[] {
   const p: string[] = [];
-  if (!fields.length) p.push("Add at least one field.");
+  if (!fields.some((f) => f.type !== "break")) p.push("Add at least one field.");
   if (!fields.some((f) => f.mapTo === "email" || f.mapTo === "phone")) p.push("Map a field to Lead · Email or Lead · Phone so you can follow up.");
   for (const t of ["businessName", "contactName", "email", "phone", "website", "estMonthlyVolume"] as const) {
     if (fields.filter((f) => f.mapTo === t).length > 1) p.push(`Only one field can map to ${MAP_LABEL[t]}.`);
@@ -166,12 +174,37 @@ export function publishProblems(fields: FormField[]): string[] {
 
 export const fieldsSchema = z.array(fieldSchema).max(40, "Keep forms to 40 fields or fewer");
 
+// ── Steps (page breaks) ──────────────────────────────────────────────────────
+export type FormStep = { fields: FormField[]; /** Next button label, from the break that ends this step. */ next: string; breakId: string | null };
+
+/**
+ * Splits fields into steps at each page break. Breaks with nothing to separate (first, last, or two in a row)
+ * are dropped, so there is never an empty step; a form without working breaks is a single step.
+ */
+export function splitSteps(fields: FormField[]): FormStep[] {
+  const steps: FormStep[] = [];
+  let cur: FormField[] = [];
+  for (const f of fields) {
+    if (f.type !== "break") { cur.push(f); continue; }
+    if (cur.length) { steps.push({ fields: cur, next: f.label, breakId: f.id }); cur = []; }
+  }
+  if (cur.length || !steps.length) steps.push({ fields: cur, next: "", breakId: null });
+  else steps[steps.length - 1] = { ...steps[steps.length - 1]!, next: "", breakId: null }; // trailing break
+  return steps;
+}
+
+/** Which step a field (or the break that ends a step) is on; 0 when it isn't on any. */
+export function stepIndexOf(fields: FormField[], id: string | null): number {
+  return Math.max(0, splitSteps(fields).findIndex((s) => (id !== null && s.breakId === id) ||s.fields.some((f) => f.id === id)));
+}
+
 // ── Submission validation (public endpoint) ──────────────────────────────────
 export function validateSubmission(fields: FormField[], settings: FormSettings, input: Record<string, string>) {
   const errors: Record<string, string> = {};
   const values: Record<string, string> = {};
   for (const f of fields) {
     if (f.type === "file") continue; // files are checked by the submit endpoint (validateFiles)
+    if (f.type === "break") continue;
     const raw = (input[`f_${f.id}`] ?? "").toString().trim().slice(0, f.type === "textarea" ? 5000 : 500);
     const v = f.type === "checkbox" ? (raw ? "Yes" : "") : raw;
     if (f.required && !v) { errors[f.id] = f.type === "checkbox" ? "Please tick this box." : "This field is required."; continue; }

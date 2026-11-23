@@ -477,6 +477,8 @@ tr.expand-in { animation: none; } tr.expand-in > td { animation: ib-fade .2s eas
 .lf-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border-bottom: 1px solid var(--line); }
 .lf-item:last-child { border-bottom: 0; }
 .lf-item.on { background: var(--accent-soft); }
+.lf-break { border-top: 1px dashed var(--line-strong, var(--line)); border-bottom-style: dashed; }
+.lf-break .lf-l { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2, inherit); }
 .lf-sel { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 6px 8px; border: 0; background: none; text-align: left; font: inherit; color: var(--ink); cursor: pointer; border-radius: 6px; }
 .lf-sel:hover { background: var(--hover); }
 .lf-l { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }

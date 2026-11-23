@@ -27,6 +27,7 @@ Array.prototype.forEach.call(targets,function(t){
   window.addEventListener("message",function(e){
     if(e.origin!==BASE||e.source!==f.contentWindow)return;var m=e.data;if(!m||m.ibForm!==ID)return;
     if(m.height)f.style.height=Math.max(200,m.height)+"px";
+    if(m.scroll){var r=f.getBoundingClientRect();if(r.top<0)window.scrollBy(0,r.top-80);}
     if(m.submitted){try{t.dispatchEvent(new CustomEvent("ib-form-submitted",{bubbles:true,detail:{form:ID}}));}catch(_){}}
     if(m.redirect&&/^https:\\/\\//.test(m.redirect))window.location.href=m.redirect;
   });
