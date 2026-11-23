@@ -8,7 +8,11 @@ import { CopyButton } from "@/components/forms";
 import { Pill } from "@/components/ui";
 import { confirmDialog, notify } from "@/components/confirm";
 import { renderFormHtml } from "@/lib/lead-forms/render";
-import { blankField, FIELD_TYPE_LABEL, FIELD_TYPES, MAP_LABEL, MAP_TARGETS, publishProblems, type FieldType, type FormField, type FormSettings } from "@/lib/lead-forms/types";
+import {
+  blankField, BUTTON_FILL_LABEL, BUTTON_FILLS, BUTTON_RADII, BUTTON_RADIUS_LABEL, BUTTON_SIZE_LABEL, BUTTON_SIZES, BUTTON_WIDTH_LABEL, BUTTON_WIDTHS,
+  FIELD_TYPE_LABEL, FIELD_TYPES, MAP_LABEL, MAP_TARGETS, publishProblems,
+  type ButtonFill, type ButtonRadius, type ButtonSize, type ButtonWidth, type FieldType, type FormField, type FormSettings,
+} from "@/lib/lead-forms/types";
 import { duplicateForm, saveForm, setArchived, setPublished } from "../actions";
 
 type Sub = { id: string; at: string; outcome: string; leadId: string | null; lead: string | null; pageUrl: string | null; data: Record<string, string> };
@@ -200,6 +204,10 @@ export function Builder({ form, owners, defaultAccent, baseUrl, submissions }: P
                   <label className="field full"><span className="lab">Consent checkbox (optional)</span><input className="inp" value={settings.consentText} onChange={(e) => setS("consentText", e.target.value)} placeholder="I agree to be contacted about payment processing." /><span className="hint">When set, visitors must tick it to submit.</span></label>
                   <label className="field"><span className="lab">Button color</span>
                     <span className="row" style={{ gap: 8 }}><input type="color" value={settings.accentColor || defaultAccent} onChange={(e) => setS("accentColor", e.target.value)} aria-label="Button color" style={{ width: 40, height: 30, padding: 0, border: 0, background: "none" }} /><input className="inp mono" value={settings.accentColor} onChange={(e) => setS("accentColor", e.target.value)} placeholder={defaultAccent} style={{ flex: 1 }} /></span></label>
+                  <label className="field"><span className="lab">Button corners</span><select className="inp" value={settings.buttonRadius} onChange={(e) => setS("buttonRadius", e.target.value as ButtonRadius)}>{BUTTON_RADII.map((v) => <option key={v} value={v}>{BUTTON_RADIUS_LABEL[v]}</option>)}</select></label>
+                  <label className="field"><span className="lab">Button style</span><select className="inp" value={settings.buttonFill} onChange={(e) => setS("buttonFill", e.target.value as ButtonFill)}>{BUTTON_FILLS.map((v) => <option key={v} value={v}>{BUTTON_FILL_LABEL[v]}</option>)}</select></label>
+                  <label className="field"><span className="lab">Button size</span><select className="inp" value={settings.buttonSize} onChange={(e) => setS("buttonSize", e.target.value as ButtonSize)}>{BUTTON_SIZES.map((v) => <option key={v} value={v}>{BUTTON_SIZE_LABEL[v]}</option>)}</select></label>
+                  <label className="field"><span className="lab">Button width</span><select className="inp" value={settings.buttonWidth} onChange={(e) => setS("buttonWidth", e.target.value as ButtonWidth)}>{BUTTON_WIDTHS.map((v) => <option key={v} value={v}>{BUTTON_WIDTH_LABEL[v]}</option>)}</select></label>
                   <label className="field"><span className="lab">Theme</span><select className="inp" value={settings.theme} onChange={(e) => setS("theme", e.target.value as "light" | "dark")}><option value="light">Light</option><option value="dark">Dark</option></select></label>
                 </div>
               </section>

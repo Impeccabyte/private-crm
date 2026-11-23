@@ -35,6 +35,22 @@ export type FormField = {
   maxFiles?: number;
 };
 
+export const BUTTON_RADII = ["square", "rounded", "extra", "pill"] as const;
+export type ButtonRadius = (typeof BUTTON_RADII)[number];
+export const BUTTON_RADIUS_LABEL: Record<ButtonRadius, string> = { square: "Square", rounded: "Rounded", extra: "Extra rounded", pill: "Pill" };
+
+export const BUTTON_FILLS = ["solid", "outline"] as const;
+export type ButtonFill = (typeof BUTTON_FILLS)[number];
+export const BUTTON_FILL_LABEL: Record<ButtonFill, string> = { solid: "Solid", outline: "Outline" };
+
+export const BUTTON_SIZES = ["small", "medium", "large"] as const;
+export type ButtonSize = (typeof BUTTON_SIZES)[number];
+export const BUTTON_SIZE_LABEL: Record<ButtonSize, string> = { small: "Small", medium: "Medium", large: "Large" };
+
+export const BUTTON_WIDTHS = ["auto", "full"] as const;
+export type ButtonWidth = (typeof BUTTON_WIDTHS)[number];
+export const BUTTON_WIDTH_LABEL: Record<ButtonWidth, string> = { auto: "Fit the label", full: "Full width" };
+
 export type FormSettings = {
   title: string;
   intro: string;
@@ -52,6 +68,11 @@ export type FormSettings = {
   /** Optional consent checkbox text; when set, it's required. */
   consentText: string;
   accentColor: string;
+  /** Submit button look. The defaults match the original button, so forms saved before these existed don't change. */
+  buttonRadius: ButtonRadius;
+  buttonFill: ButtonFill;
+  buttonSize: ButtonSize;
+  buttonWidth: ButtonWidth;
   theme: "light" | "dark";
 };
 
@@ -67,6 +88,10 @@ export const DEFAULT_SETTINGS: FormSettings = {
   allowedDomains: "",
   consentText: "",
   accentColor: "",
+  buttonRadius: "rounded",
+  buttonFill: "solid",
+  buttonSize: "medium",
+  buttonWidth: "auto",
   theme: "light",
 };
 
@@ -120,6 +145,10 @@ export const settingsSchema = z.object({
   allowedDomains: z.string().refine(domainList, "Use comma-separated domains, e.g. example.com, *.example.com"),
   consentText: z.string().max(500),
   accentColor: z.string().refine((v) => v === "" || /^#[0-9a-f]{6}$/i.test(v), "Use a hex color like #5B5BD6"),
+  buttonRadius: z.enum(BUTTON_RADII),
+  buttonFill: z.enum(BUTTON_FILLS),
+  buttonSize: z.enum(BUTTON_SIZES),
+  buttonWidth: z.enum(BUTTON_WIDTHS),
   theme: z.enum(["light", "dark"]),
 });
 

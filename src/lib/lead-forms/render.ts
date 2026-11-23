@@ -33,6 +33,12 @@ export type RenderOpts = {
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const hex = (s: string, fallback: string) => (/^#[0-9a-f]{6}$/i.test(s) ? s : fallback);
 
+// Button options are looked up, never interpolated, so a stored value can't reach the stylesheet.
+// Unknown or missing values (forms saved before these existed) fall back to the original button.
+const BTN_RADIUS: Record<string, string> = { square: "0", rounded: "8px", extra: "14px", pill: "999px" };
+const BTN_SIZE: Record<string, string> = { small: "height:40px;padding:0 16px;font-size:14px", medium: "height:46px;padding:0 22px;font-size:15px", large: "height:54px;padding:0 28px;font-size:16px" };
+const pick = (table: Record<string, string>, key: unknown, fallback: string) => (typeof key === "string" && Object.hasOwn(table, key) ? table[key] : table[fallback]);
+
 function fieldHtml(f: FormField) {
   const id = `f_${f.id}`;
   const req = f.required ? " required" : "";
@@ -76,6 +82,9 @@ export function renderFormHtml(form: { publicId: string; name: string; fields: F
   const s = form.settings;
   const accent = hex(s.accentColor, hex(o.defaultAccent, "#5B5BD6"));
   const dark = s.theme === "dark";
+  const outline = s.buttonFill === "outline";
+  const btnCss = `border-radius:${pick(BTN_RADIUS, s.buttonRadius, "rounded")};${pick(BTN_SIZE, s.buttonSize, "medium")};${s.buttonWidth === "full" ? "width:100%;" : ""}${
+    outline ? `color:${dark ? "color-mix(in srgb,var(--a) 60%,#fff)" : "var(--a)"};background:transparent;border:1.5px solid currentColor` : "color:#fff;background:var(--a);border:0"}`;
   const nonce = o.nonce ? ` nonce="${esc(o.nonce)}"` : "";
   const body = o.notice
     ? `<div class="box"><p class="intro">${esc(o.notice)}</p></div>`
@@ -133,8 +142,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--a);outline-offse
 .chk label{display:flex;gap:10px;align-items:flex-start;font-weight:500;cursor:pointer}.chk input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--a);flex:none}
 .help{font-size:12.5px;color:var(--ink2)}.err{font-size:12.5px;color:var(--err);min-height:0}.err:empty{display:none}
 .formerr{color:var(--err);font-size:13.5px;margin:14px 0 0}.formerr:empty{display:none}
-.btn{margin-top:18px;font-family:inherit;font-size:15px;font-weight:600;line-height:1;color:#fff;background:var(--a);border:0;border-radius:8px;padding:0 22px;height:46px;cursor:pointer;min-width:120px;transition:filter .15s,transform .1s}
-.btn:hover{filter:brightness(.93)}.btn:active{transform:scale(.98)}.btn[disabled]{opacity:.6;cursor:progress}
+.btn{margin-top:18px;font-family:inherit;font-weight:600;line-height:1;cursor:pointer;min-width:120px;transition:filter .15s,background-color .15s,transform .1s;${btnCss}}
+.btn:hover{${outline ? "background:color-mix(in srgb,var(--a) 10%,transparent)" : "filter:brightness(.93)"}}.btn:active{transform:scale(.98)}.btn[disabled]{opacity:.6;cursor:progress}
 .btn:focus-visible{outline:2px solid var(--a);outline-offset:3px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .pv{font-size:12.5px;color:var(--ink2);margin:10px 0 0}
