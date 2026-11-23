@@ -1,0 +1,42 @@
+# The production image (linux/amd64), built on an arm64 machine such as an
+# Apple silicon Mac. scripts/deploy.sh picks this file there.
+#
+# Running `next build` under amd64 emulation is slow and runs out of memory in
+# a small Docker VM. The compiled output is plain JavaScript, the same on every
+# CPU, so it is compiled natively here; only node_modules, which holds
+# per-CPU binaries, is installed for amd64. Keep the runner stage in step with
+# Dockerfile.
+#
+# Docker's classic builder keeps one local copy of a tag whatever the CPU, so
+# scripts/deploy.sh passes each base in by its own digest. With BuildKit the
+# defaults below work as they are.
+ARG NODE_AMD64=node:22-alpine
+ARG NODE_ARM64=node:22-alpine
+
+FROM --platform=linux/amd64 ${NODE_AMD64} AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+FROM --platform=linux/arm64 ${NODE_ARM64} AS build
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+RUN npm run build
+
+FROM --platform=linux/amd64 ${NODE_AMD64} AS runner
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+COPY --from=build --chown=node:node /app/package.json /app/package-lock.json /app/tsconfig.json /app/next.config.ts ./
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/.next ./.next
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/src ./src
+COPY --from=build --chown=node:node /app/scripts ./scripts
+COPY --from=build --chown=node:node /app/drizzle ./drizzle
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
+USER node
+EXPOSE 3000
+CMD ["npm", "run", "start"]

@@ -1,0 +1,92 @@
+# Impeccabyte CRM — production stack. A complete file, not an override: never
+# load docker-compose.yml on the server (it publishes Postgres and Mailpit).
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# The server's .env sets COMPOSE_FILE to this file, so plain `docker compose`
+# works there. See docs/DEPLOY.md.
+#
+# - Nothing is published on the host. The main site's Caddy reaches the app
+#   over the shared external network "edge" as crm-app:3000 and terminates
+#   HTTPS for the CRM's hostname.
+# - The image is built elsewhere and loaded with `docker load`; the server
+#   never builds.
+# - No ClamAV: the server is too small for it. Without CLAMAV_HOST, uploads are
+#   stored as "unscanned". To add it, copy the clamav service from
+#   docker-compose.yml and set CLAMAV_HOST/CLAMAV_PORT below.
+# - No Mailpit: set the SMTP relay in Settings → Email.
+
+x-app-env: &app-env
+  env_file: .env
+  environment:
+    DATABASE_URL: postgres://crm:${DB_PASSWORD:?set DB_PASSWORD in .env}@db:5432/crm
+    NODE_ENV: production
+    UPLOAD_DIR: /app/uploads
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: crm
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      POSTGRES_DB: crm
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm -d crm"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  # One-shot: apply migrations, then seed (idempotent). App and worker wait for it.
+  migrate:
+    image: ${CRM_IMAGE:-impeccabyte-crm:prod}
+    <<: *app-env
+    command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    image: ${CRM_IMAGE:-impeccabyte-crm:prod}
+    <<: *app-env
+    volumes:
+      - uploads:/app/uploads
+    command: ["npm", "run", "start"]
+    networks:
+      default:
+      edge:
+        aliases: [crm-app]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  # Background jobs: webhook processing, Maverick syncs.
+  worker:
+    image: ${CRM_IMAGE:-impeccabyte-crm:prod}
+    <<: *app-env
+    volumes:
+      - uploads:/app/uploads
+    command: ["npm", "run", "worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+networks:
+  # Shared with the main site's Caddy. Create once: docker network create edge
+  edge:
+    external: true
+
+volumes:
+  pgdata:
+  # Encrypted lead-form uploads (merchant statements etc.)
+  uploads:

@@ -186,10 +186,41 @@ export class MaverickAdapter implements ProcessorAdapter {
     return out;
   }
 
+  /**
+   * Maverick ticket category id → name, loaded once per adapter (i.e. per sync run) from GET /api/ticket/categories.
+   * Tickets carry only the id. The live response is an object of lists, one per parent category plus "root" for
+   * the parents themselves (the API docs show one flat list; both are read). Two categories can share a name
+   * ("Chargebacks" sits under Merchant Support and under Risk), so those get their parent appended:
+   * "Chargebacks (Risk)".
+   */
+  private ticketCategories?: Promise<Map<string, string>>;
+  private categoryNames() {
+    this.ticketCategories ??= (async () => {
+      const map = new Map<string, string>();
+      try {
+        const res = await this.client.request<Any>("GET", "api/ticket/categories");
+        const lists: Any[] = Array.isArray(res) ? [res] : Array.isArray(res?.items) ? [res.items] : Object.values(res ?? {}).filter(Array.isArray);
+        const rows: Any[] = lists.flat().filter((c: Any) => c?.id != null && str(c?.name)?.trim());
+        const uses = new Map<string, number>();
+        for (const c of rows) uses.set(String(c.name).trim(), (uses.get(String(c.name).trim()) ?? 0) + 1);
+        for (const c of rows) {
+          const name = String(c.name).trim(), within = str(c.parent?.name)?.trim() || str(c.group)?.trim();
+          map.set(String(c.id), (uses.get(name) ?? 0) > 1 && within ? `${name} (${within})` : name);
+        }
+      } catch (err) {
+        console.warn("[maverick] couldn’t load ticket categories; keeping category ids", (err as Error).message);
+      }
+      if (!map.size) console.warn("[maverick] the ticket category list came back empty; keeping category ids");
+      return map;
+    })();
+    return this.ticketCategories;
+  }
+
   async listTickets(p: number): Promise<Page<NTicket>> {
+    const names = await this.categoryNames();
     return page(await this.client.list<Any>("api/tickets", p), (t: Any) => ({
       externalId: String(t.id), dbaExternalId: str(t.dba?.id), subject: String(t.title ?? t.subject ?? "Ticket"), text: str(t.text),
-      status: mapTicketStatus(t.status), category: str(t.category?.name ?? t.category?.id), createdAt: str(t.createdOn), raw: t,
+      status: mapTicketStatus(t.status), category: str(t.category?.name) ?? names.get(String(t.category?.id)) ?? str(t.category?.id), createdAt: str(t.createdOn), raw: t,
     }), p);
   }
 

@@ -127,7 +127,7 @@ async function run(conn: Conn, adapter: ProcessorAdapter, kind: SyncKind) {
     stats.tickets = await eachPage((p) => adapter.listTickets(p), async (t) => {
       const mId = await merchantIdFor(conn, t.dbaExternalId);
       const ex = await db.query.tickets.findFirst({ where: and(eq(schema.tickets.connectionId, conn.id), eq(schema.tickets.externalId, t.externalId)) });
-      if (ex) { await db.update(schema.tickets).set({ status: t.status, subject: t.subject }).where(eq(schema.tickets.id, ex.id)); return; }
+      if (ex) { await db.update(schema.tickets).set({ status: t.status, subject: t.subject, category: t.category ?? ex.category }).where(eq(schema.tickets.id, ex.id)); return; }
       const [row] = await db.insert(schema.tickets).values({
         number: `MAV-${t.externalId}`, merchantId: mId, connectionId: conn.id, source: "maverick", externalId: t.externalId, subject: t.subject, status: t.status,
         category: t.category ?? null, createdAt: t.createdAt ? new Date(t.createdAt.replace(" ", "T") + "Z") : new Date(),
