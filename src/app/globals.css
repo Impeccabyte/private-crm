@@ -490,6 +490,13 @@ tr.expand-in { animation: none; } tr.expand-in > td { animation: ib-fade .2s eas
 .dlg-wrap .scrim { position: absolute; inset: 0; z-index: 0; }
 .dlg { position: relative; z-index: 1; width: 420px; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-pop); padding: 20px; display: flex; flex-direction: column; gap: 14px; animation: ib-dialog .2s var(--ease-out); }
 .dlg h2 { margin: 0; font-size: 15px; font-weight: 600; }
+/* Profile photo cropper (Account) */
+.crop-dlg { width: 340px; }
+.crop-frame { position: relative; align-self: center; max-width: 100%; border-radius: 8px; overflow: hidden; background: var(--sunken); touch-action: none; }
+.crop-frame canvas { display: block; cursor: grab; } .crop-frame canvas:active { cursor: grabbing; }
+.crop-frame canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.crop-ring { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 999px rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.7); pointer-events: none; }
+.crop-zoom { flex: 1; accent-color: var(--accent); }
 .dlg p { margin: 0; color: var(--ink-2); }
 .dlg .acts { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .btn.pri.danger { background: var(--r-ink); color: #fff; }
