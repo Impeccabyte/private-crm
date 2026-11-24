@@ -34,6 +34,7 @@ The first admin's starting password is in `/root/impeccabyte-crm-credentials.txt
 
 - Sign in and change the admin password (Account → Change password).
 - Set the SMTP relay in Settings → Email. Until then invite and password-reset emails are not delivered.
+- For newsletters, also set a real From address, your postal address and the send rate there; sending is blocked until they are set. Add SPF and DKIM records for the From domain at your mail provider, or newsletters will land in spam. Newsletter links (unsubscribe, tracking, pictures) are built from `APP_URL`.
 - Paste the Maverick token and webhook secret in Settings → Integrations.
 
 ## Useful commands

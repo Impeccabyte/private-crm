@@ -14,7 +14,7 @@ export const ROLE_LABEL: Record<Role, string> = {
 };
 
 export const PERMISSIONS = [
-  "leads.view", "leads.edit", "leadforms.manage",
+  "leads.view", "leads.edit", "leadforms.manage", "campaigns.manage",
   "deals.view", "deals.edit",
   "merchants.view", "merchants.edit", "merchants.hide",
   "applications.view", "applications.edit",
@@ -51,7 +51,7 @@ export function can(role: Role, perm: Permission): boolean {
 export const isScoped = (role: Role) => role === "agent";
 
 export const PERMISSION_LABEL: Record<Permission, string> = {
-  "leads.view": "View leads", "leads.edit": "Create & edit leads", "leadforms.manage": "Build & publish lead forms",
+  "leads.view": "View leads", "leads.edit": "Create & edit leads", "leadforms.manage": "Build & publish lead forms", "campaigns.manage": "Build & send email newsletters",
   "deals.view": "View deals", "deals.edit": "Move & edit deals",
   "merchants.view": "View merchants", "merchants.edit": "Edit merchants, log activity", "merchants.hide": "Hide inactive boarding merchants",
   "applications.view": "View applications", "applications.edit": "Work boarding applications",

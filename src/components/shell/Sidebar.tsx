@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
-  Home, UserPlus, Columns3, Store, FileCheck2, MessageCircle, RotateCcw, BarChart3, DollarSign, SlidersHorizontal, PanelLeft, X,
+  Home, UserPlus, Columns3, Store, FileCheck2, MessageCircle, RotateCcw, BarChart3, DollarSign, SlidersHorizontal, PanelLeft, X, Mail,
   type LucideIcon,
 } from "lucide-react";
 
@@ -12,7 +12,7 @@ export type NavItem = { href: string; label: string; icon: string; count?: numbe
 
 const ICONS: Record<string, LucideIcon> = {
   home: Home, leads: UserPlus, deals: Columns3, merchants: Store, applications: FileCheck2, support: MessageCircle,
-  chargebacks: RotateCcw, reports: BarChart3, residuals: DollarSign, settings: SlidersHorizontal,
+  chargebacks: RotateCcw, reports: BarChart3, residuals: DollarSign, settings: SlidersHorizontal, email: Mail,
 };
 
 function ago(iso: string) {

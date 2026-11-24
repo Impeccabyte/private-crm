@@ -26,6 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const nav: NavItem[] = [
     { href: "/", label: "Home", icon: "home" },
     can(user.role, "leads.view") && { href: "/leads", label: "Leads", icon: "leads" },
+    can(user.role, "campaigns.manage") && { href: "/email", label: "Email", icon: "email" },
     can(user.role, "deals.view") && { href: "/deals", label: "Deals", icon: "deals" },
     can(user.role, "merchants.view") && { href: "/merchants", label: "Merchants", icon: "merchants" },
     can(user.role, "applications.view") && { href: "/applications", label: "Applications", icon: "applications", count: apps[0]?.n },

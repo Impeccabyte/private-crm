@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * Optimistic check only: no session cookie → send to /login. The real session and permission checks
  * happen in the Data Access Layer (src/lib/dal.ts) on every page and server action.
  */
-const PUBLIC = ["/login", "/forgot-password", "/reset-password", "/api/health", "/api/webhooks", "/auth/", "/f/", "/embed/", "/api/forms/"];
+const PUBLIC = ["/login", "/forgot-password", "/reset-password", "/api/health", "/api/webhooks", "/auth/", "/f/", "/embed/", "/api/forms/", "/e/"];
 
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;

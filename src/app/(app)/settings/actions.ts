@@ -83,7 +83,10 @@ export async function saveEmail(_p: ActionState, f: FormData): Promise<ActionSta
     const v = z.object({
       enabled: z.boolean(), host: z.string().min(1, "Required"), port: z.number().int().min(1).max(65535), secure: z.boolean(),
       username: z.string(), fromAddress: z.string().email("Enter a valid email"), fromName: z.string().min(1, "Required"),
-    }).parse({ enabled: bool(f, "enabled"), host: str(f, "host"), port: int(f, "port"), secure: bool(f, "secure"), username: str(f, "username"), fromAddress: str(f, "fromAddress"), fromName: str(f, "fromName") });
+      replyTo: z.string().refine((v) => v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Enter a valid email"),
+      postalAddress: z.string().max(300), sendsPerMinute: z.number().int().min(1, "At least 1").max(600, "600 at most"),
+    }).parse({ enabled: bool(f, "enabled"), host: str(f, "host"), port: int(f, "port"), secure: bool(f, "secure"), username: str(f, "username"), fromAddress: str(f, "fromAddress"), fromName: str(f, "fromName"),
+      replyTo: str(f, "replyTo"), postalAddress: str(f, "postalAddress"), sendsPerMinute: int(f, "sendsPerMinute") });
     await setSetting("email", { ...v, passwordEnc: nextSecret(str(f, "password"), cur.passwordEnc) }, user.id);
     await audit(await actorFor(user), "settings.update", "settings", "email", { ...v, passwordChanged: !!str(f, "password") });
     return { ok: "Email settings saved." };

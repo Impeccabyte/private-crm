@@ -8,6 +8,7 @@ export const Q = {
   sync: "connection-sync",
   nightly: "nightly-sync-check",
   fileScan: "file-scan-pending",
+  emailSend: "email-send-round",
 } as const;
 
 export type SyncKind = "full" | "merchants" | "applications" | "tickets" | "chargebacks" | "residuals" | "payouts";
@@ -36,4 +37,10 @@ export async function enqueueWebhook(eventId: string) {
 export async function enqueueSync(connectionId: string, kind: SyncKind, triggeredBy?: string) {
   const b = await getBoss();
   return b.send(Q.sync, { connectionId, kind, triggeredBy: triggeredBy ?? null }, { retryLimit: 2, retryDelay: 60, singletonKey: `${connectionId}:${kind}` });
+}
+
+/** Starts a newsletter send round now instead of waiting for the next minute. */
+export async function enqueueEmailRound() {
+  const b = await getBoss();
+  return b.send(Q.emailSend, {}, { singletonKey: "now", singletonSeconds: 20 });
 }
