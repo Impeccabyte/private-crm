@@ -19,8 +19,8 @@ export default async function NewsletterEditor({ params }: { params: Promise<{ i
   const R = schema.emailRecipients;
   const hasReport = c.status === "sending" || c.status === "sent" || c.status === "cancelled";
 
-  const [g, mail, owners, forms, counts, links, recipients] = await Promise.all([
-    getSetting("general"), getSetting("email"),
+  const [g, mail, brand, owners, forms, counts, links, recipients] = await Promise.all([
+    getSetting("general"), getSetting("email"), getSetting("brand"),
     db.select({ id: schema.users.id, name: schema.users.name }).from(schema.users).where(ne(schema.users.status, "disabled")).orderBy(asc(schema.users.name)),
     db.select({ id: schema.leadForms.id, name: schema.leadForms.name }).from(schema.leadForms).where(isNull(schema.leadForms.archivedAt)).orderBy(asc(schema.leadForms.name)),
     hasReport ? db.select({
@@ -50,6 +50,7 @@ export default async function NewsletterEditor({ params }: { params: Promise<{ i
       mailProblems={newsletterMailProblems(mail)}
       mail={{ fromName: mail.fromName, fromAddress: mail.fromAddress, replyTo: mail.replyTo, postalAddress: mail.postalAddress, sendsPerMinute: mail.sendsPerMinute }}
       company={g.companyName}
+      brand={brand}
       user={{ name: user.name, email: user.email }}
       report={hasReport && counts[0] ? {
         counts: counts[0], links,

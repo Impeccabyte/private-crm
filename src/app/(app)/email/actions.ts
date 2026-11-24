@@ -7,10 +7,10 @@ import { z } from "zod";
 import { db, schema } from "@/db";
 import { actorFor, requirePermission } from "@/lib/dal";
 import { audit } from "@/lib/audit";
-import { getSetting } from "@/lib/settings";
+import { getSetting, setSetting } from "@/lib/settings";
 import { newsletterMailProblems, sendMailRich } from "@/lib/mail";
 import { enqueueEmailRound } from "@/jobs/queue";
-import { audienceSchema, campaignSchema, DEFAULT_AUDIENCE, DEFAULT_STYLE, sendProblems, starterBlocks, validEmail, type Audience, type Block, type CampaignInput } from "@/lib/email/types";
+import { audienceSchema, brandSchema, campaignSchema, DEFAULT_AUDIENCE, DEFAULT_STYLE, sendProblems, starterBlocks, validEmail, type Audience, type Block, type Brand, type CampaignInput } from "@/lib/email/types";
 import { renderEmail } from "@/lib/email/render";
 import { firstName, resolveAudience } from "@/lib/email/audience";
 import { appUrl, typedCampaign } from "@/lib/email/server";
@@ -97,11 +97,11 @@ export async function sendTest(id: string): Promise<Result> {
     const user = await requirePermission("campaigns.manage");
     const c = await load(id);
     if (!c.blocks.length) return { error: "Add at least one block first." };
-    const [g, mail] = await Promise.all([getSetting("general"), getSetting("email")]);
+    const [g, mail, brand] = await Promise.all([getSetting("general"), getSetting("email"), getSetting("brand")]);
     const out = renderEmail(c, {
       merge: { first_name: firstName(user.name), name: user.name, business_name: "Harbor Coffee Co." },
       companyName: g.companyName, postalAddress: mail.postalAddress || "Your postal address (set it in Settings → Email)",
-      unsubscribeUrl: `${appUrl()}/e/u/test-email-preview-link`,
+      unsubscribeUrl: `${appUrl()}/e/u/test-email-preview-link`, brand,
     });
     const r = await sendMailRich({ to: user.email, subject: `[Test] ${out.subject || c.name}`, text: out.text, html: out.html, fromName: c.fromName || undefined, replyTo: validEmail(c.replyTo) ? c.replyTo.trim() : undefined });
     if (!r.ok) return { error: r.error ?? "The test couldn’t be sent." };
@@ -192,6 +192,19 @@ export async function deleteTemplate(id: string): Promise<Result> {
     if (t) await audit(await actorFor(user), "campaign.template_delete", "email_template", id, { name: t.name });
     revalidatePath("/email");
     return { ok: "Template deleted." };
+  } catch (e) { return { error: msg(e) }; }
+}
+
+/** The logo used in every newsletter's header. Saved once for the workspace, so it never needs uploading again. */
+export async function saveBrand(input: Brand): Promise<Result> {
+  try {
+    const user = await requirePermission("campaigns.manage");
+    const before = await getSetting("brand");
+    const v = brandSchema.parse(input);
+    await setSetting("brand", v, user.id);
+    if (before.logoUrl !== v.logoUrl) await audit(await actorFor(user), "campaign.brand_update", "settings", "brand", { logo: v.logoUrl ? "set" : "removed" });
+    revalidatePath("/email", "layout");
+    return { ok: "Saved" };
   } catch (e) { return { error: msg(e) }; }
 }
 

@@ -607,6 +607,10 @@ tr.expand-in { animation: none; } tr.expand-in > td { animation: ib-fade .2s eas
 
 .em-stage { border: 1px solid var(--line); border-radius: 10px; padding: 44px 16px 20px; display: flex; flex-direction: column; align-items: center; min-height: 520px; min-width: 0; transition: background-color .2s ease; }
 .em-paper { position: relative; max-width: 100%; border-radius: 8px; padding: 22px 0 26px; box-shadow: var(--shadow-sm); font-size: 15px; line-height: 23px; transition: width .28s var(--ease-out), background-color .2s ease, color .2s ease; }
+.em-brand { display: block; width: 100%; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; outline: 1px solid transparent; outline-offset: -1px; transition: outline-color .12s ease; }
+.em-brand:disabled { cursor: default; }
+.em-grid:not(.locked) .em-brand:hover { outline-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.em-wordmark { font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -.01em; }
 .em-foot { max-width: 100%; padding: 18px 32px 8px; font-size: 12px; line-height: 18px; text-align: center; transition: width .28s var(--ease-out); }
 .em-warn { color: var(--r-ink); background: var(--r-bg); border-radius: 4px; padding: 1px 5px; font-family: Inter, ui-sans-serif, sans-serif; }
 

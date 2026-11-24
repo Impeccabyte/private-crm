@@ -9,7 +9,7 @@ import { db, schema } from "@/db";
 import { randomToken } from "@/lib/crypto";
 import { uploadDir } from "@/lib/files";
 import { scanBuffer, scannerConfigured } from "@/lib/clamav";
-import { DEFAULT_AUDIENCE, type Audience, type Block, type EmailStyle } from "./types";
+import { DEFAULT_AUDIENCE, type Audience, type Block, type Brand, type EmailStyle } from "./types";
 import { normalStyle } from "./render";
 
 export type CampaignRow = typeof schema.emailCampaigns.$inferSelect;
@@ -92,15 +92,15 @@ export async function readImage(id: string): Promise<{ data: Buffer; mime: strin
 }
 
 // ── Rendering one recipient's copy ───────────────────────────────────────────
-export type SendContext = { companyName: string; postalAddress: string; /** url → email_links.id */ links: Map<string, string> };
+export type SendContext = { companyName: string; postalAddress: string; brand: Brand; /** url → email_links.id */ links: Map<string, string> };
 
 export async function sendContext(campaignId: string): Promise<SendContext> {
   const { getSetting } = await import("@/lib/settings");
-  const [g, mail, links] = await Promise.all([
-    getSetting("general"), getSetting("email"),
+  const [g, mail, brand, links] = await Promise.all([
+    getSetting("general"), getSetting("email"), getSetting("brand"),
     db.select({ id: schema.emailLinks.id, url: schema.emailLinks.url }).from(schema.emailLinks).where(eq(schema.emailLinks.campaignId, campaignId)),
   ]);
-  return { companyName: g.companyName, postalAddress: mail.postalAddress, links: new Map(links.map((l) => [l.url, l.id])) };
+  return { companyName: g.companyName, postalAddress: mail.postalAddress, brand, links: new Map(links.map((l) => [l.url, l.id])) };
 }
 
 export async function renderForRecipient(c: TypedCampaign, r: { token: string; name: string | null; businessName: string | null }, ctx: SendContext, opts: { pixel: boolean }) {
@@ -109,7 +109,7 @@ export async function renderForRecipient(c: TypedCampaign, r: { token: string; n
   const name = (r.name ?? "").trim();
   return renderEmail(c, {
     merge: { first_name: name.split(/\s+/)[0] ?? "", name, business_name: r.businessName ?? "" },
-    companyName: ctx.companyName, postalAddress: ctx.postalAddress,
+    companyName: ctx.companyName, postalAddress: ctx.postalAddress, brand: ctx.brand,
     unsubscribeUrl: u.unsubscribe, viewUrl: u.view, pixelUrl: opts.pixel ? u.pixel : undefined,
     link: (url) => { const id = ctx.links.get(url); return id ? u.click(id) : url; },
   });

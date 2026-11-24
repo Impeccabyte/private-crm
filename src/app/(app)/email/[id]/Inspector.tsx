@@ -4,7 +4,7 @@ import { useRef, useState, type ReactNode } from "react";
 import { AlignCenter, AlignLeft, AlignRight, Plus, Trash2, Upload } from "lucide-react";
 import { notify } from "@/components/confirm";
 import {
-  ALIGNS, FONTS, FONT_LABEL, MERGE_TAGS, SOCIAL_LABEL, SOCIAL_NETWORKS, type Align, type Block, type Cell, type EmailStyle, type FontKey, type SocialNetwork,
+  ALIGNS, FONTS, FONT_LABEL, MERGE_TAGS, SOCIAL_LABEL, SOCIAL_NETWORKS, type Align, type Block, type Brand, type Cell, type EmailStyle, type FontKey, type SocialNetwork,
 } from "@/lib/email/types";
 import { uploadImage, type Doc, type MailInfo, type Update } from "./shared";
 
@@ -34,7 +34,7 @@ function Seg<T extends string>({ label, value, options, onChange, disabled }: { 
   );
 }
 
-function ImageField({ src, onChange, disabled, id }: { src: string; onChange: (src: string) => void; disabled?: boolean; id: string }) {
+function ImageField({ src, onChange, disabled, id, label = "Picture" }: { src: string; onChange: (src: string) => void; disabled?: boolean; id: string; label?: string }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const pick = async (f?: File | null) => {
@@ -44,7 +44,7 @@ function ImageField({ src, onChange, disabled, id }: { src: string; onChange: (s
   };
   return (
     <div className="field">
-      <label htmlFor={id}>Picture</label>
+      <label htmlFor={id}>{label}</label>
       <div className="row" style={{ gap: 6 }}>
         <input ref={input} type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden onChange={(e) => { void pick(e.target.files?.[0]); e.target.value = ""; }} />
         <button type="button" className="btn sm" disabled={disabled || busy} onClick={() => input.current?.click()}><Upload size={14} aria-hidden="true" />{busy ? "Uploading…" : src ? "Replace" : "Upload"}</button>
@@ -72,10 +72,11 @@ function Color({ label, value, onChange, disabled, id }: { label: string; value:
   );
 }
 
-export function Inspector({ doc, update, block, patch, locked, mail }: {
+export function Inspector({ doc, update, block, patch, locked, mail, brand, setBrand, company }: {
   doc: Doc; update: Update; block: Block | null; patch: (p: Partial<Block>, key?: string) => void; locked: boolean; mail: MailInfo;
+  brand: Brand; setBrand: (p: Partial<Brand>) => void; company: string;
 }) {
-  if (!block) return <EmailSettings doc={doc} update={update} locked={locked} mail={mail} />;
+  if (!block) return <EmailSettings doc={doc} update={update} locked={locked} mail={mail} brand={brand} setBrand={setBrand} company={company} />;
   const b = block;
   const dis = locked;
   const link = (id: string, value: string, onChange: (v: string) => void, label = "Link") => (
@@ -152,7 +153,7 @@ function Tags() {
   );
 }
 
-function EmailSettings({ doc, update, locked, mail }: { doc: Doc; update: Update; locked: boolean; mail: MailInfo }) {
+function EmailSettings({ doc, update, locked, mail, brand, setBrand, company }: { doc: Doc; update: Update; locked: boolean; mail: MailInfo; brand: Brand; setBrand: (p: Partial<Brand>) => void; company: string }) {
   const set = <K extends "subject" | "preheader" | "fromName" | "replyTo">(k: K, v: string) => update((d) => ({ ...d, [k]: v }), `doc:${k}`);
   const st = <K extends keyof EmailStyle>(k: K, v: EmailStyle[K]) => update((d) => ({ ...d, style: { ...d.style, [k]: v } }), `style:${k}`);
   return (
@@ -162,6 +163,22 @@ function EmailSettings({ doc, update, locked, mail }: { doc: Doc; update: Update
       <F label="From name" id="e-from" hint={`Sent from ${mail.fromAddress}.`}><input id="e-from" className="inp" value={doc.fromName} maxLength={100} disabled={locked} placeholder={mail.fromName} onChange={(e) => set("fromName", e.target.value)} /></F>
       <F label="Replies go to" id="e-reply"><input id="e-reply" type="email" className="inp" value={doc.replyTo} maxLength={200} disabled={locked} placeholder={mail.replyTo || mail.fromAddress} onChange={(e) => set("replyTo", e.target.value.trim())} /></F>
       <hr className="divider" />
+      <fieldset className="em-fs">
+        <legend>Header</legend>
+        <label className="row" style={{ gap: 10, cursor: locked ? "default" : "pointer" }}>
+          <button type="button" className={`switch ${doc.style.showLogo ? "on" : ""}`} role="switch" aria-checked={doc.style.showLogo} aria-label="Show the logo header" disabled={locked} onClick={() => st("showLogo", !doc.style.showLogo)} />
+          <span style={{ fontWeight: 500 }}>Show your logo at the top</span>
+        </label>
+        {doc.style.showLogo && <>
+          <ImageField id="br-logo" label="Logo" src={brand.logoUrl} disabled={locked} onChange={(logoUrl) => setBrand({ logoUrl })} />
+          <span className="hint" style={{ marginTop: -6 }}>{brand.logoUrl ? "Saved for every newsletter, so you only upload it once. Changing it here changes it everywhere." : `Upload it once and every newsletter uses it. Until then, “${company}” is shown as text.`}</span>
+          {brand.logoUrl && <>
+            <F label={`Logo width · ${brand.logoWidth}px`} id="br-w"><input id="br-w" type="range" min={40} max={400} step={10} value={brand.logoWidth} disabled={locked} onChange={(e) => setBrand({ logoWidth: Number(e.target.value) })} /></F>
+            <F label="Logo links to" id="br-href" hint="Usually your website."><input id="br-href" className="inp" placeholder="https://example.com" value={brand.logoHref} disabled={locked} onChange={(e) => setBrand({ logoHref: e.target.value.trim() })} /></F>
+          </>}
+          <AlignPicker value={doc.style.logoAlign} disabled={locked} onChange={(a) => st("logoAlign", a)} />
+        </>}
+      </fieldset>
       <div className="em-colors">
         <Color id="c-accent" label="Buttons & links" value={doc.style.accent} disabled={locked} onChange={(v) => st("accent", v)} />
         <Color id="c-text" label="Text" value={doc.style.text} disabled={locked} onChange={(v) => st("text", v)} />

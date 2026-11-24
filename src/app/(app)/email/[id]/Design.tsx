@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { notify } from "@/components/confirm";
 import {
-  BLOCK_HINT, BLOCK_LABEL, BLOCK_TYPES, FONT_STACK, MERGE_TAGS, SOCIAL_LABEL, blankBlock, newBlockId, type Block, type BlockType, type Cell, type EmailStyle,
+  BLOCK_HINT, BLOCK_LABEL, BLOCK_TYPES, FONT_STACK, MERGE_TAGS, SOCIAL_LABEL, blankBlock, newBlockId, validImage, type Block, type BlockType, type Brand, type Cell, type EmailStyle,
 } from "@/lib/email/types";
 import { contrastOn, mute } from "@/lib/email/render";
 import { safeHref } from "@/lib/email/sanitize";
@@ -27,8 +27,8 @@ const ICON: Record<BlockType, LucideIcon> = {
 const HEAD: Record<number, CSSProperties> = { 1: { fontSize: 28, lineHeight: "34px" }, 2: { fontSize: 22, lineHeight: "28px" }, 3: { fontSize: 17, lineHeight: "24px" } };
 const RADIUS: Record<string, string> = { square: "0", rounded: "6px", pill: "999px" };
 
-export function Design({ doc, update, locked, device, mail, company }: {
-  doc: Doc; update: Update; locked: boolean; device: "desktop" | "mobile"; mail: MailInfo; company: string;
+export function Design({ doc, update, locked, device, mail, company, brand, setBrand }: {
+  doc: Doc; update: Update; locked: boolean; device: "desktop" | "mobile"; mail: MailInfo; company: string; brand: Brand; setBrand: (p: Partial<Brand>) => void;
 }) {
   const { blocks, style } = doc;
   const [selected, setSelected] = useState<string | null>(null);
@@ -106,6 +106,15 @@ export function Design({ doc, update, locked, device, mail, company }: {
 
         <div className="em-stage" style={{ background: style.bg }} onClick={(e) => { if (e.target === e.currentTarget) setSelected(null); }}>
           <div className={`em-paper ${device}`} style={paper}>
+            {style.showLogo && (
+              <button type="button" className={`em-brand ${selected === null ? "on" : ""}`} style={{ textAlign: style.logoAlign, padding: `4px ${device === "mobile" ? 20 : 32}px 12px` }} disabled={locked}
+                onClick={() => { setSelected(null); setInspOpen(true); }} aria-label="Header with your logo. Open email settings to change it.">
+                {validImage(brand.logoUrl)
+                  // eslint-disable-next-line @next/next/no-img-element -- the uploaded workspace logo, shown at its chosen width
+                  ? <img src={brand.logoUrl} alt={brand.logoAlt || company} style={{ width: brand.logoWidth, maxWidth: "100%", height: "auto", verticalAlign: "middle" }} draggable={false} />
+                  : <span className="em-wordmark">{company}</span>}
+              </button>
+            )}
             <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
               {blocks.map((b, i) => (
                 <div key={b.id}>
@@ -134,7 +143,7 @@ export function Design({ doc, update, locked, device, mail, company }: {
             {sel && <button className="btn ghost sm" type="button" onClick={() => setSelected(null)}>Email settings</button>}
             <button className="btn ghost sm icon em-insp-x" type="button" aria-label="Close settings" onClick={() => setInspOpen(false)}><X size={16} aria-hidden="true" /></button>
           </div>
-          <Inspector key={sel?.id ?? "email"} doc={doc} update={update} block={sel} patch={(p, key) => sel && patch(sel.id, p, key)} locked={locked} mail={mail} />
+          <Inspector key={sel?.id ?? "email"} doc={doc} update={update} block={sel} patch={(p, key) => sel && patch(sel.id, p, key)} locked={locked} mail={mail} brand={brand} setBrand={setBrand} company={company} />
         </aside>
         {inspOpen && <div className="em-insp-scrim" onClick={() => setInspOpen(false)} aria-hidden="true" />}
         {!locked && <button className="btn em-insp-open" type="button" onClick={() => setInspOpen(true)}><SlidersHorizontal size={16} aria-hidden="true" />{sel ? `${BLOCK_LABEL[sel.type]} settings` : "Email settings"}</button>}

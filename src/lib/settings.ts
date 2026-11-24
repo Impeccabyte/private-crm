@@ -58,8 +58,20 @@ export type SsoSettings = {
 
 export type TemplateSettings = { templates: { id: string; name: string; body: string }[] };
 
+/** Branding shared by every newsletter, so the logo is uploaded once. Edited from the newsletter builder. */
+export type BrandSettings = {
+  /** Public image address (uploaded through the builder); empty = show the company name instead. */
+  logoUrl: string;
+  logoAlt: string;
+  /** Where the logo links to, usually your website. */
+  logoHref: string;
+  /** Display width in pixels. */
+  logoWidth: number;
+};
+
 export type SettingsMap = {
   general: GeneralSettings;
+  brand: BrandSettings;
   security: SecuritySettings;
   email: EmailSettings;
   sso: SsoSettings;
@@ -67,6 +79,7 @@ export type SettingsMap = {
 };
 
 export const DEFAULTS: SettingsMap = {
+  brand: { logoUrl: "", logoAlt: "", logoHref: "", logoWidth: 160 },
   general: {
     companyName: "Impeccabyte",
     accentColor: "#5B5BD6",

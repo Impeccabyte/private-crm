@@ -8,7 +8,8 @@ import { confirmDialog, notify } from "@/components/confirm";
 import { Pill, type Tone } from "@/components/ui";
 import { fmtDateTime } from "@/lib/format";
 import { renderEmail } from "@/lib/email/render";
-import { deleteCampaign, duplicateCampaign, saveAsTemplate, saveCampaign, sendTest } from "../actions";
+import type { Brand } from "@/lib/email/types";
+import { deleteCampaign, duplicateCampaign, saveAsTemplate, saveBrand, saveCampaign, sendTest } from "../actions";
 import { Design } from "./Design";
 import { AudiencePanel, ReportPanel, SendPanel, useAudience } from "./Panels";
 import { useLocalTime, type CampaignProps, type Doc, type MailInfo, type Report, type Update } from "./shared";
@@ -41,9 +42,9 @@ function reduce(s: Hist, a: Act): Hist {
   return next ? { doc: next, past: [...s.past, s.doc], future: s.future.slice(1), at: 0, version: s.version + 1 } : s;
 }
 
-export function Builder({ campaign, owners, forms, mailProblems, mail, company, user, report }: {
+export function Builder({ campaign, owners, forms, mailProblems, mail, company, brand: brand0, user, report }: {
   campaign: CampaignProps; owners: { id: string; name: string }[]; forms: { id: string; name: string }[]; mailProblems: string[];
-  mail: MailInfo; company: string; user: { name: string; email: string }; report: Report | null;
+  mail: MailInfo; company: string; brand: Brand; user: { name: string; email: string }; report: Report | null;
 }) {
   const router = useRouter();
   const locked = campaign.status !== "draft";
@@ -94,6 +95,18 @@ export function Builder({ campaign, owners, forms, mailProblems, mail, company, 
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
+
+  // ── Workspace logo: shared by every newsletter, saved on its own (not part of this newsletter's undo history) ──
+  const [brand, setBrandState] = useState<Brand>(brand0);
+  const brandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const setBrand = useCallback((patch: Partial<Brand>) => {
+    setBrandState((b) => {
+      const next = { ...b, ...patch };
+      if (brandTimer.current) clearTimeout(brandTimer.current);
+      brandTimer.current = setTimeout(async () => { const r = await saveBrand(next); if (r.error) notify(r.error, { error: true }); }, 500);
+      return next;
+    });
+  }, []);
 
   // ── Undo / redo shortcuts (plain inputs keep the browser's own undo) ──
   useEffect(() => {
@@ -179,24 +192,24 @@ export function Builder({ campaign, owners, forms, mailProblems, mail, company, 
         )}
       </div>
 
-      {tab === "design" && <Design doc={doc} update={update} locked={locked} device={device} mail={mail} company={company} />}
+      {tab === "design" && <Design doc={doc} update={update} locked={locked} device={device} mail={mail} company={company} brand={brand} setBrand={setBrand} />}
       {tab === "audience" && <AudiencePanel doc={doc} update={update} locked={locked} owners={owners} forms={forms} summary={audience.data} loading={audience.loading} />}
       {tab === "send" && <SendPanel campaign={campaign} doc={doc} mail={mail} mailProblems={mailProblems} summary={audience.data} user={user} flush={persist} report={report} />}
       {tab === "report" && report && <ReportPanel report={report} live={campaign.status === "sending"} />}
 
-      {preview && <Preview doc={doc} mail={mail} company={company} user={user} onClose={() => setPreview(false)} onTest={() => act(() => sendTest(campaign.id))} busy={pending} />}
+      {preview && <Preview doc={doc} mail={mail} company={company} brand={brand} user={user} onClose={() => setPreview(false)} onTest={() => act(() => sendTest(campaign.id))} busy={pending} />}
     </div>
   );
 }
 
 /** The real email HTML (the same function the send job uses), shown in a sandboxed frame. */
-function Preview({ doc, mail, company, user, onClose, onTest, busy }: { doc: Doc; mail: MailInfo; company: string; user: { name: string; email: string }; onClose: () => void; onTest: () => void; busy: boolean }) {
+function Preview({ doc, mail, company, brand, user, onClose, onTest, busy }: { doc: Doc; mail: MailInfo; company: string; brand: Brand; user: { name: string; email: string }; onClose: () => void; onTest: () => void; busy: boolean }) {
   const [device, setDevice] = useState<Device>("desktop");
   const closeRef = useRef<HTMLButtonElement>(null);
   const out = useMemo(() => renderEmail(doc, {
     merge: { first_name: user.name.split(/\s+/)[0] ?? "", name: user.name, business_name: "Harbor Coffee Co." },
-    companyName: company, postalAddress: mail.postalAddress || "Your postal address (set it in Settings → Email)", unsubscribeUrl: "#", viewUrl: "#", link: () => "#",
-  }), [doc, mail.postalAddress, company, user.name]);
+    companyName: company, postalAddress: mail.postalAddress || "Your postal address (set it in Settings → Email)", unsubscribeUrl: "#", viewUrl: "#", link: () => "#", brand,
+  }), [doc, mail.postalAddress, company, user.name, brand]);
   useEffect(() => {
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -221,7 +234,8 @@ function Preview({ doc, mail, company, user, onClose, onTest, busy }: { doc: Doc
           <button ref={closeRef} className="btn ghost icon" type="button" aria-label="Close preview" onClick={onClose}><X size={16} aria-hidden="true" /></button>
         </div>
         <div className="em-prev-b">
-          <iframe title="Email preview" sandbox="" srcDoc={out.html} style={{ width: device === "mobile" ? 375 : "100%" }} />
+          {/* No scripts are allowed in the frame. allow-same-origin only lets it load the uploaded pictures, which a fully isolated frame was refusing. */}
+          <iframe title="Email preview" sandbox="allow-same-origin" srcDoc={out.html} style={{ width: device === "mobile" ? 375 : "100%" }} />
         </div>
         <div className="em-prev-f subtle sm">Shown with sample details ({user.name}, Harbor Coffee Co.). Links are switched off in the preview.</div>
       </div>

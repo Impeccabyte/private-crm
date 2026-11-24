@@ -2,7 +2,7 @@
  * Turns a newsletter definition into email HTML (tables + inline styles, 600px wide, so it survives Outlook and
  * Gmail) and a plain-text alternative. Pure: the builder preview and the send job call the same function.
  */
-import { FONT_STACK, SOCIAL_LABEL, type Align, type Block, type Cell, type EmailStyle, DEFAULT_STYLE } from "./types";
+import { FONT_STACK, SOCIAL_LABEL, type Align, type Block, type Brand, type Cell, type EmailStyle, DEFAULT_STYLE } from "./types";
 import { richToText, safeHref, sanitizeRich } from "./sanitize";
 
 export type RenderOpts = {
@@ -11,6 +11,8 @@ export type RenderOpts = {
   companyName: string;
   postalAddress: string;
   unsubscribeUrl: string;
+  /** Workspace logo for the header (shown when the newsletter's style has the header on). */
+  brand?: Brand;
   viewUrl?: string;
   /** 1×1 open-tracking image. */
   pixelUrl?: string;
@@ -44,6 +46,7 @@ export function normalStyle(s: Partial<EmailStyle> | null | undefined): EmailSty
     bg: hex(s?.bg, DEFAULT_STYLE.bg), surface: hex(s?.surface, DEFAULT_STYLE.surface), text: hex(s?.text, DEFAULT_STYLE.text),
     accent: hex(s?.accent, DEFAULT_STYLE.accent), font: Object.hasOwn(FONT_STACK, s?.font ?? "") ? s!.font! : "sans",
     footerNote: typeof s?.footerNote === "string" ? s.footerNote : DEFAULT_STYLE.footerNote,
+    showLogo: s?.showLogo !== false, logoAlign: s?.logoAlign === "center" || s?.logoAlign === "right" ? s.logoAlign : "left",
   };
 }
 
@@ -135,6 +138,17 @@ export function renderEmail(c: RenderInput, o: RenderOpts): { html: string; text
     }
   };
 
+  // Header: the workspace logo, or the company name as a wordmark until a logo is uploaded.
+  const logo = imgSrc(o.brand?.logoUrl ?? "");
+  const logoW = Math.min(400, Math.max(40, Math.round(Number(o.brand?.logoWidth) || 160)));
+  const logoTo = href(o.brand?.logoHref ?? "");
+  const mark = logo
+    ? `<img src="${esc(logo)}" alt="${esc(o.brand?.logoAlt || o.companyName)}" width="${logoW}" style="display:inline-block;width:${logoW}px;max-width:100%;height:auto;border:0;outline:none;vertical-align:middle;">`
+    : `<span style="font-family:${font};font-size:20px;line-height:26px;font-weight:700;letter-spacing:-.01em;color:${st.text};">${esc(o.companyName)}</span>`;
+  const header = st.showLogo && (logo || o.companyName.trim())
+    ? row(`<div style="text-align:${st.logoAlign};">${logoTo ? `<a href="${esc(logoTo)}" style="text-decoration:none;">${mark}</a>` : mark}</div>`, "4px 32px 12px")
+    : "";
+
   const subject = mergeTags(c.subject, values).replace(/[\r\n]+/g, " ").trim();
   const pre = mergeTags(c.preheader, values);
   const footLink = `color:${footInk};text-decoration:underline;`;
@@ -149,6 +163,7 @@ ${pre ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:t
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${st.bg}" style="background:${st.bg};"><tr><td class="outer" align="center" style="padding:24px 12px;">
 <table role="presentation" class="wrap" width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="${st.surface}" style="width:600px;max-width:100%;background:${st.surface};border-radius:8px;">
 <tr><td style="height:22px;font-size:0;line-height:0;">&nbsp;</td></tr>
+${header}
 ${c.blocks.map(blockHtml).join("\n")}
 <tr><td style="height:26px;font-size:0;line-height:0;">&nbsp;</td></tr>
 </table>

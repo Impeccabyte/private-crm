@@ -59,11 +59,19 @@ export type EmailStyle = {
   font: FontKey;
   /** Optional line above the address in the footer, e.g. why they're getting this. */
   footerNote: string;
+  /** Show the workspace logo (or the company name if no logo is uploaded) at the top of the email. */
+  showLogo: boolean;
+  logoAlign: Align;
 };
+
+/** The workspace logo shown in the header. Stored once in settings, not per newsletter. */
+export type Brand = { logoUrl: string; logoAlt: string; logoHref: string; logoWidth: number };
+export const NO_BRAND: Brand = { logoUrl: "", logoAlt: "", logoHref: "", logoWidth: 160 };
 
 export const DEFAULT_STYLE: EmailStyle = {
   bg: "#F1F3F6", surface: "#FFFFFF", text: "#1B1F27", accent: "#5B5BD6", font: "sans",
   footerNote: "You’re receiving this because you’ve been in touch with us.",
+  showLogo: true, logoAlign: "left",
 };
 
 export const LEAD_SOURCES = ["any", "web_form", "referral", "import", "partner", "manual"] as const;
@@ -140,6 +148,14 @@ export const blocksSchema = z.array(blockSchema).max(60, "Keep newsletters to 60
 
 export const styleSchema = z.object({
   bg: hexColor, surface: hexColor, text: hexColor, accent: hexColor, font: z.enum(FONTS), footerNote: z.string().max(300),
+  showLogo: z.boolean().default(true), logoAlign: align.default("left"),
+});
+
+export const brandSchema = z.object({
+  logoUrl: z.string().trim().max(2000).refine((v) => v === "" || validImage(v), "The logo’s address must start with https://"),
+  logoAlt: z.string().trim().max(200),
+  logoHref: z.string().trim().max(2000).refine((v) => v === "" || validLink(v), "The logo link isn’t a web address. Start it with https://"),
+  logoWidth: z.number().int().min(40).max(400),
 });
 
 const uuidOr = (...lits: string[]) => z.string().refine((v) => lits.includes(v) || /^[0-9a-f-]{36}$/.test(v));
