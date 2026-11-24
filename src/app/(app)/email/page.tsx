@@ -68,7 +68,7 @@ export default async function EmailPage({ searchParams }: { searchParams: Promis
                       <td className="r">{done ? (c.status === "sending" ? `${num(sent)} of ${num(total)}` : num(sent)) : "—"}</td>
                       <td className="r">{done && sent ? pct((opened / sent) * 100, 0) : "—"}</td>
                       <td className="r">{done && sent ? pct((clicked / sent) * 100, 0) : "—"}</td>
-                      <td className="muted">{c.status === "scheduled" && c.scheduledAt ? `Sends ${fmtDateTime(c.scheduledAt)}` : done && c.startedAt ? `Sent ${fmtDate(c.startedAt)}` : `Edited ${fmtDate(c.updatedAt)}`}</td>
+                      <td className="muted">{c.status === "scheduled" && c.scheduledAt ? `Sends ${fmtDateTime(c.scheduledAt)} ET` : done && c.startedAt ? `Sent ${fmtDate(c.startedAt)}` : `Edited ${fmtDate(c.updatedAt)}`}</td>
                     </tr>
                   );
                 })}

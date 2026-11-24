@@ -3,7 +3,7 @@
  * so what you design is exactly what gets sent.
  */
 import { z } from "zod";
-import { sanitizeRich } from "./sanitize";
+import { safeHref, sanitizeRich } from "./sanitize";
 
 export const BLOCK_TYPES = ["heading", "text", "image", "button", "columns", "divider", "spacer", "social"] as const;
 export type BlockType = (typeof BLOCK_TYPES)[number];
@@ -114,9 +114,15 @@ export function starterBlocks(): Block[] {
 const id = z.string().regex(/^[a-z0-9]{4,16}$/);
 const align = z.enum(ALIGNS);
 const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i, "Use a hex color like #5B5BD6");
-/** Web links only (or empty while drafting). mailto: and tel: are allowed for links, not images. */
-const linkUrl = z.string().trim().max(2000).refine((v) => v === "" || /^(https?:\/\/|mailto:|tel:)[^\s"<>]+$/i.test(v), "Links must start with https://, http://, mailto: or tel:");
-const imageUrl = z.string().trim().max(2000).refine((v) => v === "" || /^https?:\/\/[^\s"<>]+$/i.test(v), "Image addresses must start with https:// or http://");
+/**
+ * Saving is lenient on purpose: a half-typed link must not stop autosave. Addresses are stored as typed, checked by
+ * `sendProblems` before sending, and made safe by the renderer (anything that isn't a web / mailto / tel link is dropped).
+ */
+const linkUrl = z.string().trim().max(2000);
+const imageUrl = z.string().trim().max(2000);
+export const validLink = (v: string) => safeHref(v) !== null;
+export const validImage = (v: string) => /^https?:\/\/[^\s"<>]+$/i.test(v.trim());
+export const validEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const rich = z.string().max(20_000).transform(sanitizeRich);
 const cellSchema = z.object({ imageSrc: imageUrl, imageAlt: z.string().max(300), html: rich });
 
@@ -142,13 +148,12 @@ export const audienceSchema = z.object({
   merchants: z.object({ on: z.boolean(), status: z.enum(["prospect", "boarding", "live", "closed", "any"]), ownerId: uuidOr("any", "none") }),
 });
 
-const optionalEmail = z.string().trim().max(200).refine((v) => v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Enter a valid reply-to email");
 export const campaignSchema = z.object({
-  name: z.string().trim().min(1, "Give the newsletter a name").max(120),
+  name: z.string().trim().max(120).transform((v) => v || "Untitled newsletter"),
   subject: z.string().trim().max(200),
   preheader: z.string().trim().max(200),
   fromName: z.string().trim().max(100),
-  replyTo: optionalEmail,
+  replyTo: z.string().trim().max(200),
   blocks: blocksSchema,
   style: styleSchema,
   audience: audienceSchema,
@@ -158,19 +163,25 @@ export type CampaignInput = z.infer<typeof campaignSchema>;
 const plain = (html: string) => html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
 
 /** Problems that block sending (a draft can be saved with them). */
-export function sendProblems(c: { subject: string; blocks: Block[]; audience: Audience }): string[] {
+export function sendProblems(c: { subject: string; replyTo?: string; blocks: Block[]; audience: Audience }): string[] {
   const p: string[] = [];
   if (!c.subject.trim()) p.push("Add a subject line.");
+  if (c.replyTo?.trim() && !validEmail(c.replyTo)) p.push("The “Replies go to” address isn’t a valid email address.");
   if (!c.blocks.length) p.push("Add at least one block to the email.");
   if (!c.audience.leads.on && !c.audience.merchants.on) p.push("Choose who gets this on the Audience tab.");
   c.blocks.forEach((b, i) => {
     const n = `Block ${i + 1} (${BLOCK_LABEL[b.type].toLowerCase()})`;
+    const badLink = (u: string) => !!u && !validLink(u);
     if (b.type === "button" && !b.href) p.push(`${n}: add the link the button opens.`);
+    if ((b.type === "button" || b.type === "image") && badLink(b.href)) p.push(`${n}: the link isn’t a web address. Start it with https://`);
+    if (b.type === "image" && b.src && !validImage(b.src)) p.push(`${n}: the picture’s address must start with https://`);
+    if (b.type === "columns" && [b.left, b.right].some((c2) => c2.imageSrc && !validImage(c2.imageSrc))) p.push(`${n}: a picture’s address must start with https://`);
+    if (b.type === "social" && b.links.some((l) => badLink(l.url))) p.push(`${n}: one of the links isn’t a web address. Start it with https://`);
     if (b.type === "button" && !b.label.trim()) p.push(`${n}: add the button’s label.`);
     if (b.type === "image" && !b.src) p.push(`${n}: upload a picture or remove the block.`);
     if (b.type === "heading" && !b.text.trim()) p.push(`${n}: add the heading text or remove the block.`);
     if (b.type === "text" && !plain(b.html)) p.push(`${n}: add some text or remove the block.`);
-    if (b.type === "social" && !b.links.some((l) => l.url)) p.push(`${n}: add at least one link or remove the block.`);
+    if (b.type === "social" && !b.links.some((l) => l.url && validLink(l.url))) p.push(`${n}: add at least one link or remove the block.`);
   });
   return p;
 }

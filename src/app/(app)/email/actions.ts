@@ -10,7 +10,7 @@ import { audit } from "@/lib/audit";
 import { getSetting } from "@/lib/settings";
 import { newsletterMailProblems, sendMailRich } from "@/lib/mail";
 import { enqueueEmailRound } from "@/jobs/queue";
-import { audienceSchema, campaignSchema, DEFAULT_AUDIENCE, DEFAULT_STYLE, sendProblems, starterBlocks, type Audience, type Block, type CampaignInput } from "@/lib/email/types";
+import { audienceSchema, campaignSchema, DEFAULT_AUDIENCE, DEFAULT_STYLE, sendProblems, starterBlocks, validEmail, type Audience, type Block, type CampaignInput } from "@/lib/email/types";
 import { renderEmail } from "@/lib/email/render";
 import { firstName, resolveAudience } from "@/lib/email/audience";
 import { appUrl, typedCampaign } from "@/lib/email/server";
@@ -103,7 +103,7 @@ export async function sendTest(id: string): Promise<Result> {
       companyName: g.companyName, postalAddress: mail.postalAddress || "Your postal address (set it in Settings → Email)",
       unsubscribeUrl: `${appUrl()}/e/u/test-email-preview-link`,
     });
-    const r = await sendMailRich({ to: user.email, subject: `[Test] ${out.subject || c.name}`, text: out.text, html: out.html, fromName: c.fromName || undefined, replyTo: c.replyTo || undefined });
+    const r = await sendMailRich({ to: user.email, subject: `[Test] ${out.subject || c.name}`, text: out.text, html: out.html, fromName: c.fromName || undefined, replyTo: validEmail(c.replyTo) ? c.replyTo.trim() : undefined });
     if (!r.ok) return { error: r.error ?? "The test couldn’t be sent." };
     await audit(await actorFor(user), "campaign.test", "email_campaign", id, { to: user.email });
     return { ok: `Test sent to ${user.email}.` };

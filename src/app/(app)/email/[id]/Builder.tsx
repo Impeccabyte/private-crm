@@ -11,7 +11,7 @@ import { renderEmail } from "@/lib/email/render";
 import { deleteCampaign, duplicateCampaign, saveAsTemplate, saveCampaign, sendTest } from "../actions";
 import { Design } from "./Design";
 import { AudiencePanel, ReportPanel, SendPanel, useAudience } from "./Panels";
-import type { CampaignProps, Doc, MailInfo, Report, Update } from "./shared";
+import { useLocalTime, type CampaignProps, type Doc, type MailInfo, type Report, type Update } from "./shared";
 
 type Tab = "design" | "audience" | "send" | "report";
 type Device = "desktop" | "mobile";
@@ -110,6 +110,7 @@ export function Builder({ campaign, owners, forms, mailProblems, mail, company, 
   }, [locked]);
 
   const audience = useAudience(doc.audience);
+  const scheduledFor = useLocalTime(campaign.scheduledAt, `${fmtDateTime(campaign.scheduledAt)} ET`);
   const st = STATUS[campaign.status] ?? STATUS.draft!;
   const act = (fn: () => Promise<{ ok?: string; error?: string } | void>) => start(async () => {
     setMenu(false);
@@ -157,7 +158,7 @@ export function Builder({ campaign, owners, forms, mailProblems, mail, company, 
         </div>
       </header>
 
-      {campaign.status === "scheduled" && <div className="banner amber" role="status"><div><div className="bt">Scheduled for {fmtDateTime(campaign.scheduledAt)}</div><div className="bd sm">It’s locked while it waits. To change it, cancel the schedule on the Status tab.</div></div></div>}
+      {campaign.status === "scheduled" && <div className="banner amber" role="status"><div><div className="bt">Scheduled for {scheduledFor}</div><div className="bd sm">It’s locked while it waits. To change it, cancel the schedule on the Status tab.</div></div></div>}
       {(campaign.status === "sent" || campaign.status === "sending" || campaign.status === "cancelled") && tab === "design" && <div className="banner blue" role="status"><div><div className="bt">This is what was sent</div><div className="bd sm">It can’t be edited. Use Duplicate in the ••• menu to start a new one from it.</div></div></div>}
 
       <div className="row w em-bar">

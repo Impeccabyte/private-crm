@@ -158,9 +158,12 @@ function Chip({ type }: { type: BlockType }) {
 }
 
 function PaletteItem({ type, onAdd }: { type: BlockType; onAdd: () => void }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `new:${type}` });
+  const { listeners, setNodeRef, isDragging } = useDraggable({ id: `new:${type}` });
+  // Pointer and touch drag only: on the keyboard, Enter or Space adds the block (the button's normal click).
+  const { onKeyDown: _keyboardDrag, ...pointer } = listeners ?? {};
+  void _keyboardDrag;
   return (
-    <button ref={setNodeRef} type="button" className={`em-chip ${isDragging ? "src" : ""}`} onClick={onAdd} {...attributes} {...listeners} aria-label={`Add ${BLOCK_LABEL[type].toLowerCase()} block`}>
+    <button ref={setNodeRef} type="button" className={`em-chip ${isDragging ? "src" : ""}`} onClick={onAdd} {...pointer} aria-label={`Add ${BLOCK_LABEL[type].toLowerCase()} block`}>
       <Chip type={type} />
     </button>
   );

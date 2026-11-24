@@ -10,6 +10,7 @@ import { getSetting } from "@/lib/settings";
 import { newsletterMailProblems, sendMailRich } from "@/lib/mail";
 import { audit } from "@/lib/audit";
 import { resolveAudience } from "@/lib/email/audience";
+import { validEmail } from "@/lib/email/types";
 import { collectLinks, mergeTags } from "@/lib/email/render";
 import { newRecipientToken, publicUrls, renderForRecipient, sendContext, typedCampaign, type TypedCampaign } from "@/lib/email/server";
 
@@ -70,6 +71,7 @@ export async function runEmailRound() {
       const ctx = await sendContext(c.id);
       const suppressed = new Set(claimed.length ? (await db.select({ email: schema.emailSuppressions.email }).from(schema.emailSuppressions).where(inArray(schema.emailSuppressions.email, claimed.map((r) => r.email)))).map((s) => s.email) : []);
 
+      let streak = 0;
       for (let i = 0; i < claimed.length; i++) {
         const r = claimed[i]!;
         // Stop at once if the newsletter was cancelled part-way through.
@@ -89,23 +91,33 @@ export async function runEmailRound() {
         const out = await renderForRecipient(c, r, ctx, { pixel: true });
         const u = publicUrls(r.token);
         const res = await sendMailRich({
-          to: r.email, subject: out.subject, text: out.text, html: out.html, fromName: c.fromName || undefined, replyTo: c.replyTo || undefined,
+          to: r.email, subject: out.subject, text: out.text, html: out.html, fromName: c.fromName || undefined, replyTo: validEmail(c.replyTo) ? c.replyTo.trim() : undefined,
           headers: { "List-Unsubscribe": `<${u.unsubscribe}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click", "X-Campaign": c.id },
         }, { pool: true });
 
+        // Put this recipient and everyone after them back in the queue, note why, and try again next minute.
+        const pause = async (from: number, why: string) => {
+          await db.update(R).set({ status: "queued", claimedAt: null }).where(inArray(R.id, claimed.slice(from).map((x) => x.id)));
+          await db.update(C).set({ lastError: why.slice(0, 300) }).where(eq(C.id, c.id));
+          stats.stopped = why;
+        };
         if (res.ok) {
           await db.update(R).set({ status: "sent", sentAt: new Date(), error: null }).where(eq(R.id, r.id));
-          stats.sent++;
-        } else if (res.kind === "transient") {
-          // Couldn't reach or log in to the mail server: nothing went out, so put this and the rest back and try next minute.
-          await db.update(R).set({ status: "queued", claimedAt: null }).where(inArray(R.id, claimed.slice(i).map((x) => x.id)));
-          await db.update(C).set({ lastError: `Couldn’t reach the mail server: ${res.error ?? "unknown error"}`.slice(0, 300) }).where(eq(C.id, c.id));
-          stats.stopped = res.error ?? "mail server unreachable";
+          stats.sent++; streak = 0;
+        } else if (res.kind === "server") {
+          // Couldn't connect or log in, or the server refused us as the sender: nothing went out, and it would fail for everyone.
+          await pause(i, `Couldn’t send through the mail server: ${res.error ?? "unknown error"}`);
           return stats;
         } else {
           await db.update(R).set({ status: "failed", error: (res.error ?? "Send failed").slice(0, 300) }).where(eq(R.id, r.id));
-          if (res.kind === "rejected") await db.insert(schema.emailSuppressions).values({ email: r.email, reason: "rejected", detail: (res.error ?? "").slice(0, 300), campaignId: c.id }).onConflictDoNothing();
           stats.failed++;
+          // Only a permanent refusal of this particular address puts it on the do-not-email list.
+          if (res.kind === "recipient") await db.insert(schema.emailSuppressions).values({ email: r.email, reason: "rejected", detail: (res.error ?? "").slice(0, 300), campaignId: c.id }).onConflictDoNothing();
+          // Several unexplained failures in a row point at the message or the server, not the addresses: stop before failing the whole list.
+          if (res.kind === "unknown" && ++streak >= 3) {
+            await pause(i + 1, `Sending paused after 3 failures in a row: ${res.error ?? "unknown error"}`);
+            return stats;
+          }
         }
       }
       if (claimed.length) await db.update(C).set({ lastError: null }).where(and(eq(C.id, c.id), eq(C.status, "sending")));

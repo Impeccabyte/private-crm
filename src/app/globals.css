@@ -610,7 +610,9 @@ tr.expand-in { animation: none; } tr.expand-in > td { animation: ib-fade .2s eas
 .em-foot { max-width: 100%; padding: 18px 32px 8px; font-size: 12px; line-height: 18px; text-align: center; transition: width .28s var(--ease-out); }
 .em-warn { color: var(--r-ink); background: var(--r-bg); border-radius: 4px; padding: 1px 5px; font-family: Inter, ui-sans-serif, sans-serif; }
 
-.em-block { position: relative; outline: 1px solid transparent; outline-offset: -1px; transition: outline-color .12s ease, opacity .15s ease; }
+.em-block { position: relative; outline: 1px solid transparent; outline-offset: -1px; transition: outline-color .12s ease, opacity .15s ease, margin-top .18s var(--ease-out); }
+/* The selected block makes room above itself for its toolbar, so the toolbar never hides the block before it. */
+.em-grid:not(.locked) .em-block.on { margin-top: 34px; }
 .em-grid:not(.locked) .em-block:hover { outline-color: color-mix(in srgb, var(--accent) 50%, transparent); z-index: 3; }
 .em-block.on { outline: 2px solid var(--accent); outline-offset: -2px; z-index: 4; }
 .em-block.drag { opacity: .3; }

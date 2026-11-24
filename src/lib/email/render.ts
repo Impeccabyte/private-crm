@@ -3,7 +3,7 @@
  * Gmail) and a plain-text alternative. Pure: the builder preview and the send job call the same function.
  */
 import { FONT_STACK, SOCIAL_LABEL, type Align, type Block, type Cell, type EmailStyle, DEFAULT_STYLE } from "./types";
-import { richToText, sanitizeRich } from "./sanitize";
+import { richToText, safeHref, sanitizeRich } from "./sanitize";
 
 export type RenderOpts = {
   /** Values for {{first_name}}, {{name}}, {{business_name}}, {{company}}. */
@@ -58,6 +58,9 @@ export function mergeTags(s: string, values: Record<string, string>, html = fals
 }
 
 const isWeb = (u: string) => /^https?:\/\//i.test(u);
+/** Addresses are stored as typed; only web / mailto / tel links and http(s) pictures ever reach the email. */
+const href = (u: string) => (u ? safeHref(u) ?? "" : "");
+const imgSrc = (u: string) => (/^https?:\/\/[^\s"<>]+$/i.test((u ?? "").trim()) ? u.trim() : "");
 
 /** Every web link in the newsletter, in order, without duplicates. The send job stores these for click tracking. */
 export function collectLinks(blocks: Block[]): string[] {
@@ -66,8 +69,8 @@ export function collectLinks(blocks: Block[]): string[] {
   for (const b of blocks) {
     if (b.type === "text") fromRich(b.html);
     else if (b.type === "columns") { fromRich(b.left.html); fromRich(b.right.html); }
-    else if (b.type === "image" || b.type === "button") { if (b.href) out.add(b.href); }
-    else if (b.type === "social") b.links.forEach((l) => l.url && out.add(l.url));
+    else if (b.type === "image" || b.type === "button") out.add(href(b.href));
+    else if (b.type === "social") b.links.forEach((l) => out.add(href(l.url)));
   }
   return [...out].filter(isWeb);
 }
@@ -79,7 +82,7 @@ export function renderEmail(c: RenderInput, o: RenderOpts): { html: string; text
   const soft = mute(st.text, st.surface);
   const footInk = mute(contrastOn(st.bg) === "#FFFFFF" ? "#FFFFFF" : "#111111", st.bg);
   const values = { company: o.companyName, ...o.merge };
-  const track = (u: string) => (u && o.link && isWeb(u) ? o.link(u) : u);
+  const track = (raw: string) => { const u = href(raw); return u && o.link && isWeb(u) ? o.link(u) : u; };
   const m = (s: string) => mergeTags(s, values, true); // for already-escaped / sanitised HTML
   const t = (s: string) => esc(mergeTags(s, values)); // plain text → HTML
 
@@ -89,11 +92,12 @@ export function renderEmail(c: RenderInput, o: RenderOpts): { html: string; text
     .replace(/<(ul|ol)>/g, `<$1 style="margin:0 0 12px;padding:0 0 0 22px;">`)
     .replace(/<li>/g, `<li style="margin:0 0 4px;">`);
   const body = (html: string, align: Align) => `<div style="font-family:${font};font-size:15px;line-height:23px;color:${st.text};text-align:${align};">${rich(html)}</div>`;
-  const img = (src: string, alt: string, px: number, pct: number, align: Align, href: string) => {
+  const img = (src: string, alt: string, px: number, pct: number, align: Align, link: string) => {
     const tag = `<img src="${esc(src)}" alt="${t(alt)}" width="${px}" style="display:block;width:${pct}%;max-width:100%;height:auto;border:0;outline:none;${align === "center" ? "margin:0 auto;" : align === "right" ? "margin:0 0 0 auto;" : ""}border-radius:4px;">`;
-    return href ? `<a href="${esc(track(href))}" style="text-decoration:none;">${tag}</a>` : tag;
+    const to = track(link);
+    return to ? `<a href="${esc(to)}" style="text-decoration:none;">${tag}</a>` : tag;
   };
-  const cellHtml = (cl: Cell) => `${cl.imageSrc ? `<div style="margin:0 0 10px;">${img(cl.imageSrc, cl.imageAlt, 256, 100, "left", "")}</div>` : ""}${body(cl.html, "left")}`;
+  const cellHtml = (cl: Cell) => `${imgSrc(cl.imageSrc) ? `<div style="margin:0 0 10px;">${img(imgSrc(cl.imageSrc), cl.imageAlt, 256, 100, "left", "")}</div>` : ""}${body(cl.html, "left")}`;
   const row = (inner: string, pad = "8px 32px") => `<tr><td class="pad" style="padding:${pad};">${inner}</td></tr>`;
 
   const blockHtml = (b: Block): string => {
@@ -104,9 +108,10 @@ export function renderEmail(c: RenderInput, o: RenderOpts): { html: string; text
       }
       case "text": return row(body(b.html, pick(ALIGN, b.align, "left")), "6px 32px 0");
       case "image": {
-        if (!b.src) return "";
+        const src = imgSrc(b.src);
+        if (!src) return "";
         const pct = Math.min(100, Math.max(10, Math.round(Number(b.width) || 100)));
-        return row(`<div style="text-align:${pick(ALIGN, b.align, "center")};">${img(b.src, b.alt, Math.round(536 * pct / 100), pct, pick(ALIGN, b.align, "center"), b.href)}</div>`, "10px 32px");
+        return row(`<div style="text-align:${pick(ALIGN, b.align, "center")};">${img(src, b.alt, Math.round(536 * pct / 100), pct, pick(ALIGN, b.align, "center"), b.href)}</div>`, "10px 32px");
       }
       case "button": {
         if (!b.label.trim()) return "";
@@ -123,7 +128,7 @@ export function renderEmail(c: RenderInput, o: RenderOpts): { html: string; text
       case "divider": return row(`<div style="border-top:1px solid ${mute(st.text, st.surface, 0.18)};font-size:0;line-height:0;height:0;">&nbsp;</div>`, "14px 32px");
       case "spacer": { const h = Math.min(120, Math.max(4, Math.round(Number(b.height) || 24))); return `<tr><td style="height:${h}px;font-size:0;line-height:0;">&nbsp;</td></tr>`; }
       case "social": {
-        const links = b.links.filter((l) => l.url);
+        const links = b.links.filter((l) => href(l.url));
         if (!links.length) return "";
         return row(`<div style="font-family:${font};font-size:13px;line-height:20px;text-align:${pick(ALIGN, b.align, "center")};">${links.map((l) => `<a href="${esc(track(l.url))}" style="color:${st.accent};text-decoration:underline;font-weight:600;">${esc(pick(SOCIAL_LABEL, l.network, "Link"))}</a>`).join(`<span style="color:${soft};">&nbsp;&nbsp;·&nbsp;&nbsp;</span>`)}</div>`, "10px 32px");
       }
@@ -162,11 +167,11 @@ ${o.pixelUrl ? `<img src="${esc(o.pixelUrl)}" width="1" height="1" alt="" style=
   for (const b of c.blocks) {
     if (b.type === "heading" && b.text.trim()) lines.push(tx(b.text).toUpperCase());
     else if (b.type === "text") lines.push(tx(richToText(b.html)));
-    else if (b.type === "image" && b.src && (b.alt || b.href)) lines.push(`[${tx(b.alt) || "Image"}]${b.href ? ` ${b.href}` : ""}`);
-    else if (b.type === "button" && b.label.trim()) lines.push(`${tx(b.label)}: ${b.href}`);
+    else if (b.type === "image" && imgSrc(b.src) && (b.alt || href(b.href))) lines.push(`[${tx(b.alt) || "Image"}]${href(b.href) ? ` ${href(b.href)}` : ""}`);
+    else if (b.type === "button" && b.label.trim()) lines.push(`${tx(b.label)}: ${href(b.href)}`);
     else if (b.type === "columns") lines.push(cellText(b.left), cellText(b.right));
     else if (b.type === "divider") lines.push("----------------------------------------");
-    else if (b.type === "social") lines.push(b.links.filter((l) => l.url).map((l) => `${pick(SOCIAL_LABEL, l.network, "Link")}: ${l.url}`).join("\n"));
+    else if (b.type === "social") lines.push(b.links.filter((l) => href(l.url)).map((l) => `${pick(SOCIAL_LABEL, l.network, "Link")}: ${href(l.url)}`).join("\n"));
   }
   lines.push("--", [st.footerNote.trim() ? tx(st.footerNote) : "", `${o.companyName}${o.postalAddress.trim() ? ` · ${o.postalAddress}` : ""}`, `Unsubscribe: ${o.unsubscribeUrl}`, o.viewUrl ? `View in browser: ${o.viewUrl}` : ""].filter(Boolean).join("\n"));
   return { html, text: lines.filter((l) => l.trim()).join("\n\n"), subject };

@@ -9,7 +9,7 @@ import { Pill, type Tone } from "@/components/ui";
 import { fmtDateTime, num, pct, MERCHANT_STATUS_LABEL, SOURCE_LABEL } from "@/lib/format";
 import { sendProblems, sendWarnings, type Audience } from "@/lib/email/types";
 import { audienceSummary, cancelCampaign, scheduleCampaign, sendNow, sendTest, type AudienceSummary } from "../actions";
-import type { CampaignProps, Doc, MailInfo, Report, Update } from "./shared";
+import { useLocalTime, type CampaignProps, type Doc, type MailInfo, type Report, type Update } from "./shared";
 
 type Opt = { id: string; name: string };
 const people = (n: number) => `${num(n)} ${n === 1 ? "person" : "people"}`;
@@ -131,6 +131,8 @@ export function SendPanel({ campaign, doc, mail, mailProblems, summary, user, fl
   const [when, setWhen] = useState("");
   const [serverProblems, setServerProblems] = useState<string[]>([]);
   const status = campaign.status;
+  const scheduledFor = useLocalTime(campaign.scheduledAt, `${fmtDateTime(campaign.scheduledAt)} ET`);
+  const finishedOn = useLocalTime(campaign.finishedAt, `${fmtDateTime(campaign.finishedAt)} ET`);
   const problems = [...sendProblems(doc), ...mailProblems];
   const warnings = sendWarnings(doc);
   const count = summary?.count ?? 0;
@@ -160,7 +162,7 @@ export function SendPanel({ campaign, doc, mail, mailProblems, summary, user, fl
               if (await confirmDialog(`${people(c.waiting)} haven’t been sent to yet and won’t get it. People who already received it are not affected.`, { title: "Stop sending?", confirmLabel: "Stop sending", danger: true })) run(() => cancelCampaign(campaign.id));
             }}>Stop sending</button></div>
           </>}
-          {status !== "sending" && <p style={{ margin: 0 }}>{c ? `Delivered to the mail server for ${people(c.sent)}${campaign.finishedAt ? ` on ${fmtDateTime(campaign.finishedAt)}` : ""}.` : "No recipients."} See the Report tab for opens and clicks. To send it again or change it, duplicate it from the menu at the top.</p>}
+          {status !== "sending" && <p style={{ margin: 0 }}>{c ? `Delivered to the mail server for ${people(c.sent)}${campaign.finishedAt ? ` on ${finishedOn}` : ""}.` : "No recipients."} See the Report tab for opens and clicks. To send it again or change it, duplicate it from the menu at the top.</p>}
         </div>
       </section>
     );
@@ -171,9 +173,11 @@ export function SendPanel({ campaign, doc, mail, mailProblems, summary, user, fl
       <section className="card">
         <div className="card-h"><h2>Check before sending</h2></div>
         <ul className="em-check">
-          <Line ok={!!doc.subject.trim()}>{doc.subject.trim() ? <>Subject: <b>{doc.subject}</b></> : "No subject line yet"}</Line>
+          {doc.subject.trim() && <Line ok>Subject: <b>{doc.subject}</b></Line>}
           <Line ok>From <b>{doc.fromName || mail.fromName}</b> &lt;{mail.fromAddress}&gt;, replies to {doc.replyTo || mail.replyTo || mail.fromAddress}</Line>
-          <Line ok={ready || (summary !== null && count > 0)}>{summary === null ? "Counting recipients…" : count > 0 ? <>Goes to <b>{people(count)}</b>{count > mail.sendsPerMinute ? `, taking about ${num(minutes)} minutes` : ""}</> : "Nobody is selected yet"}</Line>
+          {(doc.audience.leads.on || doc.audience.merchants.on) && (summary === null
+            ? <Line ok warn>Counting recipients…</Line>
+            : count > 0 && <Line ok>Goes to <b>{people(count)}</b>{count > mail.sendsPerMinute ? `, taking about ${num(minutes)} minutes` : ""}</Line>)}
           {[...problems, ...serverProblems.filter((p) => !problems.includes(p))].map((p) => <Line key={p} ok={false}>{p}</Line>)}
           {nobody && <Line ok={false}>Nobody matches the audience you chose (or everyone has unsubscribed).</Line>}
           {warnings.map((w) => <Line key={w} ok={false} warn>{w}</Line>)}
@@ -185,7 +189,7 @@ export function SendPanel({ campaign, doc, mail, mailProblems, summary, user, fl
         <div className="card-h"><h2>{status === "scheduled" ? "Scheduled" : "Send"}</h2>{status === "scheduled" && <Pill status="scheduled" label="Scheduled" tone="amber" />}</div>
         <div className="card-b stack" style={{ gap: 16 }}>
           {status === "scheduled" ? <>
-            <p style={{ margin: 0 }}>This newsletter will send on <b>{fmtDateTime(campaign.scheduledAt)}</b> to whoever matches the audience at that moment ({people(count)} right now).</p>
+            <p style={{ margin: 0 }}>This newsletter will send on <b>{scheduledFor}</b> to whoever matches the audience at that moment ({people(count)} right now).</p>
             <div className="row w" style={{ gap: 8 }}>
               <button className="btn" type="button" disabled={pending} onClick={() => run(() => cancelCampaign(campaign.id))}>Cancel schedule and edit</button>
               <button className="btn pri" type="button" disabled={pending || !ready} onClick={async () => { if (await confirmDialog(`It goes to ${people(count)} straight away. This can’t be undone.`, { title: "Send now instead?", confirmLabel: `Send to ${people(count)}` })) run(() => sendNow(campaign.id)); }}><Send size={16} aria-hidden="true" />Send now instead</button>
@@ -197,7 +201,7 @@ export function SendPanel({ campaign, doc, mail, mailProblems, summary, user, fl
             </div>
             <hr className="divider" />
             <div className="row w" style={{ gap: 8, alignItems: "flex-end" }}>
-              <label className="field" style={{ flex: "0 1 240px" }}><span className="lab">Send later (your local time)</span>
+              <label className="field" style={{ flex: "0 1 240px" }}><span className="lab">Send later (your time zone)</span>
                 <input type="datetime-local" className="inp" value={when} onChange={(e) => setWhen(e.target.value)} /></label>
               <button className="btn" type="button" disabled={pending || !ready || !when} onClick={() => run(() => scheduleCampaign(campaign.id, new Date(when).toISOString()))}><CalendarClock size={16} aria-hidden="true" />Schedule</button>
               <span className="sp" />
