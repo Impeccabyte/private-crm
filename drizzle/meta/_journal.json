@@ -64,6 +64,13 @@
       "when": 1795276146359,
       "tag": "0008_file_scanning",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795486794704,
+      "tag": "0009_email_newsletters",
+      "breakpoints": true
     }
   ]
 }

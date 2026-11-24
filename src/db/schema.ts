@@ -576,3 +576,97 @@ export const auditLog = pgTable("audit_log", {
   ip: text("ip"),
   details: jsonb("details").notNull().default({}),
 }, (t) => [index("audit_at_idx").on(t.at), index("audit_entity_idx").on(t.entityType, t.entityId)]);
+
+// ── Email newsletters ─────────────────────────────────────────────────────────
+/** Block, style and audience shapes live in src/lib/email/types.ts. */
+export const emailCampaigns = pgTable("email_campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  subject: text("subject").notNull().default(""),
+  preheader: text("preheader").notNull().default(""),
+  /** Empty = the From name / reply-to in Settings → Email. */
+  fromName: text("from_name").notNull().default(""),
+  replyTo: text("reply_to").notNull().default(""),
+  blocks: jsonb("blocks").notNull().default([]),
+  style: jsonb("style").notNull().default({}),
+  audience: jsonb("audience").notNull().default({}),
+  /** draft | scheduled | sending | sent | cancelled */
+  status: text("status").notNull().default("draft"),
+  scheduledAt: ts("scheduled_at"),
+  startedAt: ts("started_at"),
+  /** Set once the audience has been copied into email_recipients, so a restart never rebuilds it. */
+  snapshotAt: ts("snapshot_at"),
+  finishedAt: ts("finished_at"),
+  /** Why the last send round stopped early (e.g. mail server unreachable); cleared when a round succeeds. */
+  lastError: text("last_error"),
+  createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: created(),
+  updatedAt: updated(),
+}, (t) => [index("email_campaigns_status_idx").on(t.status)]);
+
+export const emailRecipients = pgTable("email_recipients", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").notNull().references(() => emailCampaigns.id, { onDelete: "cascade" }),
+  /** Lowercased. */
+  email: text("email").notNull(),
+  name: text("name"),
+  businessName: text("business_name"),
+  leadId: uuid("lead_id").references(() => leads.id, { onDelete: "set null" }),
+  merchantId: uuid("merchant_id").references(() => merchants.id, { onDelete: "set null" }),
+  /** Random, unguessable; used in this recipient's unsubscribe, tracking and view-in-browser links. */
+  token: text("token").notNull(),
+  /** queued → sending (claimed by a send round) → sent | failed | skipped */
+  status: text("status").notNull().default("queued"),
+  error: text("error"),
+  claimedAt: ts("claimed_at"),
+  sentAt: ts("sent_at"),
+  firstOpenedAt: ts("first_opened_at"),
+  openCount: integer("open_count").notNull().default(0),
+  firstClickedAt: ts("first_clicked_at"),
+  clickCount: integer("click_count").notNull().default(0),
+  unsubscribedAt: ts("unsubscribed_at"),
+}, (t) => [
+  uniqueIndex("email_recipients_campaign_email_uq").on(t.campaignId, t.email),
+  uniqueIndex("email_recipients_token_uq").on(t.token),
+  index("email_recipients_status_idx").on(t.campaignId, t.status),
+]);
+
+/** Every link in a sent newsletter. Click tracking redirects only to a row here, never to a URL from the request. */
+export const emailLinks = pgTable("email_links", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").notNull().references(() => emailCampaigns.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  clickCount: integer("click_count").notNull().default(0),
+}, (t) => [uniqueIndex("email_links_campaign_url_uq").on(t.campaignId, t.url)]);
+
+/** Addresses that must never get a newsletter: unsubscribed, rejected by the mail server, or added by hand. */
+export const emailSuppressions = pgTable("email_suppressions", {
+  /** Lowercased. */
+  email: text("email").primaryKey(),
+  /** unsubscribed | rejected | manual */
+  reason: text("reason").notNull(),
+  detail: text("detail"),
+  campaignId: uuid("campaign_id").references(() => emailCampaigns.id, { onDelete: "set null" }),
+  createdAt: created(),
+});
+
+/** Images uploaded for newsletters. Stored unencrypted and served publicly (email apps must be able to load them). */
+export const emailImages = pgTable("email_images", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  mimeType: text("mime_type").notNull(),
+  size: integer("size").notNull(),
+  sha256: text("sha256").notNull(),
+  storageKey: text("storage_key").notNull(),
+  createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: created(),
+});
+
+/** A saved design to start new newsletters from. */
+export const emailTemplates = pgTable("email_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  blocks: jsonb("blocks").notNull().default([]),
+  style: jsonb("style").notNull().default({}),
+  createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: created(),
+});

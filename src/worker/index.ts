@@ -9,6 +9,7 @@ import { getBoss, Q, enqueueSync, type SyncKind } from "@/jobs/queue";
 import { processWebhookEvent, SkipError } from "@/jobs/webhook-processor";
 import { runSync } from "@/jobs/sync";
 import { scanPendingFiles } from "@/jobs/file-scan";
+import { runEmailRound } from "@/jobs/email-send";
 
 async function main() {
   const boss = await getBoss({ worker: true });
@@ -47,6 +48,13 @@ async function main() {
   await boss.work(Q.fileScan, async () => {
     const r = await scanPendingFiles();
     if (r.scanned || ("waiting" in r && r.waiting)) console.log("[worker] file scan", r);
+  });
+
+  // Every minute: send the next batch of any newsletter that is sending or due.
+  await boss.schedule(Q.emailSend, "* * * * *");
+  await boss.work(Q.emailSend, async () => {
+    const r = await runEmailRound();
+    if (r.campaigns) console.log("[worker] email round", r);
   });
 
   const stop = async () => { console.log("[worker] stopping"); await boss.stop({ graceful: true, timeout: 10_000 }).catch(() => {}); process.exit(0); };

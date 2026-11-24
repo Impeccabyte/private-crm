@@ -36,6 +36,12 @@ export type EmailSettings = {
   passwordEnc: string | null;
   fromAddress: string;
   fromName: string;
+  /** Where replies go; empty = the From address. */
+  replyTo: string;
+  /** Postal address shown in the footer of every newsletter (required by anti-spam law). */
+  postalAddress: string;
+  /** Newsletter send rate, to stay inside your mail provider's limits. */
+  sendsPerMinute: number;
 };
 
 export type SsoSettings = {
@@ -89,6 +95,9 @@ export const DEFAULTS: SettingsMap = {
     passwordEnc: null,
     fromAddress: "crm@impeccabyte.example",
     fromName: "Impeccabyte CRM",
+    replyTo: "",
+    postalAddress: "",
+    sendsPerMinute: 60,
   },
   sso: {
     enabled: false,
