@@ -2,12 +2,12 @@ import Link from "next/link";
 import { and, asc, count, desc, eq, gte, inArray, isNull, lt, lte, ne, notInArray, or, sql as dsql } from "drizzle-orm";
 import { AlertTriangle, Clock, RotateCcw, MessageCircle, ShieldAlert, XCircle } from "lucide-react";
 import { db, schema } from "@/db";
-import { requireUser, scopeOwnerIds } from "@/lib/dal";
+import { requireUser, scopeOwnerIds, initialsOf } from "@/lib/dal";
 import { can, ROLE_LABEL } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
 import { monthStart, pctChange, residualTotals, volumeBetween, volumeByMonth } from "@/lib/metrics";
 import { daysSince, daysUntil, fmtDate, minutesLabel, num, pct, short, STAGE_LABEL, STAGE_PROB, usd } from "@/lib/format";
-import { Card, Kpi, Pill, Who, Banner } from "@/components/ui";
+import { Avatar, Card, Kpi, Pill, Who, Banner } from "@/components/ui";
 import { TrendChart } from "@/components/charts";
 import { TasksCard } from "./TasksCard";
 
@@ -55,31 +55,31 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const stuckBefore = new Date(Date.now() - g.stuckApplicationDays * 86_400_000);
   const cbDueBy = new Date(Date.now() + g.chargebackUrgentDays * 86_400_000).toISOString().slice(0, 10);
   const [stuck, failedChecks, cbDue, slaBreach, riskEvents] = await Promise.all([
-    can(user.role, "applications.view") ? db.select({ a: schema.applications, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor })
+    can(user.role, "applications.view") ? db.select({ a: schema.applications, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey })
       .from(schema.applications).innerJoin(schema.merchants, eq(schema.applications.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.merchants.ownerId, schema.users.id))
       .where(and(inArray(schema.applications.status, ["New", "Pending", "Underwriting"]), lt(schema.applications.statusChangedAt, stuckBefore), mScope)).orderBy(asc(schema.applications.statusChangedAt)).limit(6) : [],
-    can(user.role, "applications.view") ? db.selectDistinctOn([schema.applications.id], { a: schema.applications, dba: schema.merchants.dbaName, check: schema.applicationChecks.name, detail: schema.applicationChecks.detail, owner: schema.users.name, color: schema.users.avatarColor })
+    can(user.role, "applications.view") ? db.selectDistinctOn([schema.applications.id], { a: schema.applications, dba: schema.merchants.dbaName, check: schema.applicationChecks.name, detail: schema.applicationChecks.detail, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey })
       .from(schema.applicationChecks).innerJoin(schema.applications, eq(schema.applicationChecks.applicationId, schema.applications.id))
       .innerJoin(schema.merchants, eq(schema.applications.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.merchants.ownerId, schema.users.id))
       .where(and(eq(schema.applicationChecks.status, "Failed"), inArray(schema.applications.status, ["Pending", "Underwriting"]), mScope)).limit(6) : [],
-    can(user.role, "chargebacks.view") ? db.select({ c: schema.chargebacks, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor })
+    can(user.role, "chargebacks.view") ? db.select({ c: schema.chargebacks, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey })
       .from(schema.chargebacks).leftJoin(schema.merchants, eq(schema.chargebacks.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.merchants.ownerId, schema.users.id))
       .where(and(eq(schema.chargebacks.status, "Processed"), lte(schema.chargebacks.respondBy, cbDueBy), mScope)).orderBy(asc(schema.chargebacks.respondBy)).limit(6) : [],
-    can(user.role, "tickets.view") ? db.select({ t: schema.tickets, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor })
+    can(user.role, "tickets.view") ? db.select({ t: schema.tickets, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey })
       .from(schema.tickets).leftJoin(schema.merchants, eq(schema.tickets.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.tickets.assigneeId, schema.users.id))
       .where(and(ne(schema.tickets.status, "Closed"), isNull(schema.tickets.firstResponseAt), lte(schema.tickets.slaDueAt, new Date(Date.now() + g.ticketSlaWarnMinutes * 60_000)), mScope)).orderBy(asc(schema.tickets.slaDueAt)).limit(6) : [],
-    db.select({ act: schema.activities, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor })
+    db.select({ act: schema.activities, dba: schema.merchants.dbaName, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey })
       .from(schema.activities).innerJoin(schema.merchants, eq(schema.activities.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.merchants.ownerId, schema.users.id))
       .where(and(dsql`${schema.activities.title} ilike 'High-risk%'`, gte(schema.activities.occurredAt, new Date(Date.now() - 7 * 86_400_000)), mScope)).orderBy(desc(schema.activities.occurredAt)).limit(3),
   ]);
 
-  type Att = { key: string; href: string; icon: typeof Clock; tone: string; title: string; sub: string; status: string; statusLabel: string; owner?: string | null; color?: string | null };
+  type Att = { key: string; href: string; icon: typeof Clock; tone: string; title: string; sub: string; status: string; statusLabel: string; owner?: string | null; color?: string | null; photo?: string | null };
   const att: Att[] = [
-    ...cbDue.map((r) => { const d = daysUntil(r.c.respondBy); return { key: "cb" + r.c.id, href: `/chargebacks?cb=${r.c.id}`, icon: RotateCcw, tone: "t-red", title: `Chargeback ${d !== null && d <= 0 ? "due today" : `due in ${d} day${d === 1 ? "" : "s"}`} — ${r.dba ?? "Unknown merchant"}`, sub: `${r.c.caseId} · ${usd(r.c.amount)} · ${r.c.reason ?? ""} · respond by ${fmtDate(r.c.respondBy)}`, status: "Overdue", statusLabel: "Due soon", owner: r.owner, color: r.color }; }),
-    ...slaBreach.map((r) => { const mins = Math.round(((r.t.slaDueAt?.getTime() ?? 0) - Date.now()) / 60000); return { key: "t" + r.t.id, href: `/support?t=${r.t.id}`, icon: MessageCircle, tone: mins < 0 ? "t-red" : "t-amber", title: `Ticket ${mins < 0 ? "breaching SLA" : "at risk"} — ${r.dba ?? r.t.subject}`, sub: `${r.t.number} · ${r.t.subject} · first response ${mins < 0 ? `${minutesLabel(mins)} overdue` : `due in ${minutesLabel(mins)}`}`, status: mins < 0 ? "SLA breached" : "On Hold", statusLabel: mins < 0 ? "SLA breached" : "At risk", owner: r.owner, color: r.color }; }),
-    ...failedChecks.map((r) => ({ key: "fc" + r.a.id, href: `/applications/${r.a.id}`, icon: XCircle, tone: "t-red", title: `${r.dba} — underwriting check failed`, sub: `${r.a.number} · ${r.check}${r.detail ? ` · ${r.detail}` : ""}`, status: "Failed", statusLabel: "Failed", owner: r.owner, color: r.color })),
-    ...stuck.map((r) => ({ key: "st" + r.a.id, href: `/applications/${r.a.id}`, icon: Clock, tone: "t-amber", title: `${r.dba} — ${r.a.status} ${daysSince(r.a.statusChangedAt)} days`, sub: `${r.a.number} · over the ${g.stuckApplicationDays}-day target · signature ${r.a.signatureStatus.toLowerCase()}`, status: r.a.status, statusLabel: r.a.status, owner: r.owner, color: r.color })),
-    ...riskEvents.map((r) => ({ key: "r" + r.act.id, href: `/merchants/${r.act.merchantId}?tab=activity`, icon: ShieldAlert, tone: "t-amber", title: `High-risk authorization warning — ${r.dba}`, sub: r.act.title, status: "On Hold", statusLabel: "Review", owner: r.owner, color: r.color })),
+    ...cbDue.map((r) => { const d = daysUntil(r.c.respondBy); return { key: "cb" + r.c.id, href: `/chargebacks?cb=${r.c.id}`, icon: RotateCcw, tone: "t-red", title: `Chargeback ${d !== null && d <= 0 ? "due today" : `due in ${d} day${d === 1 ? "" : "s"}`} — ${r.dba ?? "Unknown merchant"}`, sub: `${r.c.caseId} · ${usd(r.c.amount)} · ${r.c.reason ?? ""} · respond by ${fmtDate(r.c.respondBy)}`, status: "Overdue", statusLabel: "Due soon", owner: r.owner, color: r.color, photo: r.photo }; }),
+    ...slaBreach.map((r) => { const mins = Math.round(((r.t.slaDueAt?.getTime() ?? 0) - Date.now()) / 60000); return { key: "t" + r.t.id, href: `/support?t=${r.t.id}`, icon: MessageCircle, tone: mins < 0 ? "t-red" : "t-amber", title: `Ticket ${mins < 0 ? "breaching SLA" : "at risk"} — ${r.dba ?? r.t.subject}`, sub: `${r.t.number} · ${r.t.subject} · first response ${mins < 0 ? `${minutesLabel(mins)} overdue` : `due in ${minutesLabel(mins)}`}`, status: mins < 0 ? "SLA breached" : "On Hold", statusLabel: mins < 0 ? "SLA breached" : "At risk", owner: r.owner, color: r.color, photo: r.photo }; }),
+    ...failedChecks.map((r) => ({ key: "fc" + r.a.id, href: `/applications/${r.a.id}`, icon: XCircle, tone: "t-red", title: `${r.dba} — underwriting check failed`, sub: `${r.a.number} · ${r.check}${r.detail ? ` · ${r.detail}` : ""}`, status: "Failed", statusLabel: "Failed", owner: r.owner, color: r.color, photo: r.photo })),
+    ...stuck.map((r) => ({ key: "st" + r.a.id, href: `/applications/${r.a.id}`, icon: Clock, tone: "t-amber", title: `${r.dba} — ${r.a.status} ${daysSince(r.a.statusChangedAt)} days`, sub: `${r.a.number} · over the ${g.stuckApplicationDays}-day target · signature ${r.a.signatureStatus.toLowerCase()}`, status: r.a.status, statusLabel: r.a.status, owner: r.owner, color: r.color, photo: r.photo })),
+    ...riskEvents.map((r) => ({ key: "r" + r.act.id, href: `/merchants/${r.act.merchantId}?tab=activity`, icon: ShieldAlert, tone: "t-amber", title: `High-risk authorization warning — ${r.dba}`, sub: r.act.title, status: "On Hold", statusLabel: "Review", owner: r.owner, color: r.color, photo: r.photo })),
   ];
 
   // ── Tasks ───────────────────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   // ── Team performance (managers) ─────────────────────────────────────────────
   const team = !owners && can(user.role, "reports.view") ? await db.select({
-    id: schema.users.id, name: schema.users.name, color: schema.users.avatarColor, role: schema.users.role, parent: schema.users.parentAgentId,
+    id: schema.users.id, name: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey, role: schema.users.role, parent: schema.users.parentAgentId,
     merchants: dsql<number>`(select count(*)::int from merchants m where m.owner_id = "users"."id" and m.status = 'live')`,
     volume: dsql<number>`(select coalesce(sum(dm.sales_amount),0)::float from daily_metrics dm join merchant_accounts ma on ma.id = dm.merchant_account_id join merchants m on m.id = ma.merchant_id where m.owner_id = "users"."id" and dm.day >= ${mStart.toISOString().slice(0, 10)})`,
     apps: dsql<number>`(select count(*)::int from applications a join merchants m on m.id = a.merchant_id where m.owner_id = "users"."id" and a.created_at >= ${mStart.toISOString()})`,
@@ -139,7 +139,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <Link key={a.key} className="att" href={a.href}>
               <span className={`ai ${a.tone}`}><a.icon size={14} aria-hidden="true" /></span>
               <span style={{ minWidth: 0 }}><span className="t1" style={{ display: "block" }}>{a.title}</span><span className="t2" style={{ display: "block" }}>{a.sub}</span></span>
-              <span className="row" style={{ gap: 10 }}><Pill status={a.status} label={a.statusLabel} />{a.owner && <span className={`av ${a.color ?? "av-6"}`} title={a.owner}>{a.owner.split(" ").map((p) => p[0]).join("").slice(0, 2)}</span>}</span>
+              <span className="row" style={{ gap: 10 }}><Pill status={a.status} label={a.statusLabel} />{a.owner && <Avatar initials={initialsOf(a.owner)} color={a.color} avatarKey={a.photo} title={a.owner} />}</span>
             </Link>
           ))}
         </Card>
@@ -178,7 +178,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <thead><tr><th>Agent</th><th>Role</th><th className="r">Active merchants</th><th className="r">Volume MTD</th><th className="r">New apps</th><th className="r">Open deals</th><th className="r">Residuals ({monthName(prevStart)})</th></tr></thead>
               <tbody>
                 {team.map((t) => (
-                  <tr key={t.id}><td><Who name={t.name} color={t.color} /></td><td className="muted">{t.parent ? "Sub-agent" : "Agent"}</td><td className="r">{t.merchants}</td><td className="r">{short(t.volume)}</td><td className="r">{t.apps}</td><td className="r">{t.deals}</td><td className="r">{usd(t.residual)}</td></tr>
+                  <tr key={t.id}><td><Who name={t.name} color={t.color} avatarKey={t.photo} /></td><td className="muted">{t.parent ? "Sub-agent" : "Agent"}</td><td className="r">{t.merchants}</td><td className="r">{short(t.volume)}</td><td className="r">{t.apps}</td><td className="r">{t.deals}</td><td className="r">{usd(t.residual)}</td></tr>
                 ))}
               </tbody>
             </table>

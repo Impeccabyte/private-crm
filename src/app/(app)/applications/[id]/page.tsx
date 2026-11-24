@@ -32,7 +32,7 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
     db.select().from(schema.applicationConditions).where(eq(schema.applicationConditions.applicationId, id)),
     db.select().from(schema.applicationSigners).where(eq(schema.applicationSigners.applicationId, id)),
     db.select().from(schema.applicationDocuments).where(eq(schema.applicationDocuments.applicationId, id)),
-    db.select({ a: schema.activities, who: schema.users.name, color: schema.users.avatarColor }).from(schema.activities).leftJoin(schema.users, eq(schema.activities.actorUserId, schema.users.id))
+    db.select({ a: schema.activities, who: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey }).from(schema.activities).leftJoin(schema.users, eq(schema.activities.actorUserId, schema.users.id))
       .where(eq(schema.activities.applicationId, id)).orderBy(desc(schema.activities.occurredAt)).limit(50),
     m.ownerId ? db.query.users.findFirst({ where: eq(schema.users.id, m.ownerId) }) : null,
     app.specialistId ? db.query.users.findFirst({ where: eq(schema.users.id, app.specialistId) }) : null,
@@ -61,8 +61,8 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
           <div className="row w muted" style={{ gap: 10 }}>
             <span className="mono">{app.number}</span><span aria-hidden="true">·</span><span>{le?.legalName ?? "—"}</span>
             {m.mcc && <><span aria-hidden="true">·</span><span>MCC <span className="mono">{m.mcc}</span></span></>}
-            {agent && <><span aria-hidden="true">·</span><span className="who"><Avatar initials={initialsOf(agent.name)} color={agent.avatarColor} />{agent.name}</span></>}
-            {spec && <><span aria-hidden="true">·</span><span className="who"><Avatar initials={initialsOf(spec.name)} color={spec.avatarColor} />{spec.name}, specialist</span></>}
+            {agent && <><span aria-hidden="true">·</span><span className="who"><Avatar initials={initialsOf(agent.name)} color={agent.avatarColor} avatarKey={agent.avatarKey} />{agent.name}</span></>}
+            {spec && <><span aria-hidden="true">·</span><span className="who"><Avatar initials={initialsOf(spec.name)} color={spec.avatarColor} avatarKey={spec.avatarKey} />{spec.name}, specialist</span></>}
           </div>
         </div>
         <div className="row w" style={{ gap: 8 }}>
@@ -134,7 +134,7 @@ export default async function ApplicationPage({ params }: { params: Promise<{ id
           <Card title={<>Notes <span className="ct">{noteRows.length}</span></>} actions={<span className="subtle sm">Internal · not visible to the merchant</span>} bodyClass="card-b stack">
             {noteRows.map((n) => (
               <div key={n.a.id} className="row" style={{ alignItems: "flex-start", gap: 10 }}>
-                <Avatar initials={n.who ? initialsOf(n.who) : "M"} color={n.color} />
+                <Avatar initials={n.who ? initialsOf(n.who) : "M"} color={n.color} avatarKey={n.photo} />
                 <div style={{ flex: 1, minWidth: 0 }}><div className="row"><b style={{ fontWeight: 600 }}>{n.who ?? "Maverick"}</b><span className="subtle sm">{fmtDateTime(n.a.occurredAt)}</span></div><div style={{ marginTop: 2, whiteSpace: "pre-line" }}>{n.a.body}</div></div>
               </div>
             ))}

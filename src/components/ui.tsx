@@ -5,6 +5,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Circle, Clock, CircleDashed, CheckCircle2, XCircle, MinusCircle, type LucideIcon } from "lucide-react";
+import { avatarSrc } from "@/lib/avatar-url";
 
 export type Tone = "neutral" | "blue" | "amber" | "green" | "red" | "gray";
 
@@ -41,14 +42,21 @@ export function Proc({ name = "Maverick", suffix }: { name?: string; suffix?: st
   );
 }
 
-export function Avatar({ initials, color, size, title }: { initials: string; color?: string | null; size?: "lg" | "xl"; title?: string }) {
-  return <span className={`av ${color ?? "av-6"} ${size ?? ""}`} title={title} aria-label={title}>{initials}</span>;
+/** A user's photo when they have one (avatarKey = users.avatar_key), otherwise their initials on their colour. */
+export function Avatar({ initials, color, size, title, avatarKey }: { initials: string; color?: string | null; size?: "lg" | "xl" | "xxl"; title?: string; avatarKey?: string | null }) {
+  const src = avatarSrc(avatarKey);
+  return (
+    <span className={`av ${color ?? "av-6"} ${size ?? ""}`} title={title} aria-label={title}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- served to signed-in users only; next/image's optimizer fetches without the session */}
+      {src ? <img src={src} alt="" loading="lazy" decoding="async" draggable={false} /> : initials}
+    </span>
+  );
 }
 
-export function Who({ name, color }: { name?: string | null; color?: string | null }) {
+export function Who({ name, color, avatarKey }: { name?: string | null; color?: string | null; avatarKey?: string | null }) {
   if (!name) return <span className="subtle">Unassigned</span>;
   const ini = name.split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-  return <span className="who"><Avatar initials={ini} color={color} />{name}</span>;
+  return <span className="who"><Avatar initials={ini} color={color} avatarKey={avatarKey} />{name}</span>;
 }
 
 export function Card({ title, actions, children, className = "", bodyClass, id }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; bodyClass?: string; id?: string }) {

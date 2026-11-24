@@ -15,7 +15,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
   const sp = await searchParams;
   const owners = await scopeOwnerIds(user);
   const recent = new Date(Date.now() - 30 * 86_400_000);
-  const rows = await db.select({ d: schema.deals, owner: schema.users.name, color: schema.users.avatarColor,
+  const rows = await db.select({ d: schema.deals, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey,
     app: schema.applications.number, appId: schema.applications.id, appStatus: schema.applications.status })
     .from(schema.deals).leftJoin(schema.users, eq(schema.deals.ownerId, schema.users.id)).leftJoin(schema.applications, eq(schema.applications.dealId, schema.deals.id))
     .where(and(owners ? inArray(schema.deals.ownerId, owners) : undefined, sp.owner ? eq(schema.deals.ownerId, sp.owner) : undefined,
@@ -47,7 +47,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
         <span className="subtle sm">Drag cards between stages, or use a card’s Move menu. Cards over 14 days in a stage are flagged.</span>
       </div>
       <Kanban canEdit={can(user.role, "deals.edit")} deals={rows.map((r) => ({
-        id: r.d.id, name: r.d.name, amount: r.d.amount, stage: r.d.stage, owner: r.owner, ownerIni: r.owner ? initialsOf(r.owner) : "—", color: r.color,
+        id: r.d.id, name: r.d.name, amount: r.d.amount, stage: r.d.stage, owner: r.owner, ownerIni: r.owner ? initialsOf(r.owner) : "—", color: r.color, photo: r.photo,
         days: daysSince(r.d.stageChangedAt) ?? 0, lostReason: r.d.lostReason, merchantId: r.d.merchantId, app: r.app ? { id: r.appId!, number: r.app, status: r.appStatus! } : null,
       }))} />
     </div>

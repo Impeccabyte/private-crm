@@ -49,6 +49,8 @@ export const users = pgTable("users", {
   lockedUntil: ts("locked_until"),
   lastLoginAt: ts("last_login_at"),
   avatarColor: text("avatar_color").notNull().default("av-6"),
+  /** Profile photo: storage key in src/lib/files.ts (encrypted, square, re-encoded in the browser). Null → initials. */
+  avatarKey: text("avatar_key"),
   createdAt: created(),
   updatedAt: updated(),
 }, (t) => [uniqueIndex("users_email_uq").on(t.email)]);

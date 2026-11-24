@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
 import { Clock, FileCheck2, MoreHorizontal } from "lucide-react";
+import { Avatar } from "@/components/ui";
 import { moveDeal } from "./actions";
 
 type Stage = "new_lead" | "contacted" | "qualified" | "proposal" | "application_sent" | "won" | "lost";
-type Deal = { id: string; name: string; amount: number; stage: Stage; owner: string | null; ownerIni: string; color: string | null; days: number; lostReason: string | null; merchantId: string | null; app: { id: string; number: string; status: string } | null };
+type Deal = { id: string; name: string; amount: number; stage: Stage; owner: string | null; ownerIni: string; color: string | null; photo: string | null; days: number; lostReason: string | null; merchantId: string | null; app: { id: string; number: string; status: string } | null };
 
 const STAGES: { key: Stage; label: string; prob: number; tone: string }[] = [
   { key: "new_lead", label: "New Lead", prob: 0.1, tone: "t-neutral" }, { key: "contacted", label: "Contacted", prob: 0.2, tone: "t-blue" },
@@ -71,7 +72,7 @@ export function Kanban({ deals, canEdit }: { deals: Deal[]; canEdit: boolean }) 
                   </div>
                   <div className="meta"><span>${d.amount.toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo</span><span className="sp" /><span className="tag" title="Stage probability">{s.key === "lost" ? "0%" : `${Math.round(s.prob * 100)}%`}</span></div>
                   <div className="meta">
-                    <span className={`av ${d.color ?? "av-6"}`} title={d.owner ?? "Unassigned"}>{d.ownerIni}</span><span className="nm">{d.owner ?? "Unassigned"}</span><span className="sp" />
+                    <Avatar initials={d.ownerIni} color={d.color} avatarKey={d.photo} title={d.owner ?? "Unassigned"} /><span className="nm">{d.owner ?? "Unassigned"}</span><span className="sp" />
                     <span className={d.days > 14 ? "over" : d.days > 7 ? "stale" : ""}><Clock size={12} aria-hidden="true" style={{ verticalAlign: -2 }} /> {s.key === "lost" ? "Closed" : `${d.days}d`}</span>
                   </div>
                   {d.lostReason && <div className="subtle sm">{d.lostReason}</div>}
