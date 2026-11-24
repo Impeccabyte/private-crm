@@ -34,7 +34,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
     q ? or(ilike(schema.leads.businessName, `%${q}%`), ilike(schema.leads.contactName, `%${q}%`), ilike(schema.leads.email, `%${q}%`)) : undefined,
   );
   const sort = sp.sort === "score" ? desc(score) : sp.sort === "volume" ? desc(schema.leads.estMonthlyVolume) : desc(schema.leads.updatedAt);
-  const rows = await db.select({ l: schema.leads, owner: schema.users.name, color: schema.users.avatarColor, score, nextTask })
+  const rows = await db.select({ l: schema.leads, owner: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey, score, nextTask })
     .from(schema.leads).leftJoin(schema.users, eq(schema.leads.ownerId, schema.users.id)).where(where).orderBy(sort).limit(200);
 
   const vc = async (w?: SQL) => (await db.select({ n: count() }).from(schema.leads).where(and(...base, eq(schema.leads.status, "open"), w)))[0]!.n;
@@ -113,7 +113,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                         </span>
                       </span>
                     </td>
-                    <td className="col-owner">{r.owner ? <span className="who"><Avatar initials={initialsOf(r.owner)} color={r.color} />{r.owner}</span> : "—"}</td>
+                    <td className="col-owner">{r.owner ? <span className="who"><Avatar initials={initialsOf(r.owner)} color={r.color} avatarKey={r.photo} />{r.owner}</span> : "—"}</td>
                     <td className="muted col-last">{r.l.lastActivityNote ? `${r.l.lastActivityNote} · ` : ""}{relTime(r.l.lastActivityAt)}</td>
                     <td className="col-next">{r.nextTask ?? <span className="subtle">—</span>}</td>
                   </tr>

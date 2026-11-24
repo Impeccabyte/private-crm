@@ -6,6 +6,7 @@ import { Bell, ChevronDown, LogOut, Menu, MessageCircle, Plus, Search, Store, Us
 import { ThemeToggle } from "../ThemeToggle";
 import { CommandPalette } from "./CommandPalette";
 import { logoutAction } from "@/app/(auth)/actions";
+import { Avatar } from "../ui";
 
 type Note = { id: string; title: string; sub: string; at: string; href: string };
 
@@ -23,7 +24,7 @@ function useOutside(open: boolean, close: () => void) {
 }
 
 export function Topbar({ user, canCreate, notifications }: {
-  user: { name: string; email: string; initials: string; avatarColor: string; roleLabel: string };
+  user: { name: string; email: string; initials: string; avatarColor: string; avatarKey: string | null; roleLabel: string };
   canCreate: { lead: boolean; ticket: boolean; merchant: boolean };
   notifications: Note[];
 }) {
@@ -89,7 +90,7 @@ export function Topbar({ user, canCreate, notifications }: {
       )}
       <div className="rel" ref={userRef}>
         <button className="btn ghost" style={{ padding: "0 4px" }} onClick={() => setOpen(open === "user" ? "" : "user")} aria-label={`${user.name}, account menu`} aria-expanded={open === "user"}>
-          <span className={`av lg ${user.avatarColor}`}>{user.initials}</span>
+          <Avatar initials={user.initials} color={user.avatarColor} avatarKey={user.avatarKey} size="lg" />
         </button>
         {open === "user" && (
           <div className="pop" role="menu" style={{ width: 240 }}>
@@ -98,7 +99,7 @@ export function Topbar({ user, canCreate, notifications }: {
               <div className="subtle sm">{user.email}</div>
               <div className="tag" style={{ marginTop: 6 }}>{user.roleLabel}</div>
             </div>
-            <Link className="mi" role="menuitem" href="/account" onClick={close}><Settings2 size={16} aria-hidden="true" />Account &amp; password</Link>
+            <Link className="mi" role="menuitem" href="/account" onClick={close}><Settings2 size={16} aria-hidden="true" />Profile &amp; password</Link>
             <form action={logoutAction}><button className="mi" role="menuitem" type="submit"><LogOut size={16} aria-hidden="true" />Sign out</button></form>
           </div>
         )}

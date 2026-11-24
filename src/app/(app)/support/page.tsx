@@ -27,7 +27,7 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
     sla: risk, open: ne(schema.tickets.status, "Closed"), closed: eq(schema.tickets.status, "Closed"),
   };
   const srcF = sp.src === "internal" || sp.src === "maverick" ? eq(schema.tickets.source, sp.src) : undefined;
-  const list = await db.select({ t: schema.tickets, dba: schema.merchants.dbaName, who: schema.users.name, color: schema.users.avatarColor,
+  const list = await db.select({ t: schema.tickets, dba: schema.merchants.dbaName, who: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey,
     preview: dsql<string>`(select body from ticket_messages m where m.ticket_id = "tickets"."id" and m.kind <> 'system' order by m.created_at desc limit 1)` })
     .from(schema.tickets).leftJoin(schema.merchants, eq(schema.tickets.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.tickets.assigneeId, schema.users.id))
     .where(and(mScope, filt[f] ?? filt.open, srcF)).orderBy(f === "sla" ? asc(schema.tickets.slaDueAt) : desc(schema.tickets.updatedAt)).limit(100);
@@ -36,6 +36,8 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
   const selId = sp.t ?? list[0]?.t.id;
   const cur = selId ? (await db.select({ t: schema.tickets, who: schema.users.name }).from(schema.tickets).leftJoin(schema.users, eq(schema.tickets.assigneeId, schema.users.id)).leftJoin(schema.merchants, eq(schema.tickets.merchantId, schema.merchants.id)).where(and(eq(schema.tickets.id, selId), mScope)))[0] : null;
   const msgs = cur ? await db.select().from(schema.ticketMessages).where(eq(schema.ticketMessages.ticketId, cur.t.id)).orderBy(asc(schema.ticketMessages.createdAt)) : [];
+  const authorIds = [...new Set(msgs.map((mm) => mm.authorUserId).filter((x): x is string => !!x))];
+  const authorPhotos = new Map(authorIds.length ? (await db.select({ id: schema.users.id, k: schema.users.avatarKey }).from(schema.users).where(inArray(schema.users.id, authorIds))).map((u) => [u.id, u.k]) : []);
   const m = cur?.t.merchantId ? await db.query.merchants.findFirst({ where: eq(schema.merchants.id, cur.t.merchantId) }) : null;
   const [acct, mOwner, cbs, vol, recentTix, terms] = m ? await Promise.all([
     db.query.merchantAccounts.findFirst({ where: eq(schema.merchantAccounts.merchantId, m.id) }),
@@ -86,7 +88,7 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
               <span className="r1"><span className="mono subtle">{r.t.number}</span><span className={`tag ${r.t.source === "maverick" ? "acc" : ""}`}>{r.t.source === "maverick" ? "Maverick" : "Internal"}</span><span className="sp" /><span className={s.c}>{s.t}</span></span>
               <span className="subj">{r.t.subject}</span>
               <span className="r1"><span className="pv" style={{ flex: 1 }}>{r.dba ?? "No merchant"} · {r.preview?.slice(0, 80)}</span></span>
-              <span className="r1"><Pill status={r.t.status} /><span className="sp" />{r.who ? <span className={`av ${r.color}`} title={r.who}>{initialsOf(r.who)}</span> : <span className="subtle sm">Unassigned</span>}<span className="subtle sm">{relTime(r.t.updatedAt)}</span></span>
+              <span className="r1"><Pill status={r.t.status} /><span className="sp" />{r.who ? <Avatar initials={initialsOf(r.who)} color={r.color} avatarKey={r.photo} title={r.who} /> : <span className="subtle sm">Unassigned</span>}<span className="subtle sm">{relTime(r.t.updatedAt)}</span></span>
             </Link>
           ); })}
         </div>
@@ -119,7 +121,7 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
                 <div key={mm.id} className="msg sysm"><span className="pm" aria-hidden="true">{mm.authorName === "Maverick" ? "M" : "•"}</span><span style={{ flex: 1 }}>{mm.body}</span><span className="subtle">{fmtDateTime(mm.createdAt)}</span></div>
               ) : (
                 <article key={mm.id} className={`msg ${mm.kind === "outbound" ? "out" : ""} ${mm.kind === "internal" ? "note-y" : ""}`}>
-                  <div className="row"><Avatar initials={initialsOf(mm.authorName ?? "?")} color={mm.authorUserId ? "av-8" : "av-3"} /><b style={{ fontWeight: 600 }}>{mm.authorName}</b>
+                  <div className="row"><Avatar initials={initialsOf(mm.authorName ?? "?")} color={mm.authorUserId ? "av-8" : "av-3"} avatarKey={mm.authorUserId ? authorPhotos.get(mm.authorUserId) : null} /><b style={{ fontWeight: 600 }}>{mm.authorName}</b>
                     <span className="subtle sm">{mm.kind === "inbound" ? (cur.t.source === "maverick" ? "via Maverick" : "via email") : mm.kind === "outbound" ? (mm.notifyMerchant ? "replied · merchant notified" : "replied") : ""}</span>
                     {mm.kind === "internal" && <span className="tag" style={{ background: "var(--note-line)", borderColor: "transparent", color: "var(--ink)" }}>Internal note</span>}
                     <span className="sp" /><span className="subtle sm">{fmtDateTime(mm.createdAt)}</span></div>

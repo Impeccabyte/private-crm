@@ -57,8 +57,8 @@ export default async function ResidualsPage({ searchParams }: { searchParams: Pr
     const u = allUsers.get(topId);
     const kids: Node[] = [];
     if (t.direct.length) kids.push(sum(`${topId}-d`, "group", `${u?.name ?? "Agent"} · direct`, t.direct));
-    for (const [subId, ls] of t.subs) kids.push(sum(subId, "sub", allUsers.get(subId)?.name ?? "Sub-agent", ls, { tag: "Sub-agent", avatar: { ini: initialsOf(allUsers.get(subId)?.name ?? "?"), color: allUsers.get(subId)?.avatarColor ?? "av-6" } }));
-    return sum(topId, "agent", u?.name ?? "Agent", kids, { tag: "Agent", avatar: { ini: initialsOf(u?.name ?? "?"), color: u?.avatarColor ?? "av-6" } });
+    for (const [subId, ls] of t.subs) kids.push(sum(subId, "sub", allUsers.get(subId)?.name ?? "Sub-agent", ls, { tag: "Sub-agent", avatar: { ini: initialsOf(allUsers.get(subId)?.name ?? "?"), color: allUsers.get(subId)?.avatarColor ?? "av-6", photo: allUsers.get(subId)?.avatarKey ?? null } }));
+    return sum(topId, "agent", u?.name ?? "Agent", kids, { tag: "Agent", avatar: { ini: initialsOf(u?.name ?? "?"), color: u?.avatarColor ?? "av-6", photo: u?.avatarKey ?? null } });
   }).sort((a, b) => a.label.localeCompare(b.label));
   if (house.length && !owners) tree.push(sum("house", "agent", "Impeccabyte house accounts", [sum("house-d", "group", "House book", house)]));
 

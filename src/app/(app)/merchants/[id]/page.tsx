@@ -101,7 +101,7 @@ export default async function MerchantPage({ params, searchParams }: { params: P
             {siblings.length > 1 && <LocationSwitcher current={id} ein={maskEin(le?.einLast4)} locations={siblings.map((s) => ({ id: s.id, name: s.dbaName, sub: [s.street, s.city].filter(Boolean).join(", "), status: MERCHANT_STATUS_LABEL[s.status]! }))} />}
             {m.mcc && <><span aria-hidden="true">·</span><span>MCC <span className="mono">{m.mcc}</span> {m.industry}</span></>}
             <span aria-hidden="true">·</span>
-            {agents.length ? <OwnerSelect merchantId={id} ownerId={m.ownerId} agents={agents} /> : owner ? <span className="who"><Avatar initials={initialsOf(owner.name)} color={owner.avatarColor} />{owner.name}</span> : <span>Unassigned</span>}
+            {agents.length ? <OwnerSelect merchantId={id} ownerId={m.ownerId} agents={agents} /> : owner ? <span className="who"><Avatar initials={initialsOf(owner.name)} color={owner.avatarColor} avatarKey={owner.avatarKey} />{owner.name}</span> : <span>Unassigned</span>}
             {m.liveSince && <><span aria-hidden="true">·</span><span>Live since {fmtDate(m.liveSince)}</span></>}
           </div>
         </div>

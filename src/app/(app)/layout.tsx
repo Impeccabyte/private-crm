@@ -52,7 +52,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Sidebar items={nav} company={general.companyName} lastSync={lastSync?.toISOString() ?? null} syncFailed={syncFailed} hasConnections={conns.length > 0} />
       <main className="main" id="main">
         <Topbar
-          user={{ name: user.name, email: user.email, initials: user.initials, avatarColor: user.avatarColor, roleLabel: ROLE_LABEL[user.role] }}
+          user={{ name: user.name, email: user.email, initials: user.initials, avatarColor: user.avatarColor, avatarKey: user.avatarKey, roleLabel: ROLE_LABEL[user.role] }}
           canCreate={{ lead: can(user.role, "leads.edit"), ticket: can(user.role, "tickets.edit"), merchant: can(user.role, "merchants.edit") }}
           notifications={notes.map((n) => ({ id: n.id, title: n.title, sub: n.dba ?? "", at: n.at.toISOString(), href: n.merchantId ? `/merchants/${n.merchantId}?tab=activity` : "/" }))}
         />

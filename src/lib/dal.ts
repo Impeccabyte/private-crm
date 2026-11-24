@@ -16,6 +16,8 @@ export type CurrentUser = {
   name: string;
   role: Role;
   avatarColor: string;
+  /** users.avatar_key: the profile photo, or null for initials. Turn into an address with avatarSrc(). */
+  avatarKey: string | null;
   initials: string;
 };
 
@@ -27,7 +29,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!userId) return null;
   const u = await db.query.users.findFirst({ where: eq(schema.users.id, userId) });
   if (!u || u.status !== "active") return null;
-  return { id: u.id, email: u.email, name: u.name, role: u.role, avatarColor: u.avatarColor, initials: initialsOf(u.name) };
+  return { id: u.id, email: u.email, name: u.name, role: u.role, avatarColor: u.avatarColor, avatarKey: u.avatarKey, initials: initialsOf(u.name) };
 });
 
 export async function requireUser(): Promise<CurrentUser> {

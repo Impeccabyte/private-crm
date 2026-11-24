@@ -142,7 +142,8 @@ input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); m
 .tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; background: var(--sunken); border: 1px solid var(--line); color: var(--ink-2); font-size: 11px; font-weight: 500; white-space: nowrap; }
 .tag.acc { background: var(--accent-soft); color: var(--accent-ink); border-color: transparent; }
 .av { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font: 600 9.5px/1 Inter, sans-serif; color: #fff; flex: none; letter-spacing: .02em; }
-.av.lg { width: 32px; height: 32px; font-size: 12px; } .av.xl { width: 40px; height: 40px; font-size: 14px; }
+.av.lg { width: 32px; height: 32px; font-size: 12px; } .av.xl { width: 40px; height: 40px; font-size: 14px; } .av.xxl { width: 64px; height: 64px; font-size: 22px; }
+.av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; background: var(--sunken); }
 .av-1 { background: #5E45B8; } .av-2 { background: #0D7062; } .av-3 { background: #A8431B; } .av-4 { background: #2A62A8; } .av-5 { background: #93386C; } .av-6 { background: #4B5363; } .av-7 { background: #7A5A12; } .av-8 { background: #276B34; }
 .who { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 
@@ -489,6 +490,13 @@ tr.expand-in { animation: none; } tr.expand-in > td { animation: ib-fade .2s eas
 .dlg-wrap .scrim { position: absolute; inset: 0; z-index: 0; }
 .dlg { position: relative; z-index: 1; width: 420px; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-pop); padding: 20px; display: flex; flex-direction: column; gap: 14px; animation: ib-dialog .2s var(--ease-out); }
 .dlg h2 { margin: 0; font-size: 15px; font-weight: 600; }
+/* Profile photo cropper (Account) */
+.crop-dlg { width: 340px; }
+.crop-frame { position: relative; align-self: center; max-width: 100%; border-radius: 8px; overflow: hidden; background: var(--sunken); touch-action: none; }
+.crop-frame canvas { display: block; cursor: grab; } .crop-frame canvas:active { cursor: grabbing; }
+.crop-frame canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.crop-ring { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 999px rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.7); pointer-events: none; }
+.crop-zoom { flex: 1; accent-color: var(--accent); }
 .dlg p { margin: 0; color: var(--ink-2); }
 .dlg .acts { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .btn.pri.danger { background: var(--r-ink); color: #fff; }

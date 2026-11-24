@@ -3,7 +3,8 @@ import { ROLE_LABEL } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
 import { PageHeader } from "@/components/ui";
 import { ActionForm, Field } from "@/components/forms";
-import { changePassword } from "./actions";
+import { changePassword, updateName } from "./actions";
+import { AvatarEditor } from "./AvatarEditor";
 
 export const metadata = { title: "Account" };
 
@@ -13,6 +14,15 @@ export default async function AccountPage() {
   return (
     <div className="content" style={{ maxWidth: 720 }}>
       <PageHeader title="Account" sub={`${user.name} · ${user.email} · ${ROLE_LABEL[user.role]}`} />
+      <section className="card">
+        <div className="card-h"><h2>Profile</h2><span className="subtle sm">Shown to everyone in the CRM</span></div>
+        <div className="card-b stack">
+          <AvatarEditor name={user.name} initials={user.initials} color={user.avatarColor} avatarKey={user.avatarKey} />
+          <ActionForm action={updateName} submitLabel="Save name" className="stack">
+            <Field label="Name" name="name"><input id="name" name="name" className="inp" autoComplete="name" defaultValue={user.name} maxLength={80} required /></Field>
+          </ActionForm>
+        </div>
+      </section>
       <section className="card">
         <div className="card-h"><h2>Change password</h2><span className="subtle sm">Signs out your other sessions</span></div>
         <div className="card-b">

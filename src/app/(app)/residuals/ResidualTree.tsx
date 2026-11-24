@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronRight, Lock } from "lucide-react";
+import { Avatar } from "@/components/ui";
 
 export type Node = {
-  id: string; kind: "agent" | "sub" | "group" | "mid"; label: string; sub?: string; tag?: string; href?: string; avatar?: { ini: string; color: string };
+  id: string; kind: "agent" | "sub" | "group" | "mid"; label: string; sub?: string; tag?: string; href?: string; avatar?: { ini: string; color: string; photo: string | null };
   salesCount: number; salesAmount: number; revenue: number; expense: number; split: string; adjustment: number; adjustmentNote?: string | null;
   profit: number; held: number; heldNote?: string | null; children: Node[];
 };
@@ -34,7 +35,7 @@ export function ResidualTree({ nodes, total, periodLabel }: { nodes: Node[]; tot
                 <td style={{ paddingLeft: 10 + depth * 28 }}>
                   <span className="row" style={{ gap: 6 }}>
                     {n.children.length > 0 && <button className="btn ghost sm icon" style={{ width: 24, height: 24 }} onClick={() => toggle(n.id)} aria-label={`${open.has(n.id) ? "Collapse" : "Expand"} ${n.label}`}><ChevronRight size={14} aria-hidden="true" className={`chev-r ${open.has(n.id) ? "on" : ""}`} /></button>}
-                    {n.avatar && <span className={`av ${n.avatar.color}`}>{n.avatar.ini}</span>}
+                    {n.avatar && <Avatar initials={n.avatar.ini} color={n.avatar.color} avatarKey={n.avatar.photo} />}
                     {n.href ? <Link href={n.href} style={{ color: "var(--ink)", textDecoration: "none" }}>{n.label}</Link> : <span>{n.label}</span>}
                     {n.tag && <span className="tag">{n.tag}</span>}
                     {n.sub && <span className="mono subtle">{n.sub}</span>}

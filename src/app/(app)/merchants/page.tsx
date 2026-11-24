@@ -2,10 +2,10 @@ import Link from "next/link";
 import { and, asc, count, desc, eq, ilike, inArray, isNotNull, isNull, or, sql as dsql, type SQL } from "drizzle-orm";
 import { Download, Plus, Store } from "lucide-react";
 import { db, schema } from "@/db";
-import { requirePage, scopeOwnerIds } from "@/lib/dal";
+import { requirePage, scopeOwnerIds, initialsOf } from "@/lib/dal";
 import { can } from "@/lib/rbac";
 import { MERCHANT_STATUS_LABEL, num, signedPct, usd } from "@/lib/format";
-import { Banner, Empty, PageHeader, Pill, Proc } from "@/components/ui";
+import { Avatar, Banner, Empty, PageHeader, Pill, Proc } from "@/components/ui";
 import { BulkBar, ColumnChooser, DensityToggle, KeyNavTable, SavedViews, SelectAll } from "@/components/list";
 import { bulkReassign } from "./actions";
 import { BulkHide } from "./BulkHide";
@@ -52,7 +52,7 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
   let rows: Awaited<ReturnType<typeof load>> = [];
   let total = 0, loadError: string | null = null;
   async function load() {
-    return db.select({ m: schema.merchants, legal: schema.legalEntities.legalName, owner: schema.users.name, ownerColor: schema.users.avatarColor, vol30, prev30, txn30, cb90, txn90, mid, midCount })
+    return db.select({ m: schema.merchants, legal: schema.legalEntities.legalName, owner: schema.users.name, ownerColor: schema.users.avatarColor, ownerPhoto: schema.users.avatarKey, vol30, prev30, txn30, cb90, txn90, mid, midCount })
       .from(schema.merchants).leftJoin(schema.legalEntities, eq(schema.merchants.legalEntityId, schema.legalEntities.id)).leftJoin(schema.users, eq(schema.merchants.ownerId, schema.users.id))
       .where(where).orderBy(sortCol).limit(PER).offset((page - 1) * PER);
   }
@@ -155,7 +155,7 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
                       <td className="col-mid">{r.mid ? <span className="row" style={{ gap: 6 }}><span className="mono">{r.mid}</span><Proc />{r.midCount > 1 && <span className="subtle sm">+{r.midCount - 1}</span>}</span> : <span className="subtle">—</span>}</td>
                       <td className="mono muted col-mcc"><Link href={qs({ mcc: r.m.mcc ?? undefined, page: undefined })} style={{ color: "inherit", textDecoration: "none" }}>{r.m.mcc ?? "—"}</Link></td>
                       <td className="muted col-loc">{[r.m.city, r.m.state].filter(Boolean).join(", ") || "—"}</td>
-                      <td className="col-owner">{r.owner ? <span className={`av ${r.ownerColor}`} title={r.owner}>{r.owner.split(" ").map((p) => p[0]).join("").slice(0, 2)}</span> : <span className="subtle">—</span>}</td>
+                      <td className="col-owner">{r.owner ? <Avatar initials={initialsOf(r.owner)} color={r.ownerColor} avatarKey={r.ownerPhoto} title={r.owner} /> : <span className="subtle">—</span>}</td>
                       <td className="r col-vol">{r.vol30 ? usd(r.vol30) : "—"}</td>
                       <td className="r col-delta"><span className={d === null ? "subtle" : d >= 0 ? "tx-green" : "tx-red"}>{d === null ? "—" : signedPct(d)}</span></td>
                       <td className="r col-txn">{r.txn30 ? num(r.txn30) : "—"}</td>

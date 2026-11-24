@@ -6,7 +6,7 @@ import { requirePage, scopeOwnerIds, initialsOf } from "@/lib/dal";
 import { can } from "@/lib/rbac";
 import { getSetting } from "@/lib/settings";
 import { daysSince } from "@/lib/format";
-import { PageHeader, Pill } from "@/components/ui";
+import { Avatar, PageHeader, Pill } from "@/components/ui";
 
 export const metadata = { title: "Applications" };
 const STATUSES = ["New", "Pending", "Underwriting", "Approved", "Declined", "Cancelled"] as const;
@@ -21,8 +21,8 @@ export default async function ApplicationsBoard({ searchParams }: { searchParams
   const failed = dsql<number>`(select count(*)::int from application_checks c where c.application_id = "applications"."id" and c.status = 'Failed')`;
   const missingDocs = dsql<number>`(select count(*)::int from application_documents d where d.application_id = "applications"."id" and d.required and not d.uploaded)`;
   const openConds = dsql<number>`(select count(*)::int from application_conditions c where c.application_id = "applications"."id" and not c.met)`;
-  const spec = db.$with("spec").as(db.select({ id: schema.users.id, name: schema.users.name, color: schema.users.avatarColor }).from(schema.users));
-  const rows = await db.with(spec).select({ a: schema.applications, dba: schema.merchants.dbaName, mcc: schema.merchants.mcc, agent: schema.users.name, agentColor: schema.users.avatarColor, specName: spec.name, specColor: spec.color, failed, missingDocs, openConds })
+  const spec = db.$with("spec").as(db.select({ id: schema.users.id, name: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey }).from(schema.users));
+  const rows = await db.with(spec).select({ a: schema.applications, dba: schema.merchants.dbaName, mcc: schema.merchants.mcc, agent: schema.users.name, agentColor: schema.users.avatarColor, agentPhoto: schema.users.avatarKey, specName: spec.name, specColor: spec.color, specPhoto: spec.photo, failed, missingDocs, openConds })
     .from(schema.applications).innerJoin(schema.merchants, eq(schema.applications.merchantId, schema.merchants.id))
     .leftJoin(schema.users, eq(schema.merchants.ownerId, schema.users.id)).leftJoin(spec, eq(spec.id, schema.applications.specialistId))
     .where(and(owners ? inArray(schema.merchants.ownerId, owners) : undefined, isNull(schema.merchants.hiddenAt), sp.mine ? eq(schema.applications.specialistId, user.id) : undefined,
@@ -71,8 +71,8 @@ export default async function ApplicationsBoard({ searchParams }: { searchParams
                     {issue && <div className={issue.cls} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 12 }}><issue.icon size={12} aria-hidden="true" />{issue.t}</div>}
                     {!issue && r.a.forLabel && r.a.forLabel !== "New merchant" && <div className="muted" style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 12 }}><Info size={12} aria-hidden="true" />{r.a.forLabel}</div>}
                     <div className="meta">
-                      {r.agent && <span className={`av ${r.agentColor}`} title={`Agent: ${r.agent}`}>{initialsOf(r.agent)}</span>}
-                      {r.specName && <span className={`av ${r.specColor}`} title={`Specialist: ${r.specName}`}>{initialsOf(r.specName)}</span>}
+                      {r.agent && <Avatar initials={initialsOf(r.agent)} color={r.agentColor} avatarKey={r.agentPhoto} title={`Agent: ${r.agent}`} />}
+                      {r.specName && <Avatar initials={initialsOf(r.specName)} color={r.specColor} avatarKey={r.specPhoto} title={`Specialist: ${r.specName}`} />}
                       <span className="sp" />
                       <span className={isOpen && days > g.stuckApplicationDays ? "over" : isOpen && days > 3 ? "stale" : ""}><Clock size={12} aria-hidden="true" style={{ verticalAlign: -2 }} /> {days === 0 ? "Today" : `${days}d`}</span>
                     </div>

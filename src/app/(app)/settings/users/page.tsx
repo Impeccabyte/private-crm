@@ -27,7 +27,7 @@ export default async function UsersSettings() {
               {users.map((u) => (
                 <UserRow key={u.id} isSelf={u.id === me.id} canEditAdmins={me.role === "admin"}
                   user={{ id: u.id, name: u.name, email: u.email, role: u.role, status: u.status, parentAgentId: u.parentAgentId, hasPassword: !!u.passwordHash }}
-                  avatar={<Avatar initials={initialsOf(u.name)} color={u.avatarColor} />}
+                  avatar={<Avatar initials={initialsOf(u.name)} color={u.avatarColor} avatarKey={u.avatarKey} />}
                   statusPill={<Pill status={u.status} label={u.status[0]!.toUpperCase() + u.status.slice(1)} />}
                   lastLogin={u.lastLoginAt ? relTime(u.lastLoginAt) : "Never"}
                   agents={agents.filter((a) => a.id !== u.id).map((a) => ({ id: a.id, name: a.name }))} />
