@@ -10,6 +10,7 @@ import { audit } from "@/lib/audit";
 import { encrypt, last4 } from "@/lib/crypto";
 import { findDuplicates, type DupMatch } from "@/lib/duplicates";
 import { hideEligibility } from "@/lib/merchant-hide";
+import { moveOpenTickets, resolveNewOwner } from "@/lib/owners";
 
 export type MerchantFormState = { error?: string; fieldErrors?: Record<string, string>; duplicates?: DupMatch[]; values?: Record<string, string> };
 
@@ -29,7 +30,7 @@ export async function createMerchant(_p: MerchantFormState, f: FormData): Promis
       if (dups.some((d) => d.confidence !== "low")) return { duplicates: dups, values };
     }
     const owners = await scopeOwnerIds(user);
-    const ownerId = owners ? user.id : values.ownerId || user.id;
+    const ownerId = owners ? user.id : (values.ownerId ? await resolveNewOwner(values.ownerId) : null) ?? user.id;
     const [le] = await db.insert(schema.legalEntities).values({ legalName: v.legalName, einEnc: values.ein ? encrypt(values.ein.replace(/\D/g, "")) : null, einLast4: last4(values.ein) }).returning();
     const [m] = await db.insert(schema.merchants).values({
       legalEntityId: le!.id, dbaName: v.dbaName, status: "prospect", mcc: values.mcc || null, industry: values.industry || null, street: values.street || null,
@@ -52,21 +53,33 @@ export async function createMerchant(_p: MerchantFormState, f: FormData): Promis
 export async function bulkReassign(f: FormData) {
   const user = await requirePermission("merchants.edit");
   const ids = f.getAll("ids").map(String).filter(Boolean);
-  const ownerId = s(f, "ownerId");
-  if (!ids.length || !ownerId) return;
+  const raw = s(f, "ownerId");
+  if (!ids.length || !raw) return;
   if (await scopeOwnerIds(user)) throw new Error("Only managers can reassign merchants.");
   for (const id of ids) await assertMerchantInScope(user, id);
+  const ownerId = await resolveNewOwner(raw);
+  const before = await db.select({ id: schema.merchants.id, ownerId: schema.merchants.ownerId }).from(schema.merchants).where(inArray(schema.merchants.id, ids));
   await db.update(schema.merchants).set({ ownerId }).where(inArray(schema.merchants.id, ids));
-  await audit(await actorFor(user), "merchant.reassign", "merchant", undefined, { ids, ownerId });
+  let ticketsMoved = 0;
+  if (ownerId) for (const m of before) if (m.ownerId !== ownerId) ticketsMoved += await moveOpenTickets(m.id, m.ownerId, ownerId);
+  await audit(await actorFor(user), "merchant.reassign", "merchant", undefined, { ids, ownerId, ticketsMoved });
   revalidatePath("/merchants");
+  revalidatePath("/support");
 }
 
-export async function updateMerchantOwner(merchantId: string, ownerId: string) {
+export async function updateMerchantOwner(merchantId: string, raw: string) {
   const user = await requirePermission("merchants.edit");
   if (await scopeOwnerIds(user)) throw new Error("Only managers can reassign merchants.");
+  await assertMerchantInScope(user, merchantId);
+  const ownerId = await resolveNewOwner(raw);
+  const before = await db.query.merchants.findFirst({ where: eq(schema.merchants.id, merchantId), columns: { ownerId: true } });
+  if (!before || before.ownerId === ownerId) return;
   await db.update(schema.merchants).set({ ownerId }).where(eq(schema.merchants.id, merchantId));
-  await audit(await actorFor(user), "merchant.reassign", "merchant", merchantId, { ownerId });
+  const ticketsMoved = ownerId ? await moveOpenTickets(merchantId, before.ownerId, ownerId) : 0;
+  await audit(await actorFor(user), "merchant.reassign", "merchant", merchantId, { from: before.ownerId, ownerId, ticketsMoved });
   revalidatePath(`/merchants/${merchantId}`);
+  revalidatePath("/merchants");
+  revalidatePath("/support");
 }
 
 

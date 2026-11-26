@@ -10,6 +10,7 @@ import { BulkBar, ColumnChooser, DensityToggle, KeyNavTable, SavedViews, SelectA
 import { bulkReassign } from "./actions";
 import { BulkHide } from "./BulkHide";
 import { NewMerchantSheet } from "./NewMerchantSheet";
+import { assignableOwners, currentOwners } from "@/lib/owners";
 
 export const metadata = { title: "Merchants" };
 const PER = 50;
@@ -40,7 +41,7 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
     hiddenView ? isNotNull(schema.merchants.hiddenAt) : isNull(schema.merchants.hiddenAt),
     sp.view === "inactive" ? inactiveSql : undefined,
     status ? eq(schema.merchants.status, status) : undefined,
-    sp.owner ? eq(schema.merchants.ownerId, sp.owner) : undefined,
+    sp.owner === "none" ? isNull(schema.merchants.ownerId) : sp.owner ? eq(schema.merchants.ownerId, sp.owner) : undefined,
     sp.mcc ? eq(schema.merchants.mcc, sp.mcc) : undefined,
     sp.view === "cb" ? dsql`${cb90} > 0` : undefined,
     sp.view === "down" ? dsql`${prev30} > 0 and ${vol30} < ${prev30} * 0.9` : undefined,
@@ -69,7 +70,7 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
     db.select({ n: count() }).from(schema.merchants).where(and(ownerScope, isNull(schema.merchants.hiddenAt), inactiveSql)),
   ]);
   const c = (s: string) => counts.find((x) => x.status === s)?.n ?? 0;
-  const agents = owners ? [] : await db.select({ id: schema.users.id, name: schema.users.name }).from(schema.users).where(eq(schema.users.role, "agent")).orderBy(asc(schema.users.name));
+  const [agents, ownerFilter] = owners ? [[], []] : await Promise.all([assignableOwners(), currentOwners()]);
   const canEdit = can(user.role, "merchants.edit");
   const canHide = can(user.role, "merchants.hide");
   const qs = (extra: Record<string, string | number | undefined>) => {
@@ -101,7 +102,7 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
             <label className="inpw" style={{ width: 220 }}><span className="sr">Search merchants</span><input name="q" defaultValue={q ?? ""} placeholder="DBA, MID, city…" /></label>
             {!owners && (
               <select name="owner" className="inp" defaultValue={sp.owner ?? ""} aria-label="Filter by owner">
-                <option value="">Any owner</option>{agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                <option value="">Any owner</option><option value="none">Unassigned</option>{ownerFilter.map((a) => <option key={a.id} value={a.id}>{a.name}{a.active ? "" : " (disabled)"}</option>)}
               </select>
             )}
             <select name="sort" className="inp" defaultValue={sp.sort ?? "name"} aria-label="Sort"><option value="name">Sort: name</option><option value="volume">Sort: 30-day volume</option><option value="status">Sort: status</option></select>
@@ -114,14 +115,14 @@ export default async function MerchantsPage({ searchParams }: { searchParams: Pr
         {(q || sp.owner || sp.mcc) && (
           <div className="chips">
             {q && <span className="chip">Search <b>“{q}”</b><Link href={qs({ q: undefined, page: undefined })} aria-label="Remove search">×</Link></span>}
-            {sp.owner && <span className="chip">Owner <b>{agents.find((a) => a.id === sp.owner)?.name ?? "selected"}</b><Link href={qs({ owner: undefined, page: undefined })} aria-label="Remove owner filter">×</Link></span>}
+            {sp.owner && <span className="chip">Owner <b>{sp.owner === "none" ? "Unassigned" : ownerFilter.find((a) => a.id === sp.owner)?.name ?? "selected"}</b><Link href={qs({ owner: undefined, page: undefined })} aria-label="Remove owner filter">×</Link></span>}
             {sp.mcc && <span className="chip">MCC <b>{sp.mcc}</b><Link href={qs({ mcc: undefined, page: undefined })} aria-label="Remove MCC filter">×</Link></span>}
           </div>
         )}
         {!owners && canEdit && (
           <BulkBar form="bulk-merchants">
             <form id="bulk-merchants" action={bulkReassign} className="row" style={{ gap: 6 }}>
-              <select name="ownerId" className="inp" aria-label="Reassign to" defaultValue="" style={{ height: 26 }}><option value="" disabled>Reassign to…</option>{agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select>
+              <select name="ownerId" className="inp" aria-label="Reassign to" defaultValue="" style={{ height: 26 }}><option value="" disabled>Reassign to…</option><option value="none">Unassigned</option>{agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select>
               <button className="btn sm" type="submit">Reassign</button>
             </form>
             {canHide && <BulkHide form="bulk-merchants" mode={hiddenView ? "unhide" : "hide"} />}

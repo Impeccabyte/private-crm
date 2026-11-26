@@ -16,6 +16,7 @@ import { Reveal } from "./Reveal";
 import { LogSheet } from "./LogSheet";
 import { LocationSwitcher } from "./LocationSwitcher";
 import { OwnerSelect } from "./OwnerSelect";
+import { assignableOwners } from "@/lib/owners";
 import { PortalAccess } from "./PortalAccess";
 
 export const metadata = { title: "Merchant" };
@@ -68,7 +69,7 @@ export default async function MerchantPage({ params, searchParams }: { params: P
   const canReveal = can(user.role, "sensitive.reveal");
   const portalUsers = await db.select().from(schema.portalUsers).where(eq(schema.portalUsers.merchantId, id)).orderBy(asc(schema.portalUsers.createdAt));
   const base = `/merchants/${id}`;
-  const agents = !owners && canEdit ? await db.select({ id: schema.users.id, name: schema.users.name }).from(schema.users).where(eq(schema.users.role, "agent")).orderBy(asc(schema.users.name)) : [];
+  const ownerOptions = !owners && canEdit ? await assignableOwners() : null;
   void scopeThis;
   const canHide = can(user.role, "merchants.hide");
   const hideable = canHide && !m.hiddenAt && m.status === "boarding" ? await hideEligibility(id) : null;
@@ -103,7 +104,7 @@ export default async function MerchantPage({ params, searchParams }: { params: P
             {siblings.length > 1 && <LocationSwitcher current={id} ein={maskEin(le?.einLast4)} locations={siblings.map((s) => ({ id: s.id, name: s.dbaName, sub: [s.street, s.city].filter(Boolean).join(", "), status: MERCHANT_STATUS_LABEL[s.status]! }))} />}
             {m.mcc && <><span aria-hidden="true">·</span><span>MCC <span className="mono">{m.mcc}</span> {m.industry}</span></>}
             <span aria-hidden="true">·</span>
-            {agents.length ? <OwnerSelect merchantId={id} ownerId={m.ownerId} agents={agents} /> : owner ? <span className="who"><Avatar initials={initialsOf(owner.name)} color={owner.avatarColor} avatarKey={owner.avatarKey} />{owner.name}</span> : <span>Unassigned</span>}
+            {ownerOptions ? <OwnerSelect merchantId={id} current={owner ? { id: owner.id, name: owner.name, active: owner.status === "active" } : null} options={ownerOptions} /> : owner ? <span className="who"><Avatar initials={initialsOf(owner.name)} color={owner.avatarColor} avatarKey={owner.avatarKey} />{owner.name}</span> : <span>Unassigned</span>}
             {m.liveSince && <><span aria-hidden="true">·</span><span>Live since {fmtDate(m.liveSince)}</span></>}
           </div>
         </div>
