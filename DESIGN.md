@@ -102,7 +102,22 @@ typography:
     fontWeight: 500
     letterSpacing: "-0.01em"
     fontFeature: "tnum"
+  display-compact:
+    fontFamily: "Newsreader, Georgia, 'Times New Roman', serif"
+    fontSize: "30px"
+    fontWeight: 600
+    lineHeight: 1.18
+  figure-compact:
+    fontFamily: "Newsreader, Georgia, 'Times New Roman', serif"
+    fontSize: "26px"
+    fontWeight: 600
+    lineHeight: 1.1
+  badge:
+    fontFamily: "Hanken Grotesk, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontSize: "12px"
+    fontWeight: 600
 rounded:
+  bar: "4px"
   md: "14px"
   lg: "20px"
   pill: "999px"
@@ -228,7 +243,17 @@ The world is light only (`color-scheme: light`). Merchants read it in shops and 
 
 ### The staff CRM look is separate
 
-The staff CRM screens (`src/app/(app)/*`, styled in `src/app/globals.css` under the `.ib` prefix) use a neutral graphite working look with a placeholder accent. That look is undocumented and is not part of this system. Nothing in this file applies to it, and none of its values should be borrowed into the portal. Every rule below is scoped to the merchant portal under `.mp` (`src/app/portal/`).
+The staff CRM screens (`src/app/ase/*`, styled in `src/app/globals.css` under the `.ib` prefix) are a second surface with their own working look. Nothing in the rest of this file applies to them, and none of their values should be borrowed into the portal. Every rule below this section is scoped to the merchant portal under `.mp` (`src/app/(portal)/`). The design check is told to skip this file's type, radius, colour and font scales for `globals.css` for that reason.
+
+What the staff look is, so new staff screens match it:
+
+- **Mode and scene:** an operating tool for agents and admins at a desk, dense and scannable, in a light or a dark theme the user picks.
+- **Type:** Inter throughout at 13px on a 20px line; 12px for supporting text and small buttons, 11px for counts, 15 to 22px for page and card headings at weight 600. JetBrains Mono at 12px for IDs and codes.
+- **Colour:** neutral graphite surfaces from tokens (`--bg`, `--surface`, `--sunken`, `--line`, `--ink`, `--ink-2`, `--ink-3`), each redefined for the dark theme. One accent, set in General settings (`--accent`, Kiln Clay today), for links, the active nav item, progress and the switch. Status colours come in ink and background pairs (`--g-`, `--a-`, `--r-`).
+- **Buttons with white text** use `--accent-fill`, a darker mix of the accent, never `--accent` itself, so white text keeps 4.5:1.
+- **Shape:** small radii, 6 to 8px on controls and 10 to 12px on cards. No pills except status tags.
+- **Controls:** 30px high on desktop (26px small). Under 768px the top bar and navigation go to 44px and other buttons and inputs to 40px, with 16px input text. Anything drawn smaller than 24px gets an invisible hit area of at least 24px.
+- **Keyboard:** a "Skip to content" link is the first stop on every staff page.
 
 ## Colors
 
@@ -278,7 +303,7 @@ A warm earth palette of clay, amber and clove on cream paper, with brown-tinted 
 
 ### Hierarchy
 - **Display** (Newsreader 600, 38px, 1.18, -0.025em; 30px under 900px): page h1. Greeting and hero h1s may carry one italic word in Kiln Clay at weight 500 ("Good evening, *Maya*.", "Welcome *back*.", "What do you *need*?"). Working pages such as Reports keep a plain h1.
-- **Headline** (Newsreader 600, 24px; 22px inside a card and in empty states): section h2.
+- **Headline** (Newsreader 600, 24px; 20px inside a card and in empty states, the Title size): section h2.
 - **Title** (Newsreader 600, 20px): h3 inside account sections.
 - **Figure** (Newsreader 600, 34px, 1.1, lining tabular numerals; 26px on phones): the one hero figure on home, the last deposit.
 - **Lede** (Hanken 400, 18px, 1.55, max 64ch, Soft Ink): the sentence that summarises a page's money ("In November you were paid ..."), with figures in Ledger Ink 600 and tabular numerals.
@@ -286,6 +311,8 @@ A warm earth palette of clay, amber and clove on cream paper, with brown-tinted 
 - **Group label** (Hanken 700, 15px, Soft Ink, sentence case): day labels in the feed ("Today", "Yesterday", "Mon, Nov 23") and the brick "Needs you" heading. Not uppercase, not tracked.
 - **Label** (Hanken 600, 14px): field labels (ink-900) and card labels such as "Last deposit" (ink-600).
 - **Row text** (Hanken 600, 15px for the title; 400, 14px, Muted Ink for the detail line).
+- **Small** (Hanken 400, 14px): hints, field errors (600, brick), table headers (600), chart axis labels and the footer. Nothing a merchant reads is set below 14px.
+- **Badge** (Hanken 600 or 700, 12px): status badges and count chips only, where the text sits inside a pill of 20px or more.
 - **Amount** (JetBrains Mono 500, 15px, -0.01em, no wrap; 14px in tables): every money figure in rows, tables, totals and the phone deposit list.
 
 ### Named Rules
@@ -323,7 +350,7 @@ Depth is soft and warm. Surfaces are white on paper with a 1px Rule Ink border a
 
 ## Shapes
 
-Soft, friendly geometry. Every control a finger presses is a full pill (999px): buttons, nav links, badges, count chips, segmented controls and their segments, the sign-out button. Containers use 20px (cards, day cards, pinned items, tables, thread messages, request kinds, empty states) and inputs and callouts use 14px. Icon tiles are 38px circles. Badges carry a 6px dot of their own colour before the label. Sales bars round only their top corners (4px). Borders are 1px hairlines, except inputs and request-kind cards, which use 1.5px so they meet the 3:1 control-outline bar. Empty states use a 1px dashed ink-300 border.
+Soft, friendly geometry. Every control a finger presses is a full pill (999px): buttons, nav links, badges, count chips, segmented controls and their segments, the sign-out button. Containers use 20px (cards, day cards, pinned items, tables, thread messages, request kinds, empty states) and inputs and callouts use 14px. The only other radius is 4px on the top corners of chart bars. Icon tiles are 38px circles. Badges carry a 6px dot of their own colour before the label. Sales bars round only their top corners (4px). Borders are 1px hairlines, except inputs and request-kind cards, which use 1.5px so they meet the 3:1 control-outline bar. Empty states use a 1px dashed ink-300 border.
 
 ## Components
 
@@ -342,7 +369,7 @@ Tactile, confident pills that start with a verb.
 
 ### Inputs / Fields
 - **Style:** white, 46px minimum, 10px 14px padding, 14px radius, 1.5px Outline Ink border, Hanken 16px in ink-900; placeholders in Muted Ink. Textareas start at 120px (96px in the inline reply) and resize vertically.
-- **Field:** label (Hanken 600 14px, ink-900) above, hint (13px Muted Ink) and error (13px 600 brick-600) below, 6px apart.
+- **Field:** label (Hanken 600 14px, ink-900) above, hint (14px Muted Ink) and error (14px 600 brick-600) below, 6px apart.
 - **Hover / Focus:** hover darkens the border to ink-600; focus turns it Fired Clay with a 3px Clay Wash glow and no outline.
 - **Error:** `aria-invalid` turns the border brick-500; the message is linked with `aria-describedby` and announced with `role="alert"`.
 - **Select and date:** a custom ink chevron on selects; date pickers keep tabular numerals and a warm-tinted calendar icon. Checkboxes are 20px with Fired Clay as the accent colour.
@@ -355,7 +382,7 @@ Tactile, confident pills that start with a verb.
 - **All clear:** a sage-50 panel on a sage-100 border with a white icon circle and one sentence ("Nothing needs you right now.").
 
 ### Navigation
-- **Rail:** clove-800, 248px, wordmark at the top (Newsreader 600 22px, cream, "byte" in amber, with the emblem), six links with 18px Lucide icons, and the business, person and a sign-out pill at the foot above a clove-700 rule.
+- **Rail:** clove-800, 248px, wordmark at the top (Newsreader 600 20px, cream, "byte" in amber, with the emblem), six links with 18px Lucide icons, and the business, person and a sign-out pill at the foot above a clove-700 rule.
 - **Links:** 44px pills, clove-100 Hanken 500 15px. Hover and current fill clove-700 with white text; current turns weight 600, sets `aria-current="page"` and lights its icon amber. Counts sit at the right in amber chips.
 - **Phone top bar:** 60px sticky clove bar; a native `details` "Menu" disclosure with the total count, opening a full-width clove drawer that closes itself on navigation.
 - **Segmented control:** an ink-100 pill track with 36px pill segments (Hanken 600 14px); the current segment is white with the hairline lift. Used for months and date ranges.
@@ -373,7 +400,7 @@ Above the feed, a brick "Needs you" heading with its count, then each item as th
 When a reply is sent, the item leaves the pinned group and its row appears in Today, arriving warm and cooling to the page: Brick Wash with a brick-300 inset ring, then Clay Blush with a clay-200 ring at 35%, then plain white, over 2.4s on `cubic-bezier(0.16, 1, 0.3, 1)`. It runs once per resolution and nowhere else.
 
 ### Tables and the phone deposit list
-- **Table:** inside a white, 20px, Rule Ink wrapper with the resting shadow that scrolls sideways if needed (table minimum 640px). Headers are Hanken 600 13px ink-600 on Ink Wash; cells 13px 16px with ink-100 rules; money columns right-aligned in mono; a bold Ink Wash footer row for totals. Each table has a visually hidden caption and scoped headers.
+- **Table:** inside a white, 20px, Rule Ink wrapper with the resting shadow that scrolls sideways if needed (table minimum 640px). Headers are Hanken 600 14px ink-600 on Ink Wash; cells 13px 16px with ink-100 rules; money columns right-aligned in mono; a bold Ink Wash footer row for totals. Each table has a visually hidden caption and scoped headers.
 - **Phone deposit list:** under 600px the deposits table is swapped for a white card of two-line items: date and mono amount on the first line, sales, fees and holds in Muted Ink on the second.
 
 ### The lede (instead of KPI rows)

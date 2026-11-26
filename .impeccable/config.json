@@ -17,6 +17,42 @@
         ],
         "createdAt": "2026-11-24T00:59:56.772Z",
         "reason": "Claude triage: L223 is the left edge border of a full-height slide-in sheet, not an accent bar on a rounded card"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-26T12:26:49.683Z",
+        "reason": "Agent: globals.css is the staff CRM, a second surface with its own scales (DESIGN.md 'The staff CRM look is separate'); DESIGN.md's tokens describe the merchant portal"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-26T12:26:49.698Z",
+        "reason": "Agent: globals.css is the staff CRM, a second surface with its own scales (DESIGN.md 'The staff CRM look is separate'); DESIGN.md's tokens describe the merchant portal"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-26T12:26:49.711Z",
+        "reason": "Agent: globals.css is the staff CRM, a second surface with its own scales (DESIGN.md 'The staff CRM look is separate'); DESIGN.md's tokens describe the merchant portal"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-26T12:26:49.726Z",
+        "reason": "Agent: globals.css is the staff CRM, a second surface with its own scales (DESIGN.md 'The staff CRM look is separate'); DESIGN.md's tokens describe the merchant portal"
       }
     ]
   }
