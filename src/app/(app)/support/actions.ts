@@ -67,7 +67,8 @@ export async function postMessage(_p: ActionState, f: FormData): Promise<ActionS
           note = " Posted to the Maverick ticket.";
         }
       } else if (notify && t.contactEmail) {
-        const r = await sendMail(t.contactEmail, `Re: ${t.subject} [${t.number}]`, body);
+        const portalLink = t.source === "portal" ? `\n\nSee the whole conversation and reply in your Impeccabyte account:\n${(process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "")}/portal/requests/${t.id}\n` : "";
+        const r = await sendMail(t.contactEmail, `Re: ${t.subject} [${t.number}]`, body + portalLink);
         note = r.ok ? ` Emailed ${t.contactEmail}.` : ` Email failed: ${r.error}`;
       }
     }

@@ -16,6 +16,7 @@ import { Reveal } from "./Reveal";
 import { LogSheet } from "./LogSheet";
 import { LocationSwitcher } from "./LocationSwitcher";
 import { OwnerSelect } from "./OwnerSelect";
+import { PortalAccess } from "./PortalAccess";
 
 export const metadata = { title: "Merchant" };
 
@@ -65,6 +66,7 @@ export default async function MerchantPage({ params, searchParams }: { params: P
   const lp = lastPayout[0];
   const canEdit = can(user.role, "merchants.edit");
   const canReveal = can(user.role, "sensitive.reveal");
+  const portalUsers = await db.select().from(schema.portalUsers).where(eq(schema.portalUsers.merchantId, id)).orderBy(asc(schema.portalUsers.createdAt));
   const base = `/merchants/${id}`;
   const agents = !owners && canEdit ? await db.select({ id: schema.users.id, name: schema.users.name }).from(schema.users).where(eq(schema.users.role, "agent")).orderBy(asc(schema.users.name)) : [];
   void scopeThis;
@@ -184,6 +186,10 @@ export default async function MerchantPage({ params, searchParams }: { params: P
                 <span className="row" style={{ gap: 4 }}>{p.labels.filter((l) => ["Signer", "Guarantor"].includes(l)).map((l) => <span key={l} className="tag">{l}</span>)}</span>
               </div>
             ))}
+          </Card>
+          <Card title="Merchant portal">
+            <PortalAccess merchantId={id} canEdit={canEdit && !m.hiddenAt} users={portalUsers.map((p) => ({ id: p.id, name: p.name, email: p.email, status: p.status, lastLoginAt: p.lastLoginAt?.toISOString() ?? null }))}
+              suggest={(() => { const c = contacts.find((x) => x.email && x.labels.includes("Primary")) ?? contacts.find((x) => x.email); return c ? { name: `${c.firstName} ${c.lastName}`, email: c.email! } : null; })()} />
           </Card>
           <Card title="Bank account">
             {accounts.filter((a) => a.bankAccountLast4).length === 0 && <div className="card-b subtle">No bank account on file.</div>}
