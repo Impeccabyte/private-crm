@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, ChevronDown, LogOut, Menu, MessageCircle, Plus, Search, Store, UserPlus, CheckSquare, Settings2 } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { CommandPalette } from "./CommandPalette";
-import { logoutAction } from "@/app/(auth)/actions";
+import { logoutAction } from "@/app/ase/(auth)/actions";
 import { Avatar } from "../ui";
 
 type Note = { id: string; title: string; sub: string; at: string; href: string };
@@ -80,9 +80,9 @@ export function Topbar({ user, canCreate, notifications }: {
           </button>
           {open === "new" && (
             <div className="pop" role="menu" style={{ width: 220 }}>
-              {canCreate.lead && <Link className="mi" role="menuitem" href="/leads?new=1" onClick={close}><UserPlus size={16} aria-hidden="true" />Lead</Link>}
-              {canCreate.merchant && <Link className="mi" role="menuitem" href="/merchants?new=1" onClick={close}><Store size={16} aria-hidden="true" />Merchant</Link>}
-              {canCreate.ticket && <Link className="mi" role="menuitem" href="/support?new=1" onClick={close}><MessageCircle size={16} aria-hidden="true" />Ticket</Link>}
+              {canCreate.lead && <Link className="mi" role="menuitem" href="/ase/leads?new=1" onClick={close}><UserPlus size={16} aria-hidden="true" />Lead</Link>}
+              {canCreate.merchant && <Link className="mi" role="menuitem" href="/ase/merchants?new=1" onClick={close}><Store size={16} aria-hidden="true" />Merchant</Link>}
+              {canCreate.ticket && <Link className="mi" role="menuitem" href="/ase/support?new=1" onClick={close}><MessageCircle size={16} aria-hidden="true" />Ticket</Link>}
               <Link className="mi" role="menuitem" href="/?task=new" onClick={close}><CheckSquare size={16} aria-hidden="true" />Task</Link>
             </div>
           )}
@@ -99,7 +99,7 @@ export function Topbar({ user, canCreate, notifications }: {
               <div className="subtle sm">{user.email}</div>
               <div className="tag" style={{ marginTop: 6 }}>{user.roleLabel}</div>
             </div>
-            <Link className="mi" role="menuitem" href="/account" onClick={close}><Settings2 size={16} aria-hidden="true" />Profile &amp; password</Link>
+            <Link className="mi" role="menuitem" href="/ase/account" onClick={close}><Settings2 size={16} aria-hidden="true" />Profile &amp; password</Link>
             <form action={logoutAction}><button className="mi" role="menuitem" type="submit"><LogOut size={16} aria-hidden="true" />Sign out</button></form>
           </div>
         )}

@@ -5,7 +5,7 @@ import { randomToken, sha256 } from "@/lib/crypto";
 import { sendMail } from "@/lib/mail";
 
 const base = () => (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
-export const portalUrl = (path = "") => `${base()}/portal${path}`;
+export const portalUrl = (path = "") => `${base()}${path}`;
 
 /** Single-use link for a merchant to set (invite) or reset their portal password. */
 export async function issuePortalLink(portalUserId: string, email: string, name: string, dbaName: string, purpose: "reset" | "invite") {

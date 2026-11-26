@@ -28,8 +28,8 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
   }, [q]);
 
   const actions = [
-    { title: "Create lead", href: "/leads?new=1", icon: UserPlus },
-    { title: "Create ticket", href: "/support?new=1", icon: MessageCircle },
+    { title: "Create lead", href: "/ase/leads?new=1", icon: UserPlus },
+    { title: "Create ticket", href: "/ase/support?new=1", icon: MessageCircle },
   ];
   const total = results.length + actions.length;
   const go = (href: string) => { onClose(); router.push(href); };

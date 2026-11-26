@@ -1,27 +1,38 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Optimistic check only: no session cookie → send to /login. The real session and permission checks
- * happen in the Data Access Layer (src/lib/dal.ts) on every page and server action.
+ * Optimistic check only: no session cookie → send to the right sign-in. The real session and permission checks
+ * happen in the Data Access Layers (src/lib/dal.ts for staff, src/lib/portal/dal.ts for merchants) on every page,
+ * route and server action.
+ *
+ * The app has two halves that never share a session:
+ *  - Staff CRM under /ase (cookie ib_session, sign-in at /ase/login).
+ *  - Merchant portal at the root (cookie ib_portal, sign-in at /login).
  */
-const PUBLIC = ["/login", "/forgot-password", "/reset-password", "/api/health", "/api/webhooks", "/auth/", "/f/", "/embed/", "/api/forms/", "/e/"];
+const STAFF_PUBLIC = ["/ase/login", "/ase/forgot-password", "/ase/reset-password/"];
+const PORTAL_PUBLIC = ["/login", "/forgot-password", "/set-password/"];
 
-/** Merchant portal: its own cookie and its own sign-in. A staff cookie never opens it, and vice versa. */
-const PORTAL_PUBLIC = ["/portal/login", "/portal/forgot-password", "/portal/set-password/"];
+/** Not pages of either half. Each checks its own access (staff session, portal session, token or signature). */
+const SELF_CHECKED = ["/api/", "/auth/", "/f/", "/embed/", "/e/"];
+
+const under = (pathname: string, prefix: string) => (prefix.endsWith("/") ? pathname.startsWith(prefix) : pathname === prefix || pathname.startsWith(prefix + "/"));
 
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
-  if (pathname === "/portal" || pathname.startsWith("/portal/")) {
-    if (PORTAL_PUBLIC.some((p) => pathname.startsWith(p))) return NextResponse.next();
-    if (!req.cookies.get("ib_portal")?.value) {
-      const url = new URL("/portal/login", req.url);
-      if (pathname !== "/portal") url.searchParams.set("next", pathname + search);
+  if (SELF_CHECKED.some((p) => pathname.startsWith(p))) return NextResponse.next();
+
+  if (under(pathname, "/ase")) {
+    if (STAFF_PUBLIC.some((p) => under(pathname, p))) return NextResponse.next();
+    if (!req.cookies.get("ib_session")?.value) {
+      const url = new URL("/ase/login", req.url);
+      if (pathname !== "/ase") url.searchParams.set("next", pathname + search);
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
   }
-  if (PUBLIC.some((p) => pathname.startsWith(p))) return NextResponse.next();
-  if (!req.cookies.get("ib_session")?.value) {
+
+  if (PORTAL_PUBLIC.some((p) => under(pathname, p))) return NextResponse.next();
+  if (!req.cookies.get("ib_portal")?.value) {
     const url = new URL("/login", req.url);
     if (pathname !== "/") url.searchParams.set("next", pathname + search);
     return NextResponse.redirect(url);

@@ -63,7 +63,7 @@ export function Sidebar({ items, company, lastSync, syncFailed, hasConnections }
       </div>
       {items.map((it) => {
         const Icon = ICONS[it.icon] ?? Home;
-        const on = it.href === "/" ? path === "/" : path.startsWith(it.href);
+        const on = it.href === "/ase" ? path === "/ase" : path.startsWith(it.href);
         return (
           <Link key={it.href} href={it.href} className={`nv ${on ? "on" : ""}`} aria-current={on ? "page" : undefined} title={it.label}>
             <Icon size={16} aria-hidden="true" />

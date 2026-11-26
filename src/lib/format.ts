@@ -1,23 +1,30 @@
 const TZ = "America/New_York";
 
+/**
+ * Negative amounts are written the formal accounting way, in parentheses with no minus sign: ($1,234.56).
+ * Every money, count and percent formatter here and in the merchant portal goes through this.
+ */
+export const paren = (negative: boolean, s: string) => (negative ? `(${s})` : s);
+
 export function usd(n: number | null | undefined): string {
   if (n === null || n === undefined || Number.isNaN(n)) return "—";
-  const s = Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return (n < 0 ? "−$" : "$") + s;
+  return paren(Math.round(n * 100) < 0, "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 }
 export const usd0 = (n: number | null | undefined) =>
-  n === null || n === undefined ? "—" : (n < 0 ? "−$" : "$") + Math.round(Math.abs(n)).toLocaleString("en-US");
+  n === null || n === undefined ? "—" : paren(Math.round(n) < 0, "$" + Math.round(Math.abs(n)).toLocaleString("en-US"));
 export function short(n: number | null | undefined): string {
   if (n === null || n === undefined) return "—";
-  const a = Math.abs(n), s = n < 0 ? "−$" : "$";
-  if (a >= 1e6) return `${s}${(a / 1e6).toFixed(2)}M`;
-  if (a >= 1e3) return `${s}${(a / 1e3).toFixed(1)}K`;
+  const a = Math.abs(n);
+  if (a >= 1e6) return paren(n < 0, `$${(a / 1e6).toFixed(2)}M`);
+  if (a >= 1e3) return paren(n < 0, `$${(a / 1e3).toFixed(1)}K`);
   return usd(n);
 }
-export const num = (n: number | null | undefined) => (n === null || n === undefined ? "—" : n.toLocaleString("en-US"));
-export const pct = (n: number | null | undefined, digits = 1) => (n === null || n === undefined || !Number.isFinite(n) ? "—" : `${n.toFixed(digits)}%`);
+export const num = (n: number | null | undefined) => (n === null || n === undefined ? "—" : paren(n < 0, Math.abs(n).toLocaleString("en-US")));
+export const pct = (n: number | null | undefined, digits = 1) =>
+  n === null || n === undefined || !Number.isFinite(n) ? "—" : paren(Number(n.toFixed(digits)) < 0, `${Math.abs(n).toFixed(digits)}%`);
+/** A change: +4.2% when up, (4.2%) when down. */
 export const signedPct = (n: number | null | undefined) =>
-  n === null || n === undefined || !Number.isFinite(n) ? "—" : `${n >= 0 ? "+" : "−"}${Math.abs(n).toFixed(1)}%`;
+  n === null || n === undefined || !Number.isFinite(n) ? "—" : n >= 0 ? `+${n.toFixed(1)}%` : `(${Math.abs(n).toFixed(1)}%)`;
 
 const toDate = (d: Date | string | null | undefined) => (d ? (typeof d === "string" ? new Date(d.length === 10 ? d + "T12:00:00Z" : d) : d) : null);
 

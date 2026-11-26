@@ -135,7 +135,7 @@ export async function recordSubmission(form: TypedForm, values: Record<string, s
   const to = form.settings.notifyEmails.split(",").map((x) => x.trim()).filter(Boolean);
   if (to.length) {
     const g = await getSetting("general");
-    const link = `${appUrl()}/leads?lead=${leadId}`;
+    const link = `${appUrl()}/ase/leads?lead=${leadId}`;
     for (const addr of to) {
       void sendMail(addr, `New ${form.name} submission: ${businessName}`, `${outcome === "matched" ? "An existing lead submitted again." : "A new lead came in."}\n\n${answers}\n\nOpen in ${g.companyName} CRM: ${link}`).catch(() => {});
     }

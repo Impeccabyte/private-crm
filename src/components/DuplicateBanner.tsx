@@ -40,10 +40,10 @@ export function DuplicateBanner({ incoming, matches, createAnywayName, onMerge, 
       <div className="row w" style={{ padding: "10px 14px", borderTop: "1px solid var(--line)", background: "var(--sunken)", gap: 8 }}>
         <span className="subtle sm" style={{ flex: 1 }}>Merge keeps the existing record. Link adds this as another location under the same legal entity.</span>
         <button className="btn sm ghost" type="submit" name={createAnywayName} value="yes">Create anyway</button>
-        {onLink ? onLink(top) : top.kind === "merchant" && <Link className="btn sm" href={`/merchants/${top.id}`}><Link2 size={14} aria-hidden="true" />Open existing</Link>}
+        {onLink ? onLink(top) : top.kind === "merchant" && <Link className="btn sm" href={`/ase/merchants/${top.id}`}><Link2 size={14} aria-hidden="true" />Open existing</Link>}
         {onMerge?.(top) ?? (top.kind === "merchant"
-          ? <Link className="btn sm pri" href={`/merchants/${top.id}`}><Merge size={14} aria-hidden="true" />Use existing merchant</Link>
-          : <Link className="btn sm pri" href={`/leads?lead=${top.id}`}><Merge size={14} aria-hidden="true" />Open existing lead</Link>)}
+          ? <Link className="btn sm pri" href={`/ase/merchants/${top.id}`}><Merge size={14} aria-hidden="true" />Use existing merchant</Link>
+          : <Link className="btn sm pri" href={`/ase/leads?lead=${top.id}`}><Merge size={14} aria-hidden="true" />Open existing lead</Link>)}
       </div>
     </div>
   );

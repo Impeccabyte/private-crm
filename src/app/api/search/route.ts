@@ -55,14 +55,14 @@ export async function GET(req: Request) {
   const results = rows.slice(0, 8).map((r) => ({
     id: r.id, kind: "merchant" as const, title: r.dba,
     sub: [r.mid ? `MID ${r.mid}` : null, r.ein4 ? `EIN ${maskEin(r.ein4)}` : null, r.cFirst ? `${r.cFirst} ${r.cLast}` : null, r.phone].filter(Boolean).join(" · "),
-    why: why(r), status: MERCHANT_STATUS_LABEL[r.status] ?? r.status, href: `/merchants/${r.id}`,
+    why: why(r), status: MERCHANT_STATUS_LABEL[r.status] ?? r.status, href: `/ase/merchants/${r.id}`,
   }));
 
   if (q && can(user.role, "leads.view")) {
     const leads = await db.select().from(schema.leads)
       .where(and(owners ? inArray(schema.leads.ownerId, owners) : undefined, or(ilike(schema.leads.businessName, like), ilike(schema.leads.contactName, like), ilike(schema.leads.email, like))))
       .orderBy(desc(schema.leads.updatedAt)).limit(4);
-    results.push(...leads.map((l) => ({ id: l.id, kind: "lead" as const, title: l.businessName, sub: [l.contactName, l.phone].filter(Boolean).join(" · "), why: "Lead", status: l.status === "open" ? "Open" : l.status, href: `/leads?lead=${l.id}` })) as never[]);
+    results.push(...leads.map((l) => ({ id: l.id, kind: "lead" as const, title: l.businessName, sub: [l.contactName, l.phone].filter(Boolean).join(" · "), why: "Lead", status: l.status === "open" ? "Open" : l.status, href: `/ase/leads?lead=${l.id}` })) as never[]);
   }
   return Response.json({ results });
 }

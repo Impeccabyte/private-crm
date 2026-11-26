@@ -60,3 +60,12 @@ export async function readAvatar(id: string): Promise<{ data: Buffer; mime: stri
   const mime = sniffAvatar(data);
   return mime ? { data, mime } : null;
 }
+
+/** Reads one user's current photo by their user id. For callers that have already decided whose photo may be shown. */
+export async function readAvatarOf(userId: string): Promise<{ data: Buffer; mime: string } | null> {
+  const row = await db.query.users.findFirst({ where: eq(schema.users.id, userId), columns: { avatarKey: true } });
+  if (!row?.avatarKey) return null;
+  const data = await get(row.avatarKey);
+  const mime = sniffAvatar(data);
+  return mime ? { data, mime } : null;
+}
