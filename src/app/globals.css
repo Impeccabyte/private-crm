@@ -15,7 +15,6 @@
   --bg: #F6F7F9; --surface: #FFFFFF; --sunken: #F1F3F6; --hover: #F2F4F7; --side: #FAFBFC;
   --line: #E3E6EB; --line-strong: #C9CED6;
   --ink: #111827; --ink-2: #475163; --ink-3: #5D6676;
-  --logo-bg: #1F2733; --logo-ink: #FFFFFF;
   --n-bg: #EDEFF2; --n-ink: #344054;
   --b-bg: #E5EEFC; --b-ink: #1849A9;
   --a-bg: #FCF0D9; --a-ink: #86370A;
@@ -36,7 +35,6 @@
   --bg: #0C0E12; --surface: #14171C; --sunken: #191C22; --hover: #1D2128; --side: #101216;
   --line: #252A32; --line-strong: #39404B;
   --ink: #E8EAEE; --ink-2: #B0B6C1; --ink-3: #9198A5;
-  --logo-bg: #E5E8EC; --logo-ink: #111827;
   --n-bg: #23272F; --n-ink: #CDD2DA;
   --b-bg: #12233F; --b-ink: #92BBFF;
   --a-bg: #33240C; --a-ink: #F3B95E;
@@ -72,7 +70,7 @@ svg.i.s12 { width: 12px; height: 12px; stroke-width: 2; } svg.i.s14 { width: 14p
 /* Sidebar */
 .sb { width: 232px; min-height: 900px; padding: 10px 10px 14px; display: flex; flex-direction: column; gap: 2px; font-family: Inter, system-ui, sans-serif; color: var(--ink); background: var(--side); }
 .sb .ws { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 6px; margin-bottom: 8px; }
-.logo { width: 28px; height: 28px; border-radius: 7px; background: var(--logo-bg); color: var(--logo-ink); display: grid; place-items: center; font: 700 11px/1 Inter, sans-serif; letter-spacing: .02em; flex: none; }
+.logo { width: 28px; height: 28px; flex: none; display: block; }
 .sb .sync-card { margin: 8px 4px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); display: flex; flex-direction: column; gap: 4px; }
 .sb .ws-txt { display: flex; flex-direction: column; min-width: 0; }
 .sb .ws-name { font-weight: 600; font-size: 13px; line-height: 16px; } .sb .ws-sub { font-size: 11px; color: var(--ink-3); line-height: 14px; }

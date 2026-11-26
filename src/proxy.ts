@@ -42,5 +42,5 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   // The public lead-form submit endpoint skips the proxy so file uploads aren’t buffered (and cut off) at 10 MB.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/forms/).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|api/forms/).*)"],
 };

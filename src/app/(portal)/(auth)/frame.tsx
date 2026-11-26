@@ -7,7 +7,7 @@ export function AuthFrame({ children }: { children: React.ReactNode }) {
     <div className="mp-auth">
       <main className="mp-auth-form" id="main">
         <div>
-          <div className="mp-auth-brand"><Wordmark href="/login" /></div>
+          <div className="mp-auth-brand"><Wordmark href="/login" ground="light" /></div>
           {children}
         </div>
       </main>
