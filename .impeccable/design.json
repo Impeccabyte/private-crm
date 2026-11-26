@@ -1,0 +1,855 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-26T05:23:37+00:00",
+  "title": "Design System: Impeccabyte Merchant Portal",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#faf6ef",
+        "tonalRamp": [
+          "#faf6ef"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#ffffff"
+        ]
+      },
+      "on-dark": {
+        "role": "tertiary",
+        "displayName": "On Dark",
+        "canonical": "#f3ebde",
+        "tonalRamp": [
+          "#f3ebde"
+        ]
+      },
+      "clay-50": {
+        "role": "primary",
+        "displayName": "Clay Blush",
+        "canonical": "#fbf1ec",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-100": {
+        "role": "primary",
+        "displayName": "Clay Wash",
+        "canonical": "#f5ddd0",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-200": {
+        "role": "primary",
+        "displayName": "Clay Bars (weekday)",
+        "canonical": "#ebbba1",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-300": {
+        "role": "primary",
+        "displayName": "Clay Hover Border",
+        "canonical": "#de9a78",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-400": {
+        "role": "primary",
+        "displayName": "Clay Bars (weekend)",
+        "canonical": "#d17c56",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-500": {
+        "role": "primary",
+        "displayName": "Kiln Clay",
+        "canonical": "#c0623e",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-600": {
+        "role": "primary",
+        "displayName": "Fired Clay",
+        "canonical": "#a44e2f",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-700": {
+        "role": "primary",
+        "displayName": "Burnt Clay",
+        "canonical": "#833d26",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "clay-800": {
+        "role": "primary",
+        "displayName": "Clay Shadow",
+        "canonical": "#5f2d1e",
+        "tonalRamp": [
+          "#5f2d1e",
+          "#833d26",
+          "#a44e2f",
+          "#c0623e",
+          "#d17c56",
+          "#de9a78",
+          "#ebbba1",
+          "#f5ddd0",
+          "#fbf1ec"
+        ]
+      },
+      "amber-50": {
+        "role": "secondary",
+        "displayName": "Amber Wash",
+        "canonical": "#fcf4e6",
+        "tonalRamp": [
+          "#5f3d16",
+          "#e0a04d",
+          "#fcf4e6"
+        ]
+      },
+      "amber-400": {
+        "role": "secondary",
+        "displayName": "Lamplight Amber",
+        "canonical": "#e0a04d",
+        "tonalRamp": [
+          "#5f3d16",
+          "#e0a04d",
+          "#fcf4e6"
+        ]
+      },
+      "amber-800": {
+        "role": "secondary",
+        "displayName": "Deep Amber Text",
+        "canonical": "#5f3d16",
+        "tonalRamp": [
+          "#5f3d16",
+          "#e0a04d",
+          "#fcf4e6"
+        ]
+      },
+      "clove-100": {
+        "role": "tertiary",
+        "displayName": "Clove Link Text",
+        "canonical": "#e6dace",
+        "tonalRamp": [
+          "#302419",
+          "#463424",
+          "#5e4631",
+          "#c9b49e",
+          "#e6dace"
+        ]
+      },
+      "clove-200": {
+        "role": "tertiary",
+        "displayName": "Clove Fine Print",
+        "canonical": "#c9b49e",
+        "tonalRamp": [
+          "#302419",
+          "#463424",
+          "#5e4631",
+          "#c9b49e",
+          "#e6dace"
+        ]
+      },
+      "clove-600": {
+        "role": "tertiary",
+        "displayName": "Clove Outline",
+        "canonical": "#5e4631",
+        "tonalRamp": [
+          "#302419",
+          "#463424",
+          "#5e4631",
+          "#c9b49e",
+          "#e6dace"
+        ]
+      },
+      "clove-700": {
+        "role": "tertiary",
+        "displayName": "Clove Hover",
+        "canonical": "#463424",
+        "tonalRamp": [
+          "#302419",
+          "#463424",
+          "#5e4631",
+          "#c9b49e",
+          "#e6dace"
+        ]
+      },
+      "clove-800": {
+        "role": "tertiary",
+        "displayName": "Clove",
+        "canonical": "#302419",
+        "tonalRamp": [
+          "#302419",
+          "#463424",
+          "#5e4631",
+          "#c9b49e",
+          "#e6dace"
+        ]
+      },
+      "ink-900": {
+        "role": "neutral",
+        "displayName": "Ledger Ink",
+        "canonical": "#2a211a",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-800": {
+        "role": "neutral",
+        "displayName": "Body Ink",
+        "canonical": "#3b3128",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-700": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#4d4239",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-600": {
+        "role": "neutral",
+        "displayName": "Soft Ink (labels)",
+        "canonical": "#635648",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-500": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#786b5d",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-400": {
+        "role": "neutral",
+        "displayName": "Outline Ink",
+        "canonical": "#9b8e7e",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-300": {
+        "role": "neutral",
+        "displayName": "Dashed Ink",
+        "canonical": "#c3b7a6",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-200": {
+        "role": "neutral",
+        "displayName": "Rule Ink",
+        "canonical": "#e0d6c6",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-100": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#efe8dc",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "ink-50": {
+        "role": "neutral",
+        "displayName": "Ink Wash",
+        "canonical": "#f7f2e9",
+        "tonalRamp": [
+          "#2a211a",
+          "#3b3128",
+          "#4d4239",
+          "#635648",
+          "#786b5d",
+          "#9b8e7e",
+          "#c3b7a6",
+          "#e0d6c6",
+          "#efe8dc",
+          "#f7f2e9"
+        ]
+      },
+      "sage-50": {
+        "role": "status",
+        "displayName": "Sage Wash",
+        "canonical": "#eff3ea",
+        "tonalRamp": [
+          "#38492f",
+          "#4a6440",
+          "#dce6d0",
+          "#eff3ea"
+        ]
+      },
+      "sage-100": {
+        "role": "status",
+        "displayName": "Sage Edge",
+        "canonical": "#dce6d0",
+        "tonalRamp": [
+          "#38492f",
+          "#4a6440",
+          "#dce6d0",
+          "#eff3ea"
+        ]
+      },
+      "sage-600": {
+        "role": "status",
+        "displayName": "Sage Icon",
+        "canonical": "#4a6440",
+        "tonalRamp": [
+          "#38492f",
+          "#4a6440",
+          "#dce6d0",
+          "#eff3ea"
+        ]
+      },
+      "sage-700": {
+        "role": "status",
+        "displayName": "Landed Sage",
+        "canonical": "#38492f",
+        "tonalRamp": [
+          "#38492f",
+          "#4a6440",
+          "#dce6d0",
+          "#eff3ea"
+        ]
+      },
+      "brick-50": {
+        "role": "status",
+        "displayName": "Brick Wash",
+        "canonical": "#fbedea",
+        "tonalRamp": [
+          "#6b231c",
+          "#8f2e24",
+          "#b23a2e",
+          "#dc8377",
+          "#fbedea"
+        ]
+      },
+      "brick-300": {
+        "role": "status",
+        "displayName": "Needs-you Edge",
+        "canonical": "#dc8377",
+        "tonalRamp": [
+          "#6b231c",
+          "#8f2e24",
+          "#b23a2e",
+          "#dc8377",
+          "#fbedea"
+        ]
+      },
+      "brick-500": {
+        "role": "status",
+        "displayName": "Brick",
+        "canonical": "#b23a2e",
+        "tonalRamp": [
+          "#6b231c",
+          "#8f2e24",
+          "#b23a2e",
+          "#dc8377",
+          "#fbedea"
+        ]
+      },
+      "brick-600": {
+        "role": "status",
+        "displayName": "Deep Brick",
+        "canonical": "#8f2e24",
+        "tonalRamp": [
+          "#6b231c",
+          "#8f2e24",
+          "#b23a2e",
+          "#dc8377",
+          "#fbedea"
+        ]
+      },
+      "brick-700": {
+        "role": "status",
+        "displayName": "Brick Text",
+        "canonical": "#6b231c",
+        "tonalRamp": [
+          "#6b231c",
+          "#8f2e24",
+          "#b23a2e",
+          "#dc8377",
+          "#fbedea"
+        ]
+      },
+      "slate-50": {
+        "role": "status",
+        "displayName": "Slate Wash",
+        "canonical": "#edf1f3",
+        "tonalRamp": [
+          "#2f4753",
+          "#4a6a7a",
+          "#edf1f3"
+        ]
+      },
+      "slate-500": {
+        "role": "status",
+        "displayName": "Slate Icon",
+        "canonical": "#4a6a7a",
+        "tonalRamp": [
+          "#2f4753",
+          "#4a6a7a",
+          "#edf1f3"
+        ]
+      },
+      "slate-700": {
+        "role": "status",
+        "displayName": "Slate Text",
+        "canonical": "#2f4753",
+        "tonalRamp": [
+          "#2f4753",
+          "#4a6a7a",
+          "#edf1f3"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page h1; 30px under 900px. Greeting and hero h1s may carry one italic Kiln Clay word at weight 500."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2; 22px inside cards and empty states."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "h3 inside account sections."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "The one hero figure on home (last deposit); 26px on phones."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "The money-in-words sentence on Deposits and Reports, max 64ch, figures in Ledger Ink 600."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All reading text; page intros cap at 62ch."
+      },
+      "group-label": {
+        "displayName": "Group label",
+        "purpose": "Feed day labels and the brick Needs-you heading; sentence case, never uppercase."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels and card labels."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Row detail lines, meta and helper text."
+      },
+      "amount": {
+        "displayName": "Amount",
+        "purpose": "Every money figure, percentage and count in rows, tables and totals. Figures only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-xs",
+        "value": "0 1px 2px rgba(58,42,28,0.06)",
+        "purpose": "Current segment in a segmented control."
+      },
+      {
+        "name": "shadow-sm",
+        "value": "0 1px 2px rgba(58,42,28,0.06), 0 2px 6px rgba(58,42,28,0.05)",
+        "purpose": "Resting cards, day cards, tables, the phone deposit list."
+      },
+      {
+        "name": "shadow-md",
+        "value": "0 2px 4px rgba(58,42,28,0.05), 0 6px 16px rgba(58,42,28,0.08)",
+        "purpose": "Hovered request-kind cards."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 4px 8px rgba(58,42,28,0.06), 0 14px 32px rgba(58,42,28,0.10)",
+        "purpose": "Phone menu drawer and focused skip link."
+      },
+      {
+        "name": "shadow-brand",
+        "value": "0 4px 14px rgba(192,98,62,0.28)",
+        "purpose": "Primary button hover glow only."
+      },
+      {
+        "name": "needs-halo",
+        "value": "0 0 0 3px #fbedea, 0 1px 2px rgba(58,42,28,0.06), 0 2px 6px rgba(58,42,28,0.05)",
+        "purpose": "Pinned Needs-you items."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid #a44e2f; outline-offset: 2px; box-shadow: 0 0 0 4px #ffffff",
+        "purpose": "Keyboard focus on paper and white; inside the clove rail the outline is #e0a04d with no halo; feed rows inset the outline by 3px."
+      },
+      {
+        "name": "input-focus",
+        "value": "0 0 0 3px #f5ddd0",
+        "purpose": "Focused inputs (with a Fired Clay border) and the selected request kind."
+      }
+    ],
+    "motion": [
+      {
+        "name": "fast",
+        "value": "140ms",
+        "purpose": "Colour, background and border changes."
+      },
+      {
+        "name": "base",
+        "value": "220ms",
+        "purpose": "Transform and shadow changes (button press, hover lift)."
+      },
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+        "purpose": "Shared easing for all state transitions."
+      },
+      {
+        "name": "press",
+        "value": "translateY(1px) scale(0.985)",
+        "purpose": "Primary button active state."
+      },
+      {
+        "name": "settle",
+        "value": "2.4s cubic-bezier(0.16, 1, 0.3, 1); #fbedea + inset #dc8377 -> 35% #fbf1ec + inset #ebbba1 -> #ffffff",
+        "purpose": "The one authored moment: a resolved Needs-you item lands in Today warm and cools to the page. Runs once per resolution."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "transition: none; animation: none",
+        "purpose": "Under prefers-reduced-motion every transition and animation in the portal is removed."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column",
+        "value": "1099px",
+        "purpose": "Home stacks Needs you, totals (auto-fit grid), feed."
+      },
+      {
+        "name": "top-bar",
+        "value": "899px",
+        "purpose": "Rail becomes the 60px clove top bar with a Menu disclosure; sign-in and thread stack; h1 30px."
+      },
+      {
+        "name": "phone",
+        "value": "599px",
+        "purpose": "Rows wrap with amounts and actions indented 50px; segmented pickers scroll; deposits table becomes a two-line list."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Fired Clay pill for the one main action on a screen or item.",
+      "html": "<button class=\"ds-btn-primary\">Tell us what happened <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; font: 600 15px/1 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background 140ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 220ms cubic-bezier(0.22, 0.61, 0.36, 1); border: 1px solid #a44e2f; background: #a44e2f; color: #ffffff; } .ds-btn-primary:hover { background: #833d26; border-color: #833d26; box-shadow: 0 4px 14px rgba(192,98,62,0.28); } .ds-btn-primary:active { background: #5f2d1e; transform: translateY(1px) scale(0.985); } .ds-btn-primary:focus-visible { outline: 2px solid #a44e2f; outline-offset: 2px; box-shadow: 0 0 0 4px #ffffff; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "White pill with an Outline Ink border for supporting actions.",
+      "html": "<button class=\"ds-btn-secondary\">Ask for something</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; font: 600 15px/1 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background 140ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 220ms cubic-bezier(0.22, 0.61, 0.36, 1); border: 1px solid #9b8e7e; background: #ffffff; color: #2a211a; } .ds-btn-secondary:hover { background: #f7f2e9; border-color: #786b5d; } .ds-btn-secondary:active { transform: translateY(1px) scale(0.985); } .ds-btn-secondary:focus-visible { outline: 2px solid #a44e2f; outline-offset: 2px; box-shadow: 0 0 0 4px #ffffff; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Borderless Burnt Clay label for cancel and minor actions.",
+      "html": "<button class=\"ds-btn-ghost\">Cancel</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; font: 600 15px/1 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background 140ms cubic-bezier(0.22, 0.61, 0.36, 1), transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 220ms cubic-bezier(0.22, 0.61, 0.36, 1); min-height: 36px; padding: 0 12px; font-size: 14px; border: 1px solid transparent; background: transparent; color: #833d26; } .ds-btn-ghost:hover { background: #fbf1ec; } .ds-btn-ghost:focus-visible { outline: 2px solid #a44e2f; outline-offset: 2px; box-shadow: 0 0 0 4px #ffffff; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Labelled 46px input with a 1.5px Outline Ink border and a Fired Clay focus glow.",
+      "html": "<div class=\"ds-field\"><label for=\"ds-amt\">Amount on the receipt</label><input id=\"ds-amt\" class=\"ds-input\" placeholder=\"$0.00\"><span class=\"ds-hint\">Exactly as printed.</span></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; } .ds-field label { font-size: 14px; font-weight: 600; color: #2a211a; } .ds-hint { font-size: 13px; color: #786b5d; } .ds-input { min-height: 46px; padding: 10px 14px; border-radius: 14px; border: 1.5px solid #9b8e7e; background: #ffffff; color: #2a211a; font: 400 16px/1.4 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; transition: border-color 140ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 140ms cubic-bezier(0.22, 0.61, 0.36, 1); } .ds-input::placeholder { color: #786b5d; } .ds-input:hover { border-color: #635648; } .ds-input:focus { outline: none; border-color: #a44e2f; box-shadow: 0 0 0 3px #f5ddd0; }"
+    },
+    {
+      "name": "Status Badges",
+      "kind": "chip",
+      "refersTo": "badge-neutral",
+      "description": "Pill badges with a dot and words; colour by meaning only.",
+      "html": "<span class=\"ds-badge ds-ok\">Good standing</span> <span class=\"ds-badge ds-warn\">Waiting on you</span> <span class=\"ds-badge ds-danger\">Open</span> <span class=\"ds-badge ds-info\">We&#39;re on it</span> <span class=\"ds-badge\">Decided for the customer</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font: 600 12px 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; white-space: nowrap; background: #efe8dc; color: #4d4239; } .ds-badge::before { content: \"\"; width: 6px; height: 6px; border-radius: 50%; background: currentColor; } .ds-ok { background: #eff3ea; color: #38492f; } .ds-warn { background: #fcf4e6; color: #5f3d16; } .ds-danger { background: #fbedea; color: #6b231c; } .ds-info { background: #edf1f3; color: #2f4753; }"
+    },
+    {
+      "name": "Rail Navigation",
+      "kind": "nav",
+      "refersTo": "rail",
+      "description": "Clove rail with cream pill links, amber current icon and amber count chips.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Your account\"><a href=\"#\" aria-current=\"page\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/></svg>Home</a><a href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 18v-7\"/><path d=\"M14 18v-7\"/><path d=\"M18 18v-7\"/><path d=\"M6 18v-7\"/><path d=\"M3 22h18\"/><path d=\"m12 2 9 5H3z\"/></svg>Deposits</a><a href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M12 8v4\"/><path d=\"M12 16h.01\"/></svg>Disputes<span class=\"ds-ct\">1</span></a></nav>",
+      "css": ".ds-rail { width: 248px; background: #302419; padding: 16px; display: flex; flex-direction: column; gap: 2px; font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; } .ds-rail a { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 14px; border-radius: 999px; color: #e6dace; font-weight: 500; font-size: 15px; text-decoration: none; transition: background 140ms cubic-bezier(0.22, 0.61, 0.36, 1), color 140ms cubic-bezier(0.22, 0.61, 0.36, 1); } .ds-rail a:hover { background: #463424; color: #ffffff; } .ds-rail a[aria-current=\"page\"] { background: #463424; color: #ffffff; font-weight: 600; } .ds-rail a[aria-current=\"page\"] svg { color: #e0a04d; } .ds-rail a:focus-visible { outline: 2px solid #e0a04d; outline-offset: 2px; } .ds-ct { margin-left: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; background: #e0a04d; color: #2a211a; font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; }"
+    },
+    {
+      "name": "Totals Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "White card with a label, a Newsreader figure and hairline mono rows.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-label\">November so far</p><dl class=\"ds-rows\"><div><dt>Card sales</dt><dd class=\"ds-amt\">$50,675.95</dd></div><div><dt>Fees</dt><dd class=\"ds-amt\">$1,513.38</dd></div><div><dt>Deposited</dt><dd class=\"ds-amt\">$54,537.97</dd></div></dl></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #e0d6c6; border-radius: 20px; box-shadow: 0 1px 2px rgba(58,42,28,0.06), 0 2px 6px rgba(58,42,28,0.05); padding: 20px 22px; font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #3b3128; max-width: 360px; } .ds-label { margin: 0; font-size: 14px; font-weight: 600; color: #635648; } .ds-rows { margin: 6px 0 0; } .ds-rows div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 9px 0; border-bottom: 1px solid #efe8dc; font-size: 15px; } .ds-rows div:last-child { border-bottom: 0; } .ds-rows dt { color: #4d4239; } .ds-rows dd { margin: 0; } .ds-amt { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 15px; font-weight: 500; color: #2a211a; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }"
+    },
+    {
+      "name": "Day Card with Hairline Rows",
+      "kind": "custom",
+      "refersTo": "day-card",
+      "description": "One white card per day; events as hairline rows with tinted icons and sage landed amounts.",
+      "html": "<section class=\"ds-day\"><h2>Today</h2><div class=\"ds-daycard\"><a class=\"ds-row\" href=\"#\"><span class=\"ds-ico ds-dep\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 18v-7\"/><path d=\"M14 18v-7\"/><path d=\"M18 18v-7\"/><path d=\"M6 18v-7\"/><path d=\"M3 22h18\"/><path d=\"m12 2 9 5H3z\"/></svg></span><span class=\"ds-tx\"><b>Deposit sent to Chase ••4471</b><span>Card sales $1,481.63 · fees $40.00</span></span><span class=\"ds-in\">+$1,441.63</span><span class=\"ds-go\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></span></a><a class=\"ds-row\" href=\"#\"><span class=\"ds-ico ds-dis\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M12 8v4\"/><path d=\"M12 16h.01\"/></svg></span><span class=\"ds-tx\"><b>Dispute decided in your favor: $38.25</b><span>Case CB-55102</span></span><span class=\"ds-go\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></span></a></div></section>",
+      "css": ".ds-day { display: flex; flex-direction: column; gap: 8px; font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; } .ds-day h2 { margin: 0; font-size: 15px; font-weight: 700; color: #4d4239; } .ds-daycard { background: #ffffff; border: 1px solid #e0d6c6; border-radius: 20px; box-shadow: 0 1px 2px rgba(58,42,28,0.06), 0 2px 6px rgba(58,42,28,0.05); overflow: hidden; } .ds-row { display: flex; gap: 14px; align-items: center; padding: 14px 18px; color: inherit; text-decoration: none; transition: background 140ms cubic-bezier(0.22, 0.61, 0.36, 1); } .ds-row + .ds-row { border-top: 1px solid #efe8dc; } .ds-row:hover { background: #f7f2e9; } .ds-row:focus-visible { outline: 2px solid #a44e2f; outline-offset: -3px; } .ds-ico { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none; } .ds-dep { background: #eff3ea; color: #4a6440; } .ds-dis { background: #fbedea; color: #8f2e24; } .ds-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; } .ds-tx b { font-weight: 600; color: #2a211a; font-size: 15px; } .ds-tx span { font-size: 14px; color: #786b5d; } .ds-in { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 15px; font-weight: 500; color: #38492f; white-space: nowrap; } .ds-go { color: #9b8e7e; display: flex; }"
+    },
+    {
+      "name": "Pinned Needs-you Item",
+      "kind": "custom",
+      "refersTo": "needs-item",
+      "description": "The only free-standing card: brick edge and halo, one primary action, pinned until resolved.",
+      "html": "<div><h2 class=\"ds-need-h\">Needs you <span class=\"ds-nct\">1</span></h2><div class=\"ds-need\"><span class=\"ds-nico\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"M12 8v4\"/><path d=\"M12 16h.01\"/></svg></span><span class=\"ds-ntx\"><b>A customer disputed a $64.50 charge</b><span>Visa ••0193 · respond by Wed, Dec 2</span></span><button class=\"ds-nbtn\">Tell us what happened <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></div></div>",
+      "css": ".ds-need-h { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; font: 700 15px 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #8f2e24; } .ds-nct { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; background: #b23a2e; color: #ffffff; font-size: 12px; display: inline-grid; place-items: center; } .ds-need { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding: 16px 18px; background: #ffffff; border: 1px solid #dc8377; border-radius: 20px; box-shadow: 0 0 0 3px #fbedea, 0 1px 2px rgba(58,42,28,0.06), 0 2px 6px rgba(58,42,28,0.05); font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; } .ds-nico { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none; background: #fbedea; color: #8f2e24; } .ds-ntx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; } .ds-ntx b { font-weight: 600; color: #2a211a; font-size: 15px; } .ds-ntx span { font-size: 14px; color: #786b5d; } .ds-nbtn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid #a44e2f; background: #a44e2f; color: #ffffff; font: 600 14px/1 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; cursor: pointer; transition: background 140ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 220ms cubic-bezier(0.22, 0.61, 0.36, 1); } .ds-nbtn:hover { background: #833d26; box-shadow: 0 4px 14px rgba(192,98,62,0.28); } .ds-nbtn:focus-visible { outline: 2px solid #a44e2f; outline-offset: 2px; box-shadow: 0 0 0 4px #ffffff; }"
+    },
+    {
+      "name": "Greeting Heading and Lede",
+      "kind": "custom",
+      "refersTo": "lede",
+      "description": "Newsreader h1 with one italic Kiln Clay word, and the money-in-words lede that replaces KPI rows.",
+      "html": "<div class=\"ds-head\"><h1>Good evening, <em>Maya</em>.</h1><p class=\"ds-lede\">In November you were paid <strong>$54,537.97</strong> across 21 deposits to Chase: <strong>$56,051.35</strong> in card sales minus <strong>$1,513.38</strong> in fees (2.7%).</p></div>",
+      "css": ".ds-head { display: flex; flex-direction: column; gap: 10px; background: #faf6ef; padding: 16px; } .ds-head h1 { margin: 0; font-family: Newsreader, Georgia, 'Times New Roman', serif; font-weight: 600; font-size: 38px; line-height: 1.18; letter-spacing: -0.025em; color: #2a211a; } .ds-head h1 em { font-style: italic; font-weight: 500; color: #c0623e; } .ds-lede { margin: 0; font: 400 18px/1.55 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #4d4239; max-width: 64ch; } .ds-lede strong { color: #2a211a; font-weight: 600; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Kitchen-Table Ledger",
+    "overview": "The merchant portal carries the Impeccabyte marketing site's world into an Operate surface. It inherits that site's North Star unchanged: a warm, plain-spoken ledger kept on cream paper, where money is written down clearly and nothing is dressed up. Here the ledger is the merchant's own account, told newest first. The home screen is a story of what happened (deposits, disputes, replies) grouped by day, with anything that needs the merchant pinned and lit above it and one steady column of totals beside it. The money question is answered in sentences and hairline rows, never in a row of number tiles.\n\nDensity is moderate and calm. A merchant opens this on a phone between customers, so every screen leads with one plain sentence, one clear action, and figures that line up. Colour is quiet by default: paper ground, white cards, brown-tinted inks. State colour appears only where it means something: brick for what needs you, sage for money that landed, amber for counts and waiting, slate for information. The single loud brand moment is one italic clay word in a greeting or hero heading.\n\nThe world is light only (`color-scheme: light`). Merchants read it in shops and kitchens, in daylight, and the paper ground is part of the brand promise.",
+    "keyCharacteristics": [
+      "Paper page, white cards, warm hairlines and warm brown shadows; no neutral gray and no pure black.",
+      "A dark clove rail (a clove top bar on phones) with cream text and amber count chips.",
+      "Fired Clay pill buttons; Newsreader 600 headings with at most one italic clay word.",
+      "Hanken Grotesk for all reading text; JetBrains Mono only for figures.",
+      "A day-grouped event feed in hairline rows, with brick-edged Needs-you items pinned above it.",
+      "One authored motion moment: a resolved item settles into Today, warm to cool."
+    ],
+    "rules": [
+      {
+        "name": "The Paper, Not White Rule",
+        "body": "The page is always paper. White is only for things laid on the page. Every dark and every gray is brown-tinted ink or clove.",
+        "section": "colors"
+      },
+      {
+        "name": "The State Means Something Rule",
+        "body": "Brick only marks what needs the merchant (and errors), sage only marks money that landed or a good outcome, amber only counts or waits, slate only informs. If a colour does not carry one of those meanings, the element is ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Clays Rule",
+        "body": "Kiln Clay is the brand, Fired Clay does the work. White text sits on clay-600 or darker, never on clay-500.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Italic Word Rule",
+        "body": "A heading carries at most one italic clay word, and only on a greeting or hero heading. On clove the word turns amber.",
+        "section": "typography"
+      },
+      {
+        "name": "The Mono Is a Ledger Column Rule",
+        "body": "JetBrains Mono sets only figures that line up: amounts, percentages and counts in rows, tables and totals. Prose, labels and headings never use it. Figures inside sentences stay in Hanken with tabular numerals.",
+        "section": "typography"
+      },
+      {
+        "name": "The Warm Shadow Rule",
+        "body": "Every shadow is tinted clove-brown or clay. A shadow that reads gray is wrong.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep the page paper and lay white cards, rows and inputs on it.",
+      "**Do** answer the money question in a lede sentence and hairline rows, with amounts right-aligned in JetBrains Mono.",
+      "**Do** group the feed by day in one day card per day, with events as hairline rows.",
+      "**Do** pin what needs the merchant above the feed with a brick-300 border, a brick-50 halo and one primary action, and keep it pinned until resolved.",
+      "**Do** reserve brick for needs-you and errors, sage for landed money and good outcomes, amber for counts and waiting, slate for information.",
+      "**Do** use Fired Clay (clay-600) for primary buttons, links and the focus ring, hovering to clay-700 and pressing to clay-800.",
+      "**Do** give every heading Newsreader 600, and give a greeting or hero heading at most one italic Kiln Clay word.",
+      "**Do** show focus as a 2px Fired Clay outline with a 2px offset and a 4px white halo; inside the clove rail the outline turns amber with no halo.",
+      "**Do** keep nav links, buttons and inputs at 44px or taller (46px for inputs), and label every count, chart and table for screen readers.",
+      "**Do** pair every status colour with words, a dot or an icon so colour is never the only signal.",
+      "**Do** put the Maverick disclosure on every portal page, exactly as written in PRODUCT.md: in the footer of signed-in pages and on the clove panel of sign-in pages.",
+      "**Do** use 140ms for colour changes and 220ms for movement and shadow, both on `cubic-bezier(0.22, 0.61, 0.36, 1)`, and drop every transition and animation under `prefers-reduced-motion`."
+    ],
+    "donts": [
+      "**Don't** build a row of KPI or stat tiles over a chart over a table. The only grouped figures are the home totals column (which reflows into a grid above the feed under 1100px) and the lede sentence.",
+      "**Don't** nest a card inside a card. Inside a card, use hairline rows, hairline lists, callouts or the inline reply instead.",
+      "**Don't** make each feed event its own card; only pinned Needs-you items stand alone.",
+      "**Don't** set prose, labels, headings or dates in JetBrains Mono; mono is for figures only.",
+      "**Don't** use brick, sage or amber decoratively, and never put white text on amber or on clay-500.",
+      "**Don't** add uppercase tracked eyebrows or kickers above headings; group labels are sentence-case Hanken.",
+      "**Don't** add a dark mode, neutral grays, pure black or gray shadows.",
+      "**Don't** animate anything except state transitions and the settle; no entrance choreography on page load.",
+      "**Don't** apply these rules to the staff CRM (`.ib`); it is a separate, undocumented look."
+    ]
+  }
+}

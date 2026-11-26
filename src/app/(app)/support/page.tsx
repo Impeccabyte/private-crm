@@ -10,6 +10,10 @@ import { Avatar, Empty, Pill, Proc } from "@/components/ui";
 import { Composer, EscalateButton } from "./Client";
 import { updateTicket } from "./actions";
 import { NewTicketSheet } from "./NewTicketSheet";
+import { Reveal } from "../merchants/[id]/Reveal";
+import { Fragment } from "react";
+
+const SRC_LABEL: Record<string, string> = { internal: "Internal", maverick: "Maverick", portal: "Portal" };
 
 export const metadata = { title: "Support" };
 
@@ -26,7 +30,7 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
     unassigned: and(isNull(schema.tickets.assigneeId), ne(schema.tickets.status, "Closed")),
     sla: risk, open: ne(schema.tickets.status, "Closed"), closed: eq(schema.tickets.status, "Closed"),
   };
-  const srcF = sp.src === "internal" || sp.src === "maverick" ? eq(schema.tickets.source, sp.src) : undefined;
+  const srcF = sp.src === "internal" || sp.src === "maverick" || sp.src === "portal" ? eq(schema.tickets.source, sp.src) : undefined;
   const list = await db.select({ t: schema.tickets, dba: schema.merchants.dbaName, who: schema.users.name, color: schema.users.avatarColor, photo: schema.users.avatarKey,
     preview: dsql<string>`(select body from ticket_messages m where m.ticket_id = "tickets"."id" and m.kind <> 'system' order by m.created_at desc limit 1)` })
     .from(schema.tickets).leftJoin(schema.merchants, eq(schema.tickets.merchantId, schema.merchants.id)).leftJoin(schema.users, eq(schema.tickets.assigneeId, schema.users.id))
@@ -77,7 +81,7 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
           </div>
           <div className="row"><span className="subtle sm">Source</span>
             <div className="seg" role="group" aria-label="Source filter">
-              {[["", "All"], ["internal", "Internal"], ["maverick", "Maverick"]].map(([k, l]) => <Link key={k} href={qs({ src: k || undefined, t: undefined })} className={`btn ghost sm`} style={(sp.src ?? "") === k ? { background: "var(--surface)", color: "var(--ink)", boxShadow: "0 1px 2px rgba(16,24,40,.12)", height: 24 } : { height: 24 }} aria-current={(sp.src ?? "") === k}>{l}</Link>)}
+              {[["", "All"], ["internal", "Internal"], ["portal", "Portal"], ["maverick", "Maverick"]].map(([k, l]) => <Link key={k} href={qs({ src: k || undefined, t: undefined })} className={`btn ghost sm`} style={(sp.src ?? "") === k ? { background: "var(--surface)", color: "var(--ink)", boxShadow: "0 1px 2px rgba(16,24,40,.12)", height: 24 } : { height: 24 }} aria-current={(sp.src ?? "") === k}>{l}</Link>)}
             </div>
           </div>
         </div>
@@ -85,7 +89,7 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
           {list.length === 0 && <Empty icon={MessageCircle} title="Nothing here">No tickets match this view.</Empty>}
           {list.map((r) => { const s = sla(r.t); return (
             <Link key={r.t.id} href={qs({ t: r.t.id })} className={`ti ${r.t.id === selId ? "on" : ""}`} role="option" aria-selected={r.t.id === selId} scroll={false}>
-              <span className="r1"><span className="mono subtle">{r.t.number}</span><span className={`tag ${r.t.source === "maverick" ? "acc" : ""}`}>{r.t.source === "maverick" ? "Maverick" : "Internal"}</span><span className="sp" /><span className={s.c}>{s.t}</span></span>
+              <span className="r1"><span className="mono subtle">{r.t.number}</span><span className={`tag ${r.t.source === "maverick" ? "acc" : ""}`}>{SRC_LABEL[r.t.source]}</span><span className="sp" /><span className={s.c}>{s.t}</span></span>
               <span className="subj">{r.t.subject}</span>
               <span className="r1"><span className="pv" style={{ flex: 1 }}>{r.dba ?? "No merchant"} · {r.preview?.slice(0, 80)}</span></span>
               <span className="r1"><Pill status={r.t.status} /><span className="sp" />{r.who ? <Avatar initials={initialsOf(r.who)} color={r.color} avatarKey={r.photo} title={r.who} /> : <span className="subtle sm">Unassigned</span>}<span className="subtle sm">{relTime(r.t.updatedAt)}</span></span>
@@ -100,8 +104,9 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
             <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--line)", background: "var(--surface)", display: "flex", flexDirection: "column", gap: 8 }}>
               <div className="row w" style={{ gap: 8 }}>
                 <Link className="btn ghost sm mob-only" href={qs({ t: undefined })} scroll={false}>← Tickets</Link>
-                <span className="mono subtle">{cur.t.number}</span><span className={`tag ${cur.t.source === "maverick" ? "acc" : ""}`}>{cur.t.source === "maverick" ? "Maverick" : "Internal"}</span>
+                <span className="mono subtle">{cur.t.number}</span><span className={`tag ${cur.t.source === "maverick" ? "acc" : ""}`}>{SRC_LABEL[cur.t.source]}</span>
                 {cur.t.source === "maverick" && <span className="subtle sm">Mirrored from Maverick help desk{cur.t.externalId ? ` · ${cur.t.externalId}` : ""}</span>}
+                {cur.t.source === "portal" && <span className="subtle sm">Sent from the merchant portal. The merchant sees replies, never internal notes.</span>}
                 <span className="sp" />
                 {canEdit && (
                   <form action={updateTicket} className="row" style={{ gap: 6 }}>
@@ -117,12 +122,21 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
               <div className="row w muted sm" style={{ gap: 8 }}><Pill status={cur.t.status} /><span>Category: {cur.t.category ?? "—"}</span><span aria-hidden="true">·</span><span>Priority: {cur.t.priority}</span><span aria-hidden="true">·</span><span className={sla(cur.t).c}>SLA: {sla(cur.t).t || "—"}</span><span aria-hidden="true">·</span><span>Opened {fmtDateTime(cur.t.createdAt)}</span></div>
             </div>
             <div style={{ flex: 1, padding: "18px 20px", display: "flex", flexDirection: "column", gap: 12, overflow: "auto" }}>
+              {cur.t.source === "portal" && (Object.keys((cur.t.portalDetails ?? {}) as object).length > 0 || cur.t.portalSensitiveEnc) && (
+                <div style={{ border: "1px solid var(--line)", borderRadius: 8, padding: "10px 12px", background: "var(--sunken)" }}>
+                  <dl className="dl">
+                    {Object.entries((cur.t.portalDetails ?? {}) as Record<string, string>).map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}
+                    {cur.t.portalSensitiveEnc && <><dt>New bank details</dt><dd><Reveal kind="request_bank" id={cur.t.id} masked="Encrypted" allowed={can(user.role, "sensitive.reveal")} /></dd></>}
+                  </dl>
+                  {cur.t.chargebackId && <p className="sm" style={{ margin: "8px 0 0" }}><Link href="/chargebacks">Open the chargeback</Link></p>}
+                </div>
+              )}
               {msgs.map((mm) => mm.kind === "system" ? (
                 <div key={mm.id} className="msg sysm"><span className="pm" aria-hidden="true">{mm.authorName === "Maverick" ? "M" : "•"}</span><span style={{ flex: 1 }}>{mm.body}</span><span className="subtle">{fmtDateTime(mm.createdAt)}</span></div>
               ) : (
                 <article key={mm.id} className={`msg ${mm.kind === "outbound" ? "out" : ""} ${mm.kind === "internal" ? "note-y" : ""}`}>
                   <div className="row"><Avatar initials={initialsOf(mm.authorName ?? "?")} color={mm.authorUserId ? "av-8" : "av-3"} avatarKey={mm.authorUserId ? authorPhotos.get(mm.authorUserId) : null} /><b style={{ fontWeight: 600 }}>{mm.authorName}</b>
-                    <span className="subtle sm">{mm.kind === "inbound" ? (cur.t.source === "maverick" ? "via Maverick" : "via email") : mm.kind === "outbound" ? (mm.notifyMerchant ? "replied · merchant notified" : "replied") : ""}</span>
+                    <span className="subtle sm">{mm.kind === "inbound" ? (cur.t.source === "maverick" ? "via Maverick" : cur.t.source === "portal" ? "via portal" : "via email") : mm.kind === "outbound" ? (mm.notifyMerchant ? "replied · merchant notified" : "replied") : ""}</span>
                     {mm.kind === "internal" && <span className="tag" style={{ background: "var(--note-line)", borderColor: "transparent", color: "var(--ink)" }}>Internal note</span>}
                     <span className="sp" /><span className="subtle sm">{fmtDateTime(mm.createdAt)}</span></div>
                   <div style={{ whiteSpace: "pre-line" }}>{mm.body}</div>

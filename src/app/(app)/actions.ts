@@ -54,13 +54,13 @@ export async function logActivity(_p: ActionState, f: FormData): Promise<ActionS
  * Reveal a sensitive value (EIN or bank account). Requires `sensitive.reveal`, a reason, and writes an audit row.
  * Returns the plain value for the client to show briefly; it is never rendered server-side.
  */
-export async function revealSensitive(kind: "ein" | "bank", id: string, reason: string): Promise<{ value?: string; error?: string }> {
+export async function revealSensitive(kind: "ein" | "bank" | "request_bank", id: string, reason: string): Promise<{ value?: string; error?: string }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Sign in again." };
   try {
     await requirePermission("sensitive.reveal");
   } catch {
-    await audit(await actorFor(user), "sensitive.reveal_denied", kind === "ein" ? "legal_entity" : "merchant_account", id);
+    await audit(await actorFor(user), "sensitive.reveal_denied", kind === "ein" ? "legal_entity" : kind === "request_bank" ? "ticket" : "merchant_account", id);
     return { error: "You need the “Reveal sensitive data” permission. Ask an admin." };
   }
   if (!reason.trim()) return { error: "Choose a reason." };
@@ -68,12 +68,18 @@ export async function revealSensitive(kind: "ein" | "bank", id: string, reason: 
   if (kind === "ein") {
     const le = await db.query.legalEntities.findFirst({ where: eq(schema.legalEntities.id, id) });
     value = decryptOrNull(le?.einEnc);
+  } else if (kind === "request_bank") {
+    // New bank details a merchant sent in a portal account-change request.
+    const t = await db.query.tickets.findFirst({ where: eq(schema.tickets.id, id), columns: { merchantId: true, portalSensitiveEnc: true } });
+    if (t?.merchantId) await assertMerchantInScope(user, t.merchantId);
+    const raw = decryptOrNull(t?.portalSensitiveEnc);
+    if (raw) { const b = JSON.parse(raw) as { bankName?: string; routing?: string; account?: string }; value = `${b.bankName ?? "Bank"} · routing ${b.routing ?? "?"} · account ${b.account ?? "?"}`; }
   } else {
     const ma = await db.query.merchantAccounts.findFirst({ where: eq(schema.merchantAccounts.id, id) });
     if (ma) await assertMerchantInScope(user, ma.merchantId);
     value = decryptOrNull(ma?.bankAccountEnc);
   }
   if (!value) return { error: "No value on file." };
-  await audit(await actorFor(user), "sensitive.reveal", kind === "ein" ? "legal_entity" : "merchant_account", id, { field: kind, reason: reason.slice(0, 200) });
+  await audit(await actorFor(user), "sensitive.reveal", kind === "ein" ? "legal_entity" : kind === "request_bank" ? "ticket" : "merchant_account", id, { field: kind, reason: reason.slice(0, 200) });
   return { value };
 }

@@ -78,6 +78,13 @@
       "when": 1795492814651,
       "tag": "0010_user_avatars",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795668852943,
+      "tag": "0011_merchant_portal",
+      "breakpoints": true
     }
   ]
 }

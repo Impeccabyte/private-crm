@@ -5,7 +5,7 @@ import { Eye, Lock, ShieldCheck } from "lucide-react";
 import { revealSensitive } from "../../actions";
 
 /** Masked value with a permissioned, audited, time-limited Reveal (30 seconds). */
-export function Reveal({ kind, id, masked, allowed }: { kind: "ein" | "bank"; id: string; masked: string; allowed: boolean }) {
+export function Reveal({ kind, id, masked, allowed }: { kind: "ein" | "bank" | "request_bank"; id: string; masked: string; allowed: boolean }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("Verifying with processor (Maverick)");
   const [value, setValue] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export function Reveal({ kind, id, masked, allowed }: { kind: "ein" | "bank"; id
       </span>
       {open && !value && (allowed ? (
         <span className="expand-in" style={{ border: "1px solid var(--line-strong)", borderRadius: 8, padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8, background: "var(--sunken)" }}>
-          <span className="row" style={{ gap: 6, fontWeight: 600 }}><ShieldCheck size={14} aria-hidden="true" />Reveal full {kind === "ein" ? "EIN" : "account number"}?</span>
+          <span className="row" style={{ gap: 6, fontWeight: 600 }}><ShieldCheck size={14} aria-hidden="true" />Reveal full {kind === "ein" ? "EIN" : kind === "request_bank" ? "bank details" : "account number"}?</span>
           <span className="sm muted">It shows for 30 seconds and is recorded in the audit log with your name, the time and your reason.</span>
           <label className="field"><span className="lab">Reason</span>
             <select className="inp" value={reason} onChange={(e) => setReason(e.target.value)}>

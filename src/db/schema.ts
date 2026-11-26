@@ -25,7 +25,8 @@ export const appStatusEnum = pgEnum("application_status", ["New", "Pending", "Un
 export const signatureStatusEnum = pgEnum("signature_status", ["Unsigned", "Partially Signed", "Signed", "Rejected"]);
 export const checkStatusEnum = pgEnum("check_status", ["Passed", "Failed", "Pending"]);
 export const ticketStatusEnum = pgEnum("ticket_status", ["New", "In Progress", "On Hold", "Closed"]);
-export const ticketSourceEnum = pgEnum("ticket_source", ["internal", "maverick"]);
+export const ticketSourceEnum = pgEnum("ticket_source", ["internal", "maverick", "portal"]);
+export const portalUserStatusEnum = pgEnum("portal_user_status", ["invited", "active", "disabled"]);
 export const ticketPriorityEnum = pgEnum("ticket_priority", ["low", "normal", "high"]);
 export const messageKindEnum = pgEnum("message_kind", ["inbound", "outbound", "internal", "system"]);
 export const chargebackStatusEnum = pgEnum("chargeback_status", ["Processed", "Won", "Lost"]);
@@ -444,6 +445,14 @@ export const tickets = pgTable("tickets", {
   slaDueAt: ts("sla_due_at"),
   firstResponseAt: ts("first_response_at"),
   closedAt: ts("closed_at"),
+  /** Merchant portal requests: support | equipment | account_change | trip | dispute. Null for staff/Maverick tickets. */
+  portalKind: text("portal_kind"),
+  /** Structured answers from the portal request form (never sensitive values). */
+  portalDetails: jsonb("portal_details"),
+  /** Sensitive answers (new bank account/routing), AES-256-GCM JSON; only staff with sensitive.reveal can read. */
+  portalSensitiveEnc: text("portal_sensitive_enc"),
+  portalUserId: uuid("portal_user_id").references((): AnyPgColumn => portalUsers.id, { onDelete: "set null" }),
+  chargebackId: uuid("chargeback_id").references((): AnyPgColumn => chargebacks.id, { onDelete: "set null" }),
   createdAt: created(),
   updatedAt: updated(),
 }, (t) => [
@@ -459,6 +468,8 @@ export const ticketMessages = pgTable("ticket_messages", {
   kind: messageKindEnum("kind").notNull(),
   authorName: text("author_name"),
   authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
+  /** Set when a merchant wrote this message in the portal. */
+  authorPortalUserId: uuid("author_portal_user_id").references((): AnyPgColumn => portalUsers.id, { onDelete: "set null" }),
   body: text("body").notNull(),
   notifyMerchant: boolean("notify_merchant").notNull().default(false),
   createdAt: created(),
@@ -670,5 +681,44 @@ export const emailTemplates = pgTable("email_templates", {
   blocks: jsonb("blocks").notNull().default([]),
   style: jsonb("style").notNull().default({}),
   createdById: uuid("created_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: created(),
+});
+
+// ── Merchant portal ───────────────────────────────────────────────────────────
+/**
+ * Merchant sign-ins. Deliberately separate from `users` (staff): a portal session can never satisfy the
+ * staff Data Access Layer, and the merchant id comes only from this row.
+ */
+export const portalUsers = pgTable("portal_users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  merchantId: uuid("merchant_id").notNull().references(() => merchants.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  name: text("name").notNull(),
+  passwordHash: text("password_hash"),
+  status: portalUserStatusEnum("status").notNull().default("invited"),
+  failedLoginCount: integer("failed_login_count").notNull().default(0),
+  lockedUntil: ts("locked_until"),
+  lastLoginAt: ts("last_login_at"),
+  invitedById: uuid("invited_by_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: created(),
+  updatedAt: updated(),
+}, (t) => [uniqueIndex("portal_users_email_uq").on(t.email), index("portal_users_merchant_idx").on(t.merchantId)]);
+
+export const portalSessions = pgTable("portal_sessions", {
+  /** sha256 of the opaque cookie token. */
+  id: text("id").primaryKey(),
+  portalUserId: uuid("portal_user_id").notNull().references(() => portalUsers.id, { onDelete: "cascade" }),
+  expiresAt: ts("expires_at").notNull(),
+  ip: text("ip"),
+  userAgent: text("user_agent"),
+  createdAt: created(),
+}, (t) => [index("portal_sessions_user_idx").on(t.portalUserId)]);
+
+export const portalPasswordTokens = pgTable("portal_password_tokens", {
+  id: text("id").primaryKey(), // sha256 of token
+  portalUserId: uuid("portal_user_id").notNull().references(() => portalUsers.id, { onDelete: "cascade" }),
+  purpose: text("purpose").notNull().default("reset"), // reset | invite
+  expiresAt: ts("expires_at").notNull(),
+  usedAt: ts("used_at"),
   createdAt: created(),
 });
