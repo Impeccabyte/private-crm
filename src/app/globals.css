@@ -425,8 +425,8 @@ html[data-density="compact"] .tbl th { height: 30px; }
 
 /* ===== Motion =====
    Short, quiet transitions: menus and popovers grow from their trigger, sheets slide in, dialogs scale up,
-   content fades in on navigation. Everything is switched off under prefers-reduced-motion. */
-:root { --ease-out: cubic-bezier(.2, .7, .2, 1); --ease-spring: cubic-bezier(.3, 1.3, .5, 1); }
+   content fades in on navigation. Under prefers-reduced-motion the movement goes and the fades stay. */
+:root { --ease-out: cubic-bezier(.2, .7, .2, 1); }
 @keyframes ib-pop { from { opacity: 0; transform: translateY(-4px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes ib-pop-up { from { opacity: 0; transform: translateY(4px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes ib-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -457,7 +457,7 @@ a.kpi:hover, a.card:hover { box-shadow: 0 4px 14px -6px rgba(16,24,40,.12); }
 .tab { transition: color .14s ease, border-color .2s var(--ease-out); }
 .bar i, .prog i, .hbar .fg { transition: width .5s var(--ease-out); }
 .switch { transition: background-color .16s ease; }
-.switch::after { transition: left .18s var(--ease-spring); }
+.switch::after { transition: left .18s var(--ease-out); }
 
 /* Expandable sections: <details> opens with a height transition where the browser supports it */
 :root { interpolate-size: allow-keywords; }
@@ -757,8 +757,21 @@ tr.expand-in { animation: none; } tr.expand-in > td { animation: ib-fade .2s eas
   .em-name { max-width: none; }
 }
 
+/* Reduced motion: nothing slides, scales, spins or loops, but things still fade in and colours still ease, so a
+   menu opening or a row changing state is not an abrupt jump. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  @keyframes ib-pop { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-pop-up { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-rise { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-sheet { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-sheet-up { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-dialog { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-drawer { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-toast { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ib-expand { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes em-drop { from { opacity: 0; } }
+  .sk, .spin, .em-spin, .loading-bar { animation: none !important; }
+  *, *::before, *::after { animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-property: color, background-color, border-color, outline-color, opacity, box-shadow, visibility !important; }
 }
 
 /* ===== Accessibility: skip link and minimum target sizes (WCAG 2.4.1, 2.5.8) ===== */
@@ -789,5 +802,11 @@ label:has(> .switch) { min-height: 24px; }
   .chip { height: 32px; }
   input[type=checkbox] { width: 20px; height: 20px; }
   .tab { height: 44px; }
+
+  /* Wide tables keep the columns that answer "which one, and how is it doing"; the rest wait for a wider screen.
+     The row still opens the full record. */
+  #merchants-table :is(.col-mid, .col-mcc, .col-loc, .col-txn, .col-delta, .col-cbr, .col-owner) { display: none; }
+  .tbl[role="treegrid"] :is(th, td):nth-child(n+2):nth-child(-n+7) { display: none; }
+  #merchants-table td, .tbl[role="treegrid"] :is(th, td):first-child { white-space: normal; }
 }
 
