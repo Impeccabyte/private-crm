@@ -1,3 +1,4 @@
+import { Emblem } from "@/components/Emblem";
 import type { ReactNode } from "react";
 import { RefreshCw, Users, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -7,7 +8,7 @@ export function AuthShell({ children, company }: { children: ReactNode; company:
     <div className="lg">
       <main className="lg-form">
         <div className="lg-top">
-          <span className="logo" aria-hidden="true">IB</span>
+          <Emblem className="logo" />
           <span style={{ fontWeight: 600 }}>{company} CRM</span>
           <span className="sp" />
           <ThemeToggle />

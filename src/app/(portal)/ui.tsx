@@ -1,26 +1,18 @@
 import Link from "next/link";
+import { Emblem } from "@/components/Emblem";
 import { REQUEST_STATUS } from "@/lib/portal/data";
 
 export const DISCLOSURE =
   "Merchant accounts are provided by Maverick Payments and its sponsor banks. Impeccabyte is an authorized sales agent of Maverick Payments.";
 
-/** The Impeccabyte emblem: a card with three bytes rising from clay into amber. */
-export function Emblem({ onDark = true }: { onDark?: boolean }) {
-  return (
-    <svg viewBox="8 14 84 84" aria-hidden="true">
-      {!onDark && <rect x="8" y="14" width="84" height="84" rx="18" fill="#faf6ef" />}
-      <rect x="16" y="60" width="68" height="30" rx="7" fill="#c0623e" />
-      <rect x="28" y="46" width="11" height="11" rx="3.4" fill="#c0623e" />
-      <rect x="43" y="34" width="11" height="11" rx="3.4" fill="#d17c56" />
-      <rect x="58" y="22" width="11" height="11" rx="3.4" fill="#e0a04d" />
-    </svg>
-  );
-}
-
-export function Wordmark({ href = "/" }: { href?: string }) {
+/**
+ * The logo lockup. "dark" is the dark-ground version (cream emblem, cream "Impecca", amber "byte") for the clove
+ * rail, top bar and sign-in panel. "light" is the colour version for paper grounds.
+ */
+export function Wordmark({ href = "/", ground = "dark" }: { href?: string; ground?: "dark" | "light" }) {
   return (
     <Link className="mp-logo" href={href}>
-      <Emblem />
+      <Emblem tone={ground === "dark" ? "cream" : "color"} />
       <span>Impecca<b>byte</b></span>
     </Link>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { Emblem } from "@/components/Emblem";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -54,7 +55,7 @@ export function Sidebar({ items, company, lastSync, syncFailed, hasConnections }
     <div className={`side-col ${open ? "open" : ""}`} id="primary-nav">
     <nav ref={navRef} className={`sb ${mobile ? "drawer" : collapsed ? "collapsed" : ""}`} aria-label="Primary">
       <div className="ws">
-        <span className="logo" aria-hidden="true">IB</span>
+        <Emblem className="logo" />
         <div className="lbl ws-txt">
           <span className="ws-name">{company}</span>
           <span className="ws-sub">Merchant CRM</span>

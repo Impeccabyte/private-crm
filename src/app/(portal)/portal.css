@@ -53,7 +53,7 @@
 /* ── Shell ───────────────────────────────────────────── */
 .mp-shell { display: flex; min-height: 100dvh; }
 .mp-rail { width: 248px; flex: none; background: var(--clove-800); color: var(--on-dark); padding: 24px 16px 20px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; }
-.mp-logo { display: flex; align-items: center; gap: 10px; padding: 0 10px 22px; font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.02em; color: var(--on-dark); text-decoration: none !important; }
+.mp a.mp-logo { display: flex; align-items: center; gap: 10px; padding: 0 10px 22px; font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.02em; color: var(--on-dark); text-decoration: none !important; }
 .mp-logo b { color: var(--amber-400); font-weight: 600; }
 .mp-logo svg { width: 28px; height: 28px; flex: none; }
 .mp-nav { display: flex; flex-direction: column; gap: 2px; }
@@ -237,7 +237,7 @@ a.mp-item:hover { border-color: var(--ink-300); box-shadow: var(--shadow-md); tr
 .mp-auth-form > div { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 22px; }
 .mp-auth-form form { display: flex; flex-direction: column; gap: 16px; }
 .mp-auth-brand { display: none; }
-.mp-auth-brand .mp-logo { color: var(--ink-900); padding: 0; }
+.mp .mp-auth-brand a.mp-logo { color: var(--ink-900); padding: 0; }
 .mp-auth-brand .mp-logo b { color: var(--clay-500); }
 @media (max-width: 899px) {
   .mp-auth-brand { display: block; }
