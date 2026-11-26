@@ -49,6 +49,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="app">
+      <a href="#content" className="skip">Skip to content</a>
       <Sidebar items={nav} company={general.companyName} lastSync={lastSync?.toISOString() ?? null} syncFailed={syncFailed} hasConnections={conns.length > 0} />
       <main className="main" id="main">
         <Topbar
@@ -56,6 +57,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           canCreate={{ lead: can(user.role, "leads.edit"), ticket: can(user.role, "tickets.edit"), merchant: can(user.role, "merchants.edit") }}
           notifications={notes.map((n) => ({ id: n.id, title: n.title, sub: n.dba ?? "", at: n.at.toISOString(), href: n.merchantId ? `/ase/merchants/${n.merchantId}?tab=activity` : "/ase" }))}
         />
+        {/* Where "Skip to content" lands: past the sidebar and the top bar. */}
+        <span id="content" tabIndex={-1} className="skip-target" />
         {children}
       </main>
       <ConfirmHost />
