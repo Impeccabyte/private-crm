@@ -7,6 +7,7 @@ import "server-only";
 import { and, asc, desc, eq, gte, inArray, lte, ne, sql } from "drizzle-orm";
 import { db, schema } from "@/db";
 import type { PortalUser } from "./dal";
+import { sha256 } from "@/lib/crypto";
 
 const T = schema;
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -135,7 +136,7 @@ export async function getFeed(u: PortalUser, limit = 30): Promise<{ needs: Needs
       key: `p-${p.id}`, at: `${p.depositDate}T12:00:00Z`, day: p.depositDate, kind: "deposit",
       title: `Deposit sent to ${a ? bankLabel(a) : "your bank"}`,
       detail: [`Card sales ${fmtUsd(p.gross)}`, `fees ${fmtUsd(p.fees)}`, p.chargebacks ? `disputes ${fmtUsd(p.chargebacks)}` : null, p.batches > 1 ? `${p.batches} days of sales` : null].filter(Boolean).join(" · "),
-      amount: p.net, href: "/portal/deposits",
+      amount: p.net, href: "/deposits",
     });
   }
 
@@ -146,36 +147,36 @@ export async function getFeed(u: PortalUser, limit = 30): Promise<{ needs: Needs
       key: `c-${c.id}`, at: `${c.receivedAt}T12:00:00Z`, day: c.receivedAt, kind: "dispute",
       title: `A customer disputed a ${fmtUsd(c.amount)} charge`,
       detail: [card, c.reason].filter(Boolean).join(" · ") || "Dispute opened",
-      href: "/portal/disputes",
+      href: "/disputes",
     });
     if (c.status !== "Processed") {
       items.push({ key: `cr-${c.id}`, at: c.updatedAt.toISOString(), kind: "dispute_result",
         title: c.status === "Won" ? `Dispute decided in your favor: ${fmtUsd(c.amount)}` : `Dispute decided for the customer: ${fmtUsd(c.amount)}`,
-        detail: `Case ${c.caseId}`, href: "/portal/disputes" });
+        detail: `Case ${c.caseId}`, href: "/disputes" });
     }
     const open = c.status === "Processed" && c.disputeStatus === "none" && (!c.respondBy || c.respondBy >= today);
     if (open && !helpOpenFor.has(c.id)) {
       needs.push({ key: `n-c-${c.id}`, kind: "dispute", title: `A customer disputed a ${fmtUsd(c.amount)} charge`,
         detail: [card, c.respondBy ? `respond by ${fmtDay(c.respondBy)}` : null].filter(Boolean).join(" · "),
-        action: "Tell us what happened", href: `/portal/requests/new?kind=dispute&chargeback=${c.id}`, due: c.respondBy ?? undefined });
+        action: "Tell us what happened", href: `/requests/new?kind=dispute&chargeback=${c.id}`, due: c.respondBy ?? undefined });
     }
   }
 
   for (const t of tix) {
     const label = REQUEST_KINDS[(t.portalKind ?? "support") as RequestKind]?.label ?? "Request";
-    items.push({ key: `t-${t.id}`, at: t.createdAt.toISOString(), kind: "request", title: `You sent a request: ${t.subject}`, detail: `${label} · ${t.number}`, href: `/portal/requests/${t.id}` });
+    items.push({ key: `t-${t.id}`, at: t.createdAt.toISOString(), kind: "request", title: `You sent a request: ${t.subject}`, detail: `${label} · ${t.number}`, href: `/requests/${t.id}` });
     const ms = msgs.filter((m) => m.ticketId === t.id);
     for (const m of ms.filter((x) => x.kind === "inbound").slice(1).slice(-3)) {
-      items.push({ key: `m-${m.id}`, at: m.at.toISOString(), kind: "you_replied", title: `You replied about "${t.subject}"`, detail: `“${clip(m.body, 110)}”`, href: `/portal/requests/${t.id}`, ticketId: t.id });
+      items.push({ key: `m-${m.id}`, at: m.at.toISOString(), kind: "you_replied", title: `You replied about "${t.subject}"`, detail: `“${clip(m.body, 110)}”`, href: `/requests/${t.id}`, ticketId: t.id });
     }
     for (const m of ms.filter((x) => x.kind === "outbound").slice(-3)) {
       items.push({ key: `m-${m.id}`, at: m.at.toISOString(), kind: "reply", title: `${firstName(m.author)} replied about ${t.subject.toLowerCase().startsWith("your") ? t.subject : `"${t.subject}"`}`,
-        detail: `“${clip(m.body, 110)}”`, href: `/portal/requests/${t.id}` });
+        detail: `“${clip(m.body, 110)}”`, href: `/requests/${t.id}` });
     }
-    if (t.closedAt) items.push({ key: `td-${t.id}`, at: t.closedAt.toISOString(), kind: "request_done", title: `Request done: ${t.subject}`, detail: t.number, href: `/portal/requests/${t.id}` });
+    if (t.closedAt) items.push({ key: `td-${t.id}`, at: t.closedAt.toISOString(), kind: "request_done", title: `Request done: ${t.subject}`, detail: t.number, href: `/requests/${t.id}` });
     const lastMsg = ms[ms.length - 1];
     if (t.status !== "Closed" && lastMsg?.kind === "outbound") {
-      needs.push({ key: `n-t-${t.id}`, kind: "reply", title: `${firstName(lastMsg.author)} is waiting on your reply`, detail: `${t.subject}: “${clip(lastMsg.body, 140)}”`, action: "Reply", href: `/portal/requests/${t.id}`, ticketId: t.id });
+      needs.push({ key: `n-t-${t.id}`, kind: "reply", title: `${firstName(lastMsg.author)} is waiting on your reply`, detail: `${t.subject}: “${clip(lastMsg.body, 140)}”`, action: "Reply", href: `/requests/${t.id}`, ticketId: t.id });
     }
   }
 
@@ -303,7 +304,7 @@ export async function getAccount(u: PortalUser) {
     accountsOf(m.id),
     db.select({ id: T.contacts.id, first: T.contacts.firstName, last: T.contacts.lastName, title: T.contacts.title, email: T.contacts.email, phone: T.contacts.phone, labels: T.contacts.labels })
       .from(T.contacts).where(eq(T.contacts.merchantId, m.id)).orderBy(asc(T.contacts.lastName)),
-    m.ownerId ? db.query.users.findFirst({ where: eq(T.users.id, m.ownerId), columns: { name: true, email: true } }) : null,
+    m.ownerId ? db.query.users.findFirst({ where: eq(T.users.id, m.ownerId), columns: { name: true, email: true, avatarKey: true } }) : null,
     db.select({ id: T.portalUsers.id, name: T.portalUsers.name, email: T.portalUsers.email, status: T.portalUsers.status, lastLoginAt: T.portalUsers.lastLoginAt })
       .from(T.portalUsers).where(and(eq(T.portalUsers.merchantId, m.id), ne(T.portalUsers.status, "disabled"))),
   ]);
@@ -320,13 +321,19 @@ export async function getAccount(u: PortalUser) {
     accounts: accts.map((a) => ({ id: a.id, mid: `•••• ${lastFour(a.mid)}`, status: a.status, openedAt: a.openedAt, bank: bankLabel(a), channel: a.channel,
       terminals: terms.filter((t) => t.acct === a.id).map((t) => ({ id: t.id, name: t.name ?? t.model ?? "Terminal", model: t.model, location: t.location, status: t.status, tid: `••${lastFour(t.tid)}` })) })),
     contacts: contacts.map((c) => ({ id: c.id, name: `${c.first} ${c.last}`, title: c.title, email: c.email, phone: c.phone, labels: c.labels })),
-    manager: owner ? { name: owner.name, email: owner.email } : null,
+    manager: owner ? {
+      name: owner.name, email: owner.email,
+      initials: owner.name.split(/\s+/).filter(Boolean).map((w) => w[0]).slice(0, 2).join("").toUpperCase(),
+      // No staff id in the address: the photo route works out the manager from the merchant's session.
+      photo: owner.avatarKey ? `/api/portal/manager-photo?v=${sha256(owner.avatarKey).slice(0, 12)}` : null,
+    } : null,
     logins: users,
   };
 }
 
 // ── small helpers ─────────────────────────────────────────────────────────────
-export const fmtUsd = (n: number) => (n < 0 ? "−$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/** Negative amounts (money taken out or owed) are written in parentheses: ($1,234.56). */
+export const fmtUsd = (n: number) => { const s = "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); return n < 0 ? `(${s})` : s; };
 export const fmtDay = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
 const firstName = (n: string | null) => (n ? n.split(/\s+/)[0]! : "We");
 const clip = (s: string, n: number) => { const t = s.replace(/\s+/g, " ").trim(); return t.length > n ? `${t.slice(0, n - 1).trimEnd()}…` : t; };

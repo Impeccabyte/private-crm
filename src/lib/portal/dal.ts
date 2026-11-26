@@ -44,7 +44,7 @@ export const getPortalUser = cache(async (): Promise<PortalUser | null> => {
 /** For portal pages: send anyone without a live merchant session to the portal sign-in. */
 export async function requirePortalUser(): Promise<PortalUser> {
   const u = await getPortalUser();
-  if (!u) redirect("/portal/login");
+  if (!u) redirect("/login");
   return u;
 }
 

@@ -5,8 +5,8 @@ import { appBase, callbackUrl, oidc, ssoConfig } from "@/lib/sso";
 export async function GET(req: Request) {
   try {
     const sso = await ssoConfig();
-    if (!sso) return Response.redirect(`${appBase()}/login`, 302);
-    const next = new URL(req.url).searchParams.get("next") ?? "/";
+    if (!sso) return Response.redirect(`${appBase()}/ase/login`, 302);
+    const next = new URL(req.url).searchParams.get("next") ?? "/ase";
     const verifier = oidc.randomPKCECodeVerifier();
     const state = oidc.randomState();
     const nonce = oidc.randomNonce();
@@ -20,6 +20,6 @@ export async function GET(req: Request) {
     return Response.redirect(url.href, 302);
   } catch (err) {
     console.error("[sso] start failed", (err as Error).message);
-    return Response.redirect(`${appBase()}/login?sso_error=1`, 302);
+    return Response.redirect(`${appBase()}/ase/login?sso_error=1`, 302);
   }
 }

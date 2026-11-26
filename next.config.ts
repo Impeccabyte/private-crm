@@ -14,6 +14,21 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    // Old addresses, from before the merchant portal moved to the root and the staff CRM moved under /ase
+    // (Nov 2026). Sent emails and bookmarks still use them. The old staff /login, /account, /reports and
+    // /forgot-password can't be redirected: those addresses are merchant pages now.
+    const staff = ["merchants", "leads", "deals", "applications", "chargebacks", "residuals", "settings", "support", "email"];
+    return [
+      { source: "/portal", destination: "/", permanent: false },
+      { source: "/portal/:path*", destination: "/:path*", permanent: false },
+      { source: "/reset-password/:token", destination: "/ase/reset-password/:token", permanent: false },
+      ...staff.flatMap((s) => [
+        { source: `/${s}`, destination: `/ase/${s}`, permanent: false },
+        { source: `/${s}/:path*`, destination: `/ase/${s}/:path*`, permanent: false },
+      ]),
+    ];
+  },
   async headers() {
     return [
       {

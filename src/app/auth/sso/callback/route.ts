@@ -9,7 +9,7 @@ import { audit } from "@/lib/audit";
 
 const fail = (reason: string) => {
   console.warn("[sso] callback rejected:", reason);
-  return Response.redirect(`${appBase()}/login?sso_error=1`, 302);
+  return Response.redirect(`${appBase()}/ase/login?sso_error=1`, 302);
 };
 
 export async function GET(req: Request) {
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
     await db.update(schema.users).set({ lastLoginAt: new Date(), failedLoginCount: 0, lockedUntil: null }).where(eq(schema.users.id, user!.id));
     await createSession(user!.id, sec.sessionHours * 3_600_000, false);
     await audit({ id: user!.id, email, ip: await requestIp() }, "auth.login_sso", "user", user!.id, { provider: sso.settings.providerName });
-    const next = st.next?.startsWith("/") && !st.next.startsWith("//") ? st.next : "/";
+    const next = st.next && (st.next === "/ase" || st.next.startsWith("/ase/")) ? st.next : "/ase";
     return Response.redirect(`${appBase()}${next}`, 302);
   } catch (err) {
     return fail((err as Error).message);
