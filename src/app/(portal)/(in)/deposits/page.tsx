@@ -96,7 +96,7 @@ export default async function Deposits({ searchParams }: { searchParams: Promise
                   <li key={r.id}>
                     <b>{day(r.date, true)}</b>
                     <span className="amt">{fmtUsd(r.net)}</span>
-                    <span className="sub">Sales {fmtUsd(r.gross)} · fees {fmtUsd(r.fees)}{r.chargebacks ? ` · disputes ${fmtUsd(r.chargebacks)}` : ""}{r.reserve ? ` · held ${fmtUsd(r.reserve)}` : ""}</span>
+                    <span className="sub">Sales {fmtUsd(r.gross)} · fees {fmtUsd(-r.fees)}{r.chargebacks ? ` · disputes ${fmtUsd(-r.chargebacks)}` : ""}{r.reserve ? ` · held ${fmtUsd(-r.reserve)}` : ""}</span>
                   </li>
                 ))}
               </ul>
